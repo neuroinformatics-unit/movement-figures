@@ -1,0 +1,12 @@
+{
+  "hash": "d036cec7d1ceb30be1fc58df639d9790",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Example trajectory\"\n---\n\nA self-contained example figure: a synthetic 2D trajectory, styled and exported\nto vector files via the shared `movement_figures` helpers. Use this as the\ntemplate for new figures.\n\n::: {#57dbf389 .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nfrom movement_figures import apply_style, save_figure, PALETTE, FIGSIZES\n\napply_style(\"manuscript\")\n\nrng = np.random.default_rng(0)\nsteps = rng.normal(size=(200, 2)).cumsum(axis=0)\n\nfig, ax = plt.subplots(figsize=FIGSIZES[\"manuscript\"][\"single\"])\nax.plot(steps[:, 0], steps[:, 1], color=PALETTE[\"primary\"], lw=1.0)\nax.scatter(*steps[0], color=PALETTE[\"accent\"], zorder=3, label=\"start\")\nax.scatter(*steps[-1], color=PALETTE[\"secondary\"], zorder=3, label=\"end\")\nax.set(xlabel=\"x (px)\", ylabel=\"y (px)\", aspect=\"equal\")\nax.legend(frameon=False)\n\nsave_figure(fig, \"example_trajectory\")\nfig\n```\n\n::: {.cell-output .cell-output-display execution_count=1}\n![](example_trajectory_files/figure-html/cell-2-output-1.png){width=318 height=215}\n:::\n\n::: {.cell-output .cell-output-display}\n![](example_trajectory_files/figure-html/cell-2-output-2.png){width=318 height=215}\n:::\n:::\n\n\n",
+    "supporting": [
+      "example_trajectory_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
