@@ -1,0 +1,21 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+  render:
+    - index.qmd
+    - figures/*.qmd
+
+website:
+  title: "movement figures"
+  description: "Reproducible figures for movement research outputs."
+
+format:
+  html:
+    theme: cosmo
+    code-fold: true
+    toc: true
+
+execute:
+  freeze: auto
+  warning: false

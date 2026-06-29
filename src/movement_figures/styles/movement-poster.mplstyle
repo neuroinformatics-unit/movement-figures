@@ -1,0 +1,5 @@
+font.size: 18
+axes.titlesize: 22
+axes.labelsize: 18
+lines.linewidth: 2.5
+lines.markersize: 9

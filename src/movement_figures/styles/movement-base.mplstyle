@@ -1,0 +1,14 @@
+figure.facecolor: white
+axes.facecolor: white
+axes.edgecolor: 333333
+axes.labelcolor: 333333
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: False
+text.color: 333333
+xtick.color: 333333
+ytick.color: 333333
+font.family: sans-serif
+savefig.dpi: 300
+savefig.bbox: tight
+savefig.transparent: False

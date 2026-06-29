@@ -1,0 +1,4 @@
+engine: jupyter
+execute:
+  echo: true
+  warning: false

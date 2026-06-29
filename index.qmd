@@ -1,0 +1,11 @@
+---
+title: "movement figures"
+listing:
+  contents: figures
+  type: grid
+  sort: "title"
+---
+
+Reproducible figures for research outputs related to
+[movement](https://movement.neuroinformatics.dev/).
+Each card below links to a figure generated from a single Quarto document.
