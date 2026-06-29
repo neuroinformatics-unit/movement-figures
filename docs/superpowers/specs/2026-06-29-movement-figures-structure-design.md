@@ -21,6 +21,8 @@ style, and the whole set builds with one command.
 | Export formats | Vector PDF + SVG; plus rendered Quarto pages as a browsable gallery |
 | Committed artifacts | Final figures in `outputs/` are committed; `_site/`, caches gitignored |
 | Dependency management | uv (`pyproject.toml` + `uv.lock`) |
+| Python version | `>=3.12,<3.15` (range supported by movement 0.17) |
+| Build backend | setuptools (matches movement); static version |
 | Package layout | `src/` layout, package/import name `movement_figures` |
 
 ## Directory Structure
