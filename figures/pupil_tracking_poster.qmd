@@ -6,10 +6,11 @@ A two-panel poster figure for the `black` (dark surround) rotating-mouse
 eye-tracking dataset: the four tracked keypoints (plus the pupil centroid) on an
 example video frame, and the pupil centroid's horizontal velocity over time.
 
-## Imports
+## Imports and style
 
 ```{python}
 import matplotlib.pyplot as plt
+import seaborn as sns
 import sleap_io as sio
 
 from movement import sample_data
@@ -21,6 +22,10 @@ apply_style("poster")
 ```
 
 ## Load and prepare data
+
+We use a dataset that's already part of `movement`'s sample data and has been
+thoroughly explored in `movement`'s ['Pupil tracking' example](https://movement.neuroinformatics.dev/latest/examples/mouse_eye_movements.html).
+
 
 ```{python}
 # Load the black (dark surround) eye-tracking dataset together with its video.
@@ -54,17 +59,21 @@ ax_frame.imshow(frame0, cmap="gray")
 for kp in ds.position.keypoint.values:
     p = pos0.sel(keypoint=kp)
     ax_frame.scatter(p.sel(space="x"), p.sel(space="y"), s=120, label=kp)
+
 ax_frame.scatter(
     centroid0.sel(space="x"),
     centroid0.sel(space="y"),
     marker="x",
-    s=160,
-    color=PALETTE["accent"],
+    s=220,
+    linewidths=4,
+    color=PALETTE["highlight"],
     label="centroid",
 )
 ax_frame.invert_yaxis()  # the dataset was captured flipped
 ax_frame.set_xticks([])
 ax_frame.set_yticks([])
+ax_frame.set_xlabel("x")
+ax_frame.set_ylabel("y")
 ax_frame.set_title("Tracked keypoints")
 ax_frame.legend(loc="upper right")
 
@@ -73,7 +82,12 @@ vx.plot.line(ax=ax_vel)
 ax_vel.set_title("Pupil centroid x-velocity")
 ax_vel.set_xlabel("time (s)")
 ax_vel.set_ylabel("velocity (px/s)")
+```
 
+## Save the figure
+
+```{python}
+sns.despine(fig=fig, trim=True)
 fig.tight_layout()
 save_figure(fig, "pupil_tracking_poster")
 fig
