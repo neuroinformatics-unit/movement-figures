@@ -1,6 +1,3 @@
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from movement_figures import save_figure
@@ -21,14 +18,17 @@ def test_save_figure_custom_formats(tmp_path):
     ax.plot([0, 1], [0, 1])
     paths = save_figure(fig, "demo", formats=("svg",), output_dir=tmp_path)
     assert [p.name for p in paths] == ["demo.svg"]
+    assert paths[0].exists() and paths[0].stat().st_size > 0
 
 
 def test_save_figure_creates_missing_dir(tmp_path):
     target = tmp_path / "nested" / "outputs"
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
-    save_figure(fig, "demo", output_dir=target)
-    assert (target / "demo.pdf").exists()
+    paths = save_figure(fig, "demo", output_dir=target)
+    assert {p.name for p in paths} == {"demo.pdf", "demo.svg"}
+    for p in paths:
+        assert p.exists() and p.stat().st_size > 0
 
 
 def test_save_figure_is_deterministic(tmp_path):

@@ -1,6 +1,3 @@
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pytest
 
@@ -11,9 +8,12 @@ def test_available_media():
     assert AVAILABLE_MEDIA == ("manuscript", "poster", "presentation")
 
 
-def test_apply_style_sets_medium_fontsize():
+def test_apply_style_manuscript_fontsize():
     apply_style("manuscript")
     assert plt.rcParams["font.size"] == 8
+
+
+def test_apply_style_poster_fontsize():
     apply_style("poster")
     assert plt.rcParams["font.size"] == 18
 
