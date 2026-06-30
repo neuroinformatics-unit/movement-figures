@@ -45,7 +45,7 @@ def _deterministic_svg_context() -> Generator[None, None, None]:
 def save_figure(
     fig: Figure,
     name: str,
-    formats: Sequence[str] = ("pdf", "svg"),
+    formats: Sequence[str] = ("pdf",),
     output_dir: str | Path | None = None,
 ) -> list[Path]:
     """Save ``fig`` as vector files named ``<name>.<fmt>`` in ``output_dir``.
@@ -70,5 +70,6 @@ def save_figure(
                 fig.savefig(path, metadata=metadata)
         else:
             fig.savefig(path, metadata=metadata)
+
         paths.append(path)
     return paths

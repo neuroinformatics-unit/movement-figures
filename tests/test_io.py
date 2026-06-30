@@ -4,14 +4,20 @@ from movement_figures import save_figure
 from movement_figures.io import _default_output_dir
 
 
-def test_save_figure_writes_pdf_and_svg(tmp_path):
+def test_save_figure_default_writes_pdf(tmp_path):
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
     paths = save_figure(fig, "demo", output_dir=tmp_path)
-    names = {p.name for p in paths}
-    assert names == {"demo.pdf", "demo.svg"}
-    for p in paths:
-        assert p.exists() and p.stat().st_size > 0
+    assert [p.name for p in paths] == ["demo.pdf"]
+    assert paths[0].exists() and paths[0].stat().st_size > 0
+
+
+def test_save_figure_writes_png(tmp_path):
+    fig, ax = plt.subplots()
+    ax.plot([0, 1], [0, 1])
+    paths = save_figure(fig, "demo", formats=("png",), output_dir=tmp_path)
+    assert [p.name for p in paths] == ["demo.png"]
+    assert paths[0].exists() and paths[0].stat().st_size > 0
 
 
 def test_save_figure_custom_formats(tmp_path):
@@ -27,9 +33,8 @@ def test_save_figure_creates_missing_dir(tmp_path):
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
     paths = save_figure(fig, "demo", output_dir=target)
-    assert {p.name for p in paths} == {"demo.pdf", "demo.svg"}
-    for p in paths:
-        assert p.exists() and p.stat().st_size > 0
+    assert [p.name for p in paths] == ["demo.pdf"]
+    assert paths[0].exists() and paths[0].stat().st_size > 0
 
 
 def test_save_figure_is_deterministic(tmp_path):
