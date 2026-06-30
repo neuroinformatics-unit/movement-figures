@@ -10,14 +10,14 @@ template for new figures.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from movement_figures import apply_style, save_figure, PALETTE, FIGSIZES
+from movement_figures import apply_style, figure_size, save_figure, PALETTE
 
 apply_style("manuscript")
 
 rng = np.random.default_rng(0)
 steps = rng.normal(size=(200, 2)).cumsum(axis=0)
 
-fig, ax = plt.subplots(figsize=FIGSIZES["manuscript"]["single"])
+fig, ax = plt.subplots(figsize=figure_size("single", height=2.6))
 ax.plot(steps[:, 0], steps[:, 1], color=PALETTE["primary"], lw=1.0)
 ax.scatter(*steps[0], color=PALETTE["accent"], zorder=3, label="start")
 ax.scatter(*steps[-1], color=PALETTE["secondary"], zorder=3, label="end")

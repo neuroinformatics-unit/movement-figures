@@ -16,7 +16,7 @@ import sleap_io as sio
 from movement import sample_data
 from movement.kinematics import compute_velocity
 
-from movement_figures import FIGSIZES, PALETTE, apply_style, save_figure
+from movement_figures import PALETTE, apply_style, figure_size, save_figure
 
 apply_style("poster")
 ```
@@ -51,44 +51,45 @@ vx = velocity.sel(space="x").squeeze().sel(time=slice(10, 25))
 
 ```{python}
 fig, (ax_frame, ax_vel) = plt.subplots(
-    1, 2, figsize=FIGSIZES["poster"]["double"]
+    1,
+    2,
+    figsize=figure_size("double", height=4.5),
+    gridspec_kw={"width_ratios": [1, 3]},
 )
 
-# Panel 1: example frame with the tracked keypoints and the pupil centroid.
+# Panel 1 (~1/4 width): example frame with tracked keypoints + derived centroid.
 ax_frame.imshow(frame0, cmap="gray")
-for kp in ds.position.keypoint.values:
-    p = pos0.sel(keypoint=kp)
-    ax_frame.scatter(p.sel(space="x"), p.sel(space="y"), s=120, label=kp)
-
-ax_frame.scatter(
+# All 4 tracked keypoints share one color and one label -> a single legend entry.
+h_tracked = ax_frame.scatter(
+    pos0.sel(space="x"),
+    pos0.sel(space="y"),
+    s=120,
+    color=PALETTE["primary"],
+)
+h_centroid = ax_frame.scatter(
     centroid0.sel(space="x"),
     centroid0.sel(space="y"),
-    marker="x",
-    s=220,
-    linewidths=4,
-    color=PALETTE["highlight"],
-    label="centroid",
+    s=120,
+    color=PALETTE["accent"],
 )
 ax_frame.invert_yaxis()  # the dataset was captured flipped
-ax_frame.set_xticks([])
-ax_frame.set_yticks([])
-ax_frame.set_xlabel("x")
-ax_frame.set_ylabel("y")
-ax_frame.set_title("Tracked keypoints")
-ax_frame.legend(loc="upper right")
+ax_frame.axis("off")  # image without any spines/ticks
+ax_frame.set_title("Keypoints")
 
-# Panel 2: x-velocity of the normalized pupil centroid over time.
-vx.plot.line(ax=ax_vel)
+# Panel 2 (~3/4 width): x-velocity of the normalized pupil centroid over time.
+vx.plot.line(ax=ax_vel, color=PALETTE["accent"])
 ax_vel.set_title("Pupil centroid x-velocity")
 ax_vel.set_xlabel("time (s)")
 ax_vel.set_ylabel("velocity (px/s)")
+
+# Layout tweaks
+sns.despine(fig=fig, trim=True)
+fig.tight_layout()
 ```
 
 ## Save the figure
 
 ```{python}
-sns.despine(fig=fig, trim=True)
-fig.tight_layout()
 save_figure(fig, "pupil_tracking_poster")
 fig
 ```

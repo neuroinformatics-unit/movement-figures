@@ -4,10 +4,11 @@ from matplotlib.colors import to_hex
 
 from movement_figures import (
     AVAILABLE_MEDIA,
-    FIGSIZES,
     PALETTE,
     SET2,
+    WIDTHS,
     apply_style,
+    figure_size,
 )
 
 
@@ -57,9 +58,17 @@ def test_apply_style_rejects_unknown_medium():
         apply_style("billboard")
 
 
-def test_palette_and_figsizes_shape():
+def test_palette_and_widths_shape():
     assert isinstance(PALETTE, dict) and len(PALETTE) >= 1
-    assert set(FIGSIZES) == set(AVAILABLE_MEDIA)
-    for sizes in FIGSIZES.values():
-        for dims in sizes.values():
-            assert len(dims) == 2
+    assert set(WIDTHS) == set(AVAILABLE_MEDIA)
+    for spans in WIDTHS.values():
+        assert set(spans) == {"single", "double"}
+        for w in spans.values():
+            assert isinstance(w, (int, float))
+
+
+def test_figure_size_uses_active_medium():
+    apply_style("poster")
+    assert figure_size("double", height=5.0) == (16.0, 5.0)
+    apply_style("manuscript")
+    assert figure_size("single", height=2.6) == (3.5, 2.6)

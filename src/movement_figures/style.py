@@ -8,6 +8,9 @@ AVAILABLE_MEDIA: tuple[str, ...] = ("manuscript", "poster", "presentation")
 
 _STYLE_DIR = files("movement_figures") / "styles"
 
+# The medium of the most recent ``apply_style`` call; used by ``figure_size``.
+_active_medium: str = "manuscript"
+
 # ColorBrewer Set2 — movement's brand categorical palette (matches the base
 # axes.prop_cycle in movement-base.mplstyle).
 SET2: tuple[str, ...] = (
@@ -31,11 +34,12 @@ PALETTE: dict[str, str] = {
     "ink": "#666666",  # Dark2 grey (dark neutral)
 }
 
-# Figure dimensions in inches, per medium.
-FIGSIZES: dict[str, dict[str, tuple[float, float]]] = {
-    "manuscript": {"single": (3.5, 2.6), "double": (7.0, 4.0)},
-    "poster": {"single": (8.0, 6.0), "double": (16.0, 9.0)},
-    "presentation": {"single": (6.0, 4.0), "double": (12.0, 6.75)},
+# Standardized figure widths (inches) per medium and column span. Heights are
+# chosen per figure via figure_size(..., height=...).
+WIDTHS: dict[str, dict[str, float]] = {
+    "manuscript": {"single": 3.5, "double": 7.0},
+    "poster": {"single": 8.0, "double": 16.0},
+    "presentation": {"single": 6.0, "double": 12.0},
 }
 
 
@@ -52,8 +56,20 @@ def apply_style(medium: str = "manuscript") -> None:
     ValueError
         If ``medium`` is not a known medium.
     """
+    global _active_medium
     if medium not in AVAILABLE_MEDIA:
         raise ValueError(f"Unknown medium {medium!r}; choose from {AVAILABLE_MEDIA}.")
     base = str(_STYLE_DIR / "movement-base.mplstyle")
     override = str(_STYLE_DIR / f"movement-{medium}.mplstyle")
     plt.style.use([base, override])
+    _active_medium = medium
+
+
+def figure_size(width: str = "double", height: float = 4.0) -> tuple[float, float]:
+    """Return a ``(width, height)`` figure size in inches.
+
+    The width is the standardized width for the active medium (set by the most
+    recent :func:`apply_style` call) and the given column ``width`` (``"single"``
+    or ``"double"``). ``height`` is chosen freely per figure.
+    """
+    return (WIDTHS[_active_medium][width], height)
