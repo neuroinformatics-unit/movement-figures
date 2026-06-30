@@ -60,3 +60,8 @@ uv run ruff format .    # format
 
 Generated figures under `outputs/` are excluded from the hooks so their
 committed vector files stay byte-stable across re-renders.
+
+> [!NOTE]
+> ruff only lints `.py` files — the Python inside `figures/*.qmd` code cells is
+> not checked for now. Keep figure code tidy by hand, or factor reusable logic
+> into `src/movement_figures/` where it is linted.
