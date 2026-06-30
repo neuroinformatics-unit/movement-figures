@@ -24,7 +24,28 @@ where = ["src"]
 movement_figures = ["styles/*.mplstyle"]
 
 [dependency-groups]
-dev = ["pytest"]
+dev = [
+    "pytest",
+    "pre-commit",
+    "ruff",
+    "codespell",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+fix = true
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# matplotlib.use("Agg") must run before pyplot is imported, so the imports
+# that follow it are intentionally not at the top of the file.
+"tests/conftest.py" = ["E402"]
+
+[tool.codespell]
+skip = '.git,*.svg,*.pdf,uv.lock'
+check-hidden = true

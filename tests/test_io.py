@@ -36,5 +36,5 @@ def test_save_figure_is_deterministic(tmp_path):
     ax.plot([0, 1], [0, 1])
     first = save_figure(fig, "d", output_dir=tmp_path / "a")
     second = save_figure(fig, "d", output_dir=tmp_path / "b")
-    for p1, p2 in zip(first, second):
+    for p1, p2 in zip(first, second, strict=True):
         assert p1.read_bytes() == p2.read_bytes(), f"{p1.name} not deterministic"

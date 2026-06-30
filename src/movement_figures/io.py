@@ -1,9 +1,8 @@
 """Consistent vector export for figures."""
 
-from collections.abc import Sequence
+from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator
 
 import matplotlib as mpl
 from matplotlib.figure import Figure
