@@ -30,3 +30,33 @@ rendered site (`_site/`) and caches are not.
 Copy `figures/example_trajectory.qmd`, pick a `medium`
 (`manuscript` / `poster` / `presentation`) for `apply_style`, build the plot,
 and end with `save_figure(fig, "<name>")`.
+
+## Development
+
+Code quality is enforced with [ruff](https://docs.astral.sh/ruff/) (linting and
+formatting), [codespell](https://github.com/codespell-project/codespell), and a
+set of [pre-commit](https://pre-commit.com/) hooks (`uv sync` installs all of
+these into the environment).
+
+Install the git hook once, so the checks run automatically on every commit:
+
+```bash
+uv run pre-commit install
+```
+
+After that, committing runs the hooks against your staged files. To run every
+hook across the whole repo on demand:
+
+```bash
+uv run pre-commit run --all-files
+```
+
+You can also invoke the linters directly:
+
+```bash
+uv run ruff check .     # lint (auto-fixes where it can)
+uv run ruff format .    # format
+```
+
+Generated figures under `outputs/` are excluded from the hooks so their
+committed vector files stay byte-stable across re-renders.

@@ -38,9 +38,7 @@ def apply_style(medium: str = "manuscript") -> None:
         If ``medium`` is not a known medium.
     """
     if medium not in AVAILABLE_MEDIA:
-        raise ValueError(
-            f"Unknown medium {medium!r}; choose from {AVAILABLE_MEDIA}."
-        )
+        raise ValueError(f"Unknown medium {medium!r}; choose from {AVAILABLE_MEDIA}.")
     base = str(_STYLE_DIR / "movement-base.mplstyle")
     override = str(_STYLE_DIR / f"movement-{medium}.mplstyle")
     plt.style.use([base, override])
