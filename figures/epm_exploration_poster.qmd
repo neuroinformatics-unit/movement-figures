@@ -149,7 +149,7 @@ pos_sel.sel(data="raw").plot.line(
     label="Raw snout position",
 )
 pos_sel.sel(data="clean").plot.line(
-    ax=ax_trace, color=PALETTE["accent"], alpha=0.7,
+    ax=ax_trace, color=PALETTE["accent"], alpha=1.0,
     label="Clean (after dropping outliers and smoothing)",
 )
 ax_trace.set_xlim(float(pos_sel.time.min()), float(pos_sel.time.max()))
@@ -157,7 +157,9 @@ ax_trace.set_title("")
 ax_trace.set_xlabel("time (s)")
 ax_trace.set_ylabel("y position (px)")
 # Anchor the legend on top of the panel (where the title would normally go) so it doesn't overlap the data.
-ax_trace.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=True, framealpha=0.6, ncols=2)
+ax_trace.legend(
+    loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=True, framealpha=0.6, ncols=2
+)
 
 # ------------------------------------------------------------------ #
 # Row 1 left: centroid trajectory                                     #

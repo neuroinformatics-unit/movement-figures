@@ -50,12 +50,15 @@ vx = velocity.sel(space="x").squeeze().sel(time=slice(10, 25))
 ## Build the figure
 
 ```{python}
-fig, (ax_frame, ax_vel) = plt.subplots(
-    1,
-    2,
-    figsize=figure_size("double", height=4.5),
-    gridspec_kw={"width_ratios": [1, 2]},
+fig = plt.figure(figsize=figure_size("double", height=3))
+gs = fig.add_gridspec(
+    1, 2,
+    width_ratios=[5, 11],
+    wspace=0.25,
+    left=0.1, right=0.95, top=0.9, bottom=0.1,
 )
+ax_frame = fig.add_subplot(gs[0, 0])  # example frame
+ax_vel = fig.add_subplot(gs[0, 1])    # x-velocity trace
 
 # Panel 1 (~1/4 width): example frame with tracked keypoints + derived centroid.
 ax_frame.imshow(frame0, cmap="gray")
@@ -65,36 +68,32 @@ h_tracked = ax_frame.scatter(
     pos0.sel(space="y"),
     s=120,
     color=PALETTE["primary"],
-    label="Tracked keypoints"
 )
 h_centroid = ax_frame.scatter(
     centroid0.sel(space="x"),
     centroid0.sel(space="y"),
     s=120,
     color=PALETTE["accent"],
-    label="Pupil centroid"
-)
-ax_frame.legend(
-    handles=[h_tracked, h_centroid],
-    loc="upper right",
-    frameon=True,
-    framealpha=0.6,
 )
 ax_frame.invert_yaxis()  # the dataset was captured flipped
-ax_frame.axis("off")  # image without any spines/ticks
+# Hide ticks and spines but keep the axis labels: axis("off") would hide the
+# labels too, so instead clear ticks and drop the spines manually.
+ax_frame.set_xticks([])
+ax_frame.set_yticks([])
+for spine in ax_frame.spines.values():
+    spine.set_visible(False)
+ax_frame.set_xlabel("x")
+ax_frame.set_ylabel("y")
 
 # Panel 2 (~3/4 width): x-velocity of the normalized pupil centroid over time.
-vx.plot.line(ax=ax_vel, color=PALETTE["accent"])
-ax_vel.set_title("Pupil centroid x-velocity")
+vx.plot.line(ax=ax_vel, color=PALETTE["accent"], label="Pupil centroid x velocity")
+ax_vel.set_xlim(float(vx.time.min()), float(vx.time.max()))
+ax_vel.set_title("Pupil centroid x velocity")
 ax_vel.set_xlabel("time (s)")
 ax_vel.set_ylabel("velocity (px/s)")
 
 # Layout tweaks
 sns.despine(fig=fig)
-fig.subplots_adjust(
-    left=0.1, right=0.95, top=0.95, bottom=0.1,
-    wspace=0.25, hspace=0.2
-)
 ```
 
 ## Save the figure

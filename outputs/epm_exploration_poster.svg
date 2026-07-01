@@ -1337,7 +1337,7 @@ L 1068.149375 156.74191
 L 1069.781375 157.009016 
 L 1070.869375 157.214296 
 L 1070.869375 157.214296 
-" clip-path="url(#p509d4ab224)" style="fill: none; stroke: #66c2a5; stroke-opacity: 0.8; stroke-width: 3; stroke-linecap: round"/>
+" clip-path="url(#p509d4ab224)" style="fill: none; stroke: #66c2a5; stroke-width: 3; stroke-linecap: round"/>
    </g>
    <g id="line2d_12">
     <path d="M 91.669375 79.821568 
@@ -2081,7 +2081,7 @@ z
      <path d="M 193.354375 30.3 
 L 215.354375 30.3 
 L 237.354375 30.3 
-" style="fill: none; stroke: #66c2a5; stroke-opacity: 0.8; stroke-width: 3; stroke-linecap: round"/>
+" style="fill: none; stroke: #66c2a5; stroke-width: 3; stroke-linecap: round"/>
     </g>
     <g id="text_13">
      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="254.954375" y="38" transform="rotate(-0 254.954375 38)">Raw snout position</text>
