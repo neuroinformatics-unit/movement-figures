@@ -23,7 +23,7 @@ uv run quarto render                   # build all figures + the gallery
 ```
 
 Vector exports (`pdf` + `svg`) are written to `outputs/` and committed; the
-rendered site (`_site/`) and caches are not.
+rendered figure gallery website (`_site/`) and caches are not.
 
 ## Adding a figure
 

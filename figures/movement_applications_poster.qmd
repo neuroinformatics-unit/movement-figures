@@ -1,18 +1,23 @@
 ---
-title: "EPM exploration (poster)"
+title: "movement applications (poster)"
 ---
 
-A five-panel poster figure for the elevated plus maze (EPM) dataset: a
-raw-vs-clean position trace (row 1), centroid trajectory and occupancy
-heatmap side-by-side (row 2), and ROI time-fractions overlaid on the maze
-frame alongside a head-direction polar histogram (row 3).
+A poster figure with 7 panels—split across 4 rows—showcasing `movement` application examples.
+
+Rows 1--3 cover the elevated plus maze (EPM) dataset,
+whereas row 4 covers the rotating-mouse eye-tracking dataset:
+
+1. a raw-vs-clean position trace (**A**)
+2. centroid trajectory and occupancy heatmap side-by-side (**B**, **C**)
+3. ROI time-fractions overlaid on the maze frame alongside a head-angle polar histogram (**D**, **E**).
+4. the four tracked keypoints (plus the pupil centroid) on an example video frame
+(**F**), and the pupil centroid's horizontal velocity over time (**G**).
 
 ## Imports and style
 
 ```{python}
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import sleap_io as sio
 import xarray as xr
 
@@ -22,7 +27,7 @@ from movement.filtering import (
     interpolate_over_time,
     rolling_filter,
 )
-from movement.kinematics import compute_forward_vector_angle
+from movement.kinematics import compute_forward_vector_angle, compute_velocity
 from movement.plots import plot_centroid_trajectory, plot_occupancy
 from movement.roi import compute_region_occupancy, load_rois
 
@@ -41,13 +46,15 @@ apply_style("poster")
 
 ## Load and prepare data
 
+### EPM dataset
+
 The EPM dataset ships with `movement`'s sample data.  We apply
 a three-step cleaning pipeline
 (confidence filter, rolling median, linear gap interpolation)
 and keep both the raw and clean positions so we can compare them in the first panel.
 
 We also compute the time fraction spent in each ROI and the head direction angle
-for the clean positions, which will be visualized in the last figure row.
+for the clean positions, which will be visualized in the third figure row.
 
 ```{python}
 # Dataset and background frame.
@@ -57,7 +64,8 @@ ds = sample_data.fetch_dataset(
 frame = plt.imread(ds.frame_path)  # 1300 x 1028 px maze image for heatmap/ROI panels
 frame_h, frame_w = frame.shape[:2]
 
-# Video frame at the end of TRAJ_WINDOW as the trajectory background.
+# Video frame at the end of trajectory time window
+# (to use as background for the trajectory panel).
 video = sio.load_video(ds.video_path)
 traj_end_sec = 250
 traj_frame = video[int(traj_end_sec * ds.fps)]
@@ -97,32 +105,40 @@ head_angle = compute_forward_vector_angle(
 )
 ```
 
+### Eye-tracking dataset
+
+We use a dataset that's already part of `movement`'s sample data and has been
+thoroughly explored in `movement`'s ['Pupil tracking' example](https://movement.neuroinformatics.dev/latest/examples/mouse_eye_movements.html).
+Here we extract the first video frame with tracked keypoints and the pupil centroid,
+as well as the pupil centroid's horizontal velocity over a specific window (normalised by the mean eye position to remove head/camera motion).
+
+```{python}
+# Load the black (dark surround) eye-tracking dataset together with its video.
+eye_ds = sample_data.fetch_dataset(
+    "DLC_rotating-mouse_eye-tracking_stim-black.predictions.h5",
+    with_video=True,
+)
+frame0 = sio.load_video(eye_ds.video_path)[0]
+
+# Panel F data: keypoints at the first frame and the pupil centroid.
+pos0 = eye_ds.position.isel(time=0).squeeze()
+centroid0 = pos0.sel(keypoint=["pupil-L", "pupil-R"]).mean("keypoint")
+
+# Panel G data: x-velocity of the normalized pupil centroid over time.
+eye_mid = eye_ds.position.sel(keypoint=["eye-L", "eye-R"]).mean("keypoint")
+pos_norm = eye_ds.position - eye_mid
+pupil_c = pos_norm.sel(keypoint=["pupil-L", "pupil-R"]).mean("keypoint")
+velocity = compute_velocity(pupil_c)
+vx = velocity.sel(space="x").squeeze().sel(time=slice(10, 25))
+```
+
 ## Build the figure
 
 ```{python}
-TRACE_WINDOW = slice(240, 300)   # (used for the raw-vs-clean trace panel)
-TRAJ_WINDOW = slice(traj_end_sec - 10, traj_end_sec)  # (used for the trajectory panel)
-HEAD_ANGLE_WINDOW = slice(150, 300)  # (used for the head direction panel)
-# Occupancy heatmap and ROI time-fraction panels use the full ~10-min dataset.
-
-# Occupancy histogram bins (30 px cells covering the full frame).
-BIN_PIX = 30
-bins = [
-    np.arange(0, frame_w + BIN_PIX, BIN_PIX),
-    np.arange(0, frame_h + BIN_PIX, BIN_PIX),
-]
-
-roi_colors = [
-    get_color("teal", "Dark2") if roi.name.startswith("open")
-    else get_color("pink", "Dark2") for roi in rois
-]
-```
-
-```{python}
-fig = plt.figure(figsize=figure_size("double", height=14))
+fig = plt.figure(figsize=figure_size("double", height=17.5))
 gs = fig.add_gridspec(
-    3, 2,
-    height_ratios=[2, 5, 5],
+    4, 2,
+    height_ratios=[2, 5, 5, 3.5],
     hspace=0.5,
     wspace=0.3,
     left=0.1, right=0.95, top=0.95, bottom=0.05,
@@ -134,14 +150,19 @@ ax_heat  = fig.add_subplot(gs[1, 1])           # row 1 right
 ax_roi   = fig.add_subplot(gs[2, 0])           # row 2 left
 ax_polar = fig.add_subplot(gs[2, 1], projection="polar")  # row 2 right
 
+# Row 3 keeps the pupil pair's original narrow-frame / wide-trace proportion.
+gs_pupil = gs[3, :].subgridspec(1, 2, width_ratios=[5, 11], wspace=0.25)
+ax_frame = fig.add_subplot(gs_pupil[0, 0])     # row 3 left
+ax_vel   = fig.add_subplot(gs_pupil[0, 1])     # row 3 right
+
 # ------------------------------------------------------------------ #
-# Row 0: raw vs clean snout y-position                                #
+# Panel A: raw vs clean snout y-position                              #
 # ------------------------------------------------------------------ #
 pos_sel = positions.sel(
     keypoint="snout",
     individual="individual_0",
     space="y",
-    time=TRACE_WINDOW,
+    time=slice(240, 300),
 )
 pos_sel.sel(data="raw").plot.line(
     ax=ax_trace, color=get_color("orange", "Pastel2"), alpha=1.0,
@@ -161,11 +182,11 @@ ax_trace.legend(
 )
 
 # ------------------------------------------------------------------ #
-# Row 1 left: centroid trajectory                                     #
+# Panel B: centroid trajectory                                        #
 # ------------------------------------------------------------------ #
 ax_traj.imshow(traj_frame.mean(axis=2), cmap="gray")
 plot_centroid_trajectory(
-    pos_clean.sel(time=TRAJ_WINDOW),
+    pos_clean.sel(time=slice(traj_end_sec - 10, traj_end_sec)),
     individual="individual_0",
     keypoints=["centre", "tailbase", "left_ear", "right_ear"],
     ax=ax_traj,
@@ -179,8 +200,16 @@ ax_traj.set_title("Centroid trajectory")
 ax_traj.axis("off")
 
 # ------------------------------------------------------------------ #
-# Row 1 right: occupancy heatmap                                      #
+# Panel C: occupancy heatmap                                          #
 # ------------------------------------------------------------------ #
+
+# Occupancy histogram bins (30 px cells covering the full frame).
+BIN_PIX = 30
+bins = [
+    np.arange(0, frame_w + BIN_PIX, BIN_PIX),
+    np.arange(0, frame_h + BIN_PIX, BIN_PIX),
+]
+
 ax_heat.imshow(frame.mean(axis=2), cmap="gray")
 _, ax_heat, _ = plot_occupancy(
     da=pos_clean,
@@ -198,8 +227,13 @@ ax_heat.set_title("Occupancy heatmap")
 ax_heat.axis("off")
 
 # ------------------------------------------------------------------ #
-# Row 2 left: time in ROIs                                            #
+# Panel D: time in ROIs                                               #
 # ------------------------------------------------------------------ #
+roi_colors = [
+    get_color("teal", "Dark2") if roi.name.startswith("open")
+    else get_color("pink", "Dark2") for roi in rois
+]
+
 ax_roi.imshow(frame.mean(axis=2), cmap="gray")
 for i, roi in enumerate(rois):
     roi.plot(
@@ -226,12 +260,12 @@ ax_roi.axis("off")
 reserve_colorbar_space(ax_roi)
 
 # ------------------------------------------------------------------ #
-# Row 2 right: head direction polar histogram                         #
+# Panel E: head direction polar histogram                             #
 # ------------------------------------------------------------------ #
 BIN_WIDTH_DEG = 15
 n_bins = int(360 / BIN_WIDTH_DEG)
 
-head_angle.sel(time=HEAD_ANGLE_WINDOW).plot.hist(
+head_angle.sel(time=slice(150, 300)).plot.hist(
     bins=np.linspace(-np.pi, np.pi, n_bins + 1),
     ax=ax_polar,
     density=True,
@@ -248,14 +282,52 @@ tick_angles = np.linspace(0, 2 * np.pi, 9)[:-1]
 tick_labels_deg = list(range(0, 181, 45)) + list(range(0, -180, -45))[-1:0:-1]
 ax_polar.set_xticks(tick_angles)
 ax_polar.set_xticklabels([f"{t}\N{DEGREE SIGN}" for t in tick_labels_deg])
-ax_polar.set_title("Head direction", pad=45);
+ax_polar.set_title("Head direction", pad=45)
 
+# ------------------------------------------------------------------ #
+# Panel F: example eye frame with tracked keypoints + centroid        #
+# ------------------------------------------------------------------ #
+ax_frame.imshow(frame0, cmap="gray")
+# All 4 tracked keypoints share one color and one label -> a single legend entry.
+ax_frame.scatter(
+    pos0.sel(space="x"),
+    pos0.sel(space="y"),
+    s=120,
+    color=get_color("teal", "Set2"),
+)
+ax_frame.scatter(
+    centroid0.sel(space="x"),
+    centroid0.sel(space="y"),
+    s=120,
+    color=get_color("orange", "Set2"),
+)
+ax_frame.invert_yaxis()  # the dataset was captured flipped
+
+# Hide ticks and spines but keep the axis labels
+ax_frame.set_xticks([])
+ax_frame.set_yticks([])
+for spine in ax_frame.spines.values():
+    spine.set_visible(False)
+
+ax_frame.set_xlabel("x")
+ax_frame.set_ylabel("y")
+
+# ------------------------------------------------------------------ #
+# Panel G: pupil centroid x-velocity over time                        #
+# ------------------------------------------------------------------ #
+vx.plot.line(
+    ax=ax_vel, color=get_color("orange", "Set2"), label="Pupil centroid x velocity"
+)
+ax_vel.set_xlim(float(vx.time.min()), float(vx.time.max()))
+ax_vel.set_title("Pupil centroid x velocity")
+ax_vel.set_xlabel("time (s)")
+ax_vel.set_ylabel("velocity (px/s)")
 ```
 
 ## Save the figure
 
 ```{python}
-fig_name = "epm_exploration_poster"
+fig_name = "movement_applications_poster"
 save_paths = save_figure(fig, fig_name, formats=("pdf", "svg"))
 print(f"Saved '{fig_name}' figure to {save_paths[0].parent}.")
 ```
