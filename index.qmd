@@ -3,6 +3,7 @@ title: "movement figures"
 listing:
   contents: figures
   type: grid
+  grid-columns: 2
   sort: "title"
 ---
 
