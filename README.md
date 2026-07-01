@@ -27,7 +27,7 @@ rendered site (`_site/`) and caches are not.
 
 ## Adding a figure
 
-Copy `figures/example_trajectory.qmd`, pick a `medium`
+Copy an existing `.qmd` file in `figures/`, pick a `medium`
 (`manuscript` / `poster` / `presentation`) for `apply_style`, build the plot,
 and end with `save_figure(fig, "<name>")`.
 
