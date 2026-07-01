@@ -193,7 +193,9 @@ plot_centroid_trajectory(
     alpha=0.8,
     cmap="viridis",
 )
-move_colorbar_to_divider(ax_traj, "time (s)")
+# anchor="W" left-justifies the equal-aspect image within its divider cell so
+# its left edge lines up with panel A's left plot-area edge.
+move_colorbar_to_divider(ax_traj, "time (s)", anchor="W")
 ax_traj.set_xlim(0, frame_w)
 ax_traj.set_ylim(frame_h, 0)
 ax_traj.set_title("Centroid trajectory")
@@ -256,8 +258,9 @@ ax_roi.set_title("Time spent in ROIs")
 ax_roi.axis("off")
 
 # Reserve an invisible colorbar-sized strip so this panel's image box matches
-# the colorbar-bearing trajectory panel directly above it.
-reserve_colorbar_space(ax_roi)
+# the colorbar-bearing trajectory panel directly above it. anchor="W" keeps the
+# image left-justified, matching panel A's left edge (as in the trajectory panel).
+reserve_colorbar_space(ax_roi, anchor="W")
 
 # ------------------------------------------------------------------ #
 # Panel E: head direction polar histogram                             #
@@ -311,6 +314,7 @@ for spine in ax_frame.spines.values():
 
 ax_frame.set_xlabel("x")
 ax_frame.set_ylabel("y")
+ax_frame.set_anchor("W")  # left-justify to align with panel A's left edge
 
 # ------------------------------------------------------------------ #
 # Panel G: pupil centroid x-velocity over time                        #
@@ -321,7 +325,7 @@ vx.plot.line(
 ax_vel.set_xlim(float(vx.time.min()), float(vx.time.max()))
 ax_vel.set_title("Pupil centroid x velocity")
 ax_vel.set_xlabel("time (s)")
-ax_vel.set_ylabel("velocity (px/s)")
+ax_vel.set_ylabel("velocity (px/s)");
 ```
 
 ## Save the figure

@@ -11,7 +11,11 @@ _CBAR_PAD: float = 0.1
 
 
 def move_colorbar_to_divider(
-    ax: Axes, label: str, size: str = _CBAR_SIZE, pad: float = _CBAR_PAD
+    ax: Axes,
+    label: str,
+    size: str = _CBAR_SIZE,
+    pad: float = _CBAR_PAD,
+    anchor: str = "C",
 ) -> None:
     """Move an auto-generated colorbar into a divider axes beside ``ax``.
 
@@ -35,17 +39,25 @@ def move_colorbar_to_divider(
         Width of the colorbar axes as a percentage of ``ax`` width.
     pad : float
         Padding between ``ax`` and the colorbar axes, in inches.
+    anchor : str
+        Compass anchor (e.g. ``"C"``, ``"W"``, ``"E"``) for placing an
+        equal-aspect image within its divider cell. A divider overrides the
+        axes-level anchor, so use this to e.g. left-justify (``"W"``) an image
+        whose left edge must line up with another panel.
     """
     mappable = ax.collections[0]
     mappable.colorbar.remove()
-    cax = make_axes_locatable(ax).append_axes(
-        "right", size=size, pad=pad, axes_class=plt.Axes
-    )
+    divider = make_axes_locatable(ax)
+    divider.set_anchor(anchor)
+    cax = divider.append_axes("right", size=size, pad=pad, axes_class=plt.Axes)
     ax.figure.colorbar(mappable, cax=cax, label=label)
 
 
 def reserve_colorbar_space(
-    ax: Axes, size: str = _CBAR_SIZE, pad: float = _CBAR_PAD
+    ax: Axes,
+    size: str = _CBAR_SIZE,
+    pad: float = _CBAR_PAD,
+    anchor: str = "C",
 ) -> None:
     """Reserve an invisible colorbar-sized strip beside ``ax``.
 
@@ -61,8 +73,12 @@ def reserve_colorbar_space(
         Width of the reserved strip as a percentage of ``ax`` width.
     pad : float
         Padding between ``ax`` and the reserved strip, in inches.
+    anchor : str
+        Compass anchor for placing an equal-aspect image within its divider
+        cell; see :func:`move_colorbar_to_divider`. Match the paired
+        colorbar panel so both stay aligned.
     """
-    spacer = make_axes_locatable(ax).append_axes(
-        "right", size=size, pad=pad, axes_class=plt.Axes
-    )
+    divider = make_axes_locatable(ax)
+    divider.set_anchor(anchor)
+    spacer = divider.append_axes("right", size=size, pad=pad, axes_class=plt.Axes)
     spacer.axis("off")
