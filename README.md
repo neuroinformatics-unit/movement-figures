@@ -35,6 +35,14 @@ rendered figure gallery website (`_site/`) and caches are not.
 - End with `save_figure(fig, "<name>")`
 - Run `uv run quarto render` and inspect the new files in `outputs/` or the whole gallery in `_site/index.html`.
 
+## Fonts
+
+The fonts used by the figures—Liberation Sans (all media) and Barlow
+(posters)—are bundled under `src/movement_figures/fonts/` and registered with
+matplotlib by `apply_style`. Nothing needs to be installed system-wide, and
+figures render identically on every machine and on CI. Both are licensed under
+the SIL Open Font License; see the `LICENSE-*` files alongside them.
+
 ## Development
 
 Code quality is enforced with [ruff](https://docs.astral.sh/ruff/) (linting and

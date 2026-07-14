@@ -22,7 +22,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-movement_figures = ["styles/*.mplstyle"]
+movement_figures = ["styles/*.mplstyle", "fonts/*.ttf"]
 
 [dependency-groups]
 dev = [

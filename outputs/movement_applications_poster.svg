@@ -49,7 +49,7 @@ L 0 12
       </g>
      </g>
      <g id="text_1">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="91.669375" y="206.116422" transform="rotate(-0 91.669375 206.116422)">240</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="91.669375" y="206.116422" transform="rotate(-0 91.669375 206.116422)">240</text>
      </g>
     </g>
     <g id="xtick_2">
@@ -59,7 +59,7 @@ L 0 12
       </g>
      </g>
      <g id="text_2">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="254.869375" y="206.116422" transform="rotate(-0 254.869375 206.116422)">250</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="254.869375" y="206.116422" transform="rotate(-0 254.869375 206.116422)">250</text>
      </g>
     </g>
     <g id="xtick_3">
@@ -69,7 +69,7 @@ L 0 12
       </g>
      </g>
      <g id="text_3">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="418.069375" y="206.116422" transform="rotate(-0 418.069375 206.116422)">260</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="418.069375" y="206.116422" transform="rotate(-0 418.069375 206.116422)">260</text>
      </g>
     </g>
     <g id="xtick_4">
@@ -79,7 +79,7 @@ L 0 12
       </g>
      </g>
      <g id="text_4">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="581.269375" y="206.116422" transform="rotate(-0 581.269375 206.116422)">270</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="581.269375" y="206.116422" transform="rotate(-0 581.269375 206.116422)">270</text>
      </g>
     </g>
     <g id="xtick_5">
@@ -89,7 +89,7 @@ L 0 12
       </g>
      </g>
      <g id="text_5">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="744.469375" y="206.116422" transform="rotate(-0 744.469375 206.116422)">280</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="744.469375" y="206.116422" transform="rotate(-0 744.469375 206.116422)">280</text>
      </g>
     </g>
     <g id="xtick_6">
@@ -99,7 +99,7 @@ L 0 12
       </g>
      </g>
      <g id="text_6">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="907.669375" y="206.116422" transform="rotate(-0 907.669375 206.116422)">290</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="907.669375" y="206.116422" transform="rotate(-0 907.669375 206.116422)">290</text>
      </g>
     </g>
     <g id="xtick_7">
@@ -109,11 +109,11 @@ L 0 12
       </g>
      </g>
      <g id="text_7">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1070.869375" y="206.116422" transform="rotate(-0 1070.869375 206.116422)">300</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1070.869375" y="206.116422" transform="rotate(-0 1070.869375 206.116422)">300</text>
      </g>
     </g>
     <g id="text_8">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="581.269375" y="238.516422" transform="rotate(-0 581.269375 238.516422)">time (s)</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="581.269375" y="238.516422" transform="rotate(-0 581.269375 238.516422)">time (s)</text>
     </g>
    </g>
    <g id="matplotlib.axis_2">
@@ -129,7 +129,7 @@ L -12 0
       </g>
      </g>
      <g id="text_9">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="162.222355" transform="rotate(-0 76.169375 162.222355)">250</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="162.222355" transform="rotate(-0 76.169375 162.222355)">250</text>
      </g>
     </g>
     <g id="ytick_2">
@@ -139,7 +139,7 @@ L -12 0
       </g>
      </g>
      <g id="text_10">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="125.235277" transform="rotate(-0 76.169375 125.235277)">500</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="125.235277" transform="rotate(-0 76.169375 125.235277)">500</text>
      </g>
     </g>
     <g id="ytick_3">
@@ -149,11 +149,11 @@ L -12 0
       </g>
      </g>
      <g id="text_11">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="88.248199" transform="rotate(-0 76.169375 88.248199)">750</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="76.169375" y="88.248199" transform="rotate(-0 76.169375 88.248199)">750</text>
      </g>
     </g>
     <g id="text_12">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="31.2" y="115.408211" transform="rotate(-90 31.2 115.408211)">y position (px)</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="31.2" y="115.408211" transform="rotate(-90 31.2 115.408211)">y position (px)</text>
     </g>
    </g>
    <g id="line2d_11">
@@ -2053,7 +2053,7 @@ L 237.354375 30.3
 " style="fill: none; stroke: #fdcdac; stroke-width: 3; stroke-linecap: round"/>
     </g>
     <g id="text_13">
-     <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="254.954375" y="38" transform="rotate(-0 254.954375 38)">Raw snout position</text>
+     <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="254.954375" y="38" transform="rotate(-0 254.954375 38)">Raw snout position</text>
     </g>
     <g id="line2d_14">
      <path d="M 479.904375 30.3 
@@ -2062,7 +2062,7 @@ L 523.904375 30.3
 " style="fill: none; stroke: #66c2a5; stroke-width: 3; stroke-linecap: round"/>
     </g>
     <g id="text_14">
-     <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="541.504375" y="38" transform="rotate(-0 541.504375 38)">Clean (after dropping outliers and smoothing)</text>
+     <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="541.504375" y="38" transform="rotate(-0 541.504375 38)">Clean (after dropping outliers and smoothing)</text>
     </g>
    </g>
   </g>
@@ -2990,7 +2990,7 @@ z
     </g>
    </g>
    <g id="text_15">
-    <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="259.885996" y="265.707331" transform="rotate(-0 259.885996 265.707331)">Centroid trajectory</text>
+    <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="259.885996" y="265.707331" transform="rotate(-0 259.885996 265.707331)">Centroid trajectory</text>
    </g>
   </g>
   <g id="axes_3">
@@ -12241,7 +12241,7 @@ L 1011.617652 535.678029
 " clip-path="url(#p0caa2b61b4)" style="fill: none"/>
    </g>
    <g id="text_16">
-    <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="845.988979" y="265.707331" transform="rotate(-0 845.988979 265.707331)">Occupancy heatmap</text>
+    <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="845.988979" y="265.707331" transform="rotate(-0 845.988979 265.707331)">Occupancy heatmap</text>
    </g>
   </g>
   <g id="axes_4">
@@ -12282,19 +12282,19 @@ L 243.473408 792.401167
 " clip-path="url(#p7018fc2ea4)" style="fill: none; stroke: #e7298a; stroke-width: 2; stroke-linejoin: miter"/>
    </g>
    <g id="text_17">
-    <text style="font-size: 19.992px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1b9e77" x="210.631828" y="782.691997" transform="rotate(-0 210.631828 782.691997)">13%</text>
+    <text style="font-size: 19.992px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1b9e77" x="210.631828" y="782.691997" transform="rotate(-0 210.631828 782.691997)">13%</text>
    </g>
    <g id="text_18">
-    <text style="font-size: 19.992px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1b9e77" x="308.871007" y="783.834341" transform="rotate(-0 308.871007 783.834341)">10%</text>
+    <text style="font-size: 19.992px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1b9e77" x="308.871007" y="783.834341" transform="rotate(-0 308.871007 783.834341)">10%</text>
    </g>
    <g id="text_19">
-    <text style="font-size: 19.992px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #e7298a" x="259.751354" y="735.571439" transform="rotate(-0 259.751354 735.571439)">13%</text>
+    <text style="font-size: 19.992px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #e7298a" x="259.751354" y="735.571439" transform="rotate(-0 259.751354 735.571439)">13%</text>
    </g>
    <g id="text_20">
-    <text style="font-size: 19.992px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #e7298a" x="259.465786" y="830.669353" transform="rotate(-0 259.465786 830.669353)">11%</text>
+    <text style="font-size: 19.992px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #e7298a" x="259.465786" y="830.669353" transform="rotate(-0 259.465786 830.669353)">11%</text>
    </g>
    <g id="text_21">
-    <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="259.885996" y="634.839296" transform="rotate(-0 259.885996 634.839296)">Time spent in ROIs</text>
+    <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="259.885996" y="634.839296" transform="rotate(-0 259.885996 634.839296)">Time spent in ROIs</text>
    </g>
   </g>
   <g id="axes_5">
@@ -12344,7 +12344,7 @@ L 991.020338 773.859824
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_22">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1013.520338" y="782.659824" transform="rotate(-0 1013.520338 782.659824)">0°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1013.520338" y="782.659824" transform="rotate(-0 1013.520338 782.659824)">0°</text>
      </g>
     </g>
     <g id="xtick_9">
@@ -12354,7 +12354,7 @@ L 952.059527 867.919541
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_23">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="967.96943" y="892.629444" transform="rotate(-0 967.96943 892.629444)">45°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="967.96943" y="892.629444" transform="rotate(-0 967.96943 892.629444)">45°</text>
      </g>
     </g>
     <g id="xtick_10">
@@ -12364,7 +12364,7 @@ L 857.99981 906.880352
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_24">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="938.180352" transform="rotate(-0 857.99981 938.180352)">90°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="938.180352" transform="rotate(-0 857.99981 938.180352)">90°</text>
      </g>
     </g>
     <g id="xtick_11">
@@ -12374,7 +12374,7 @@ L 763.940092 867.919541
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_25">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="748.03019" y="892.629444" transform="rotate(-0 748.03019 892.629444)">135°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="748.03019" y="892.629444" transform="rotate(-0 748.03019 892.629444)">135°</text>
      </g>
     </g>
     <g id="xtick_12">
@@ -12384,7 +12384,7 @@ L 724.979282 773.859824
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_26">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="702.479282" y="782.659824" transform="rotate(-0 702.479282 782.659824)">180°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="702.479282" y="782.659824" transform="rotate(-0 702.479282 782.659824)">180°</text>
      </g>
     </g>
     <g id="xtick_13">
@@ -12394,7 +12394,7 @@ L 763.940092 679.800107
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_27">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="748.03019" y="672.690204" transform="rotate(-0 748.03019 672.690204)">-135°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="748.03019" y="672.690204" transform="rotate(-0 748.03019 672.690204)">-135°</text>
      </g>
     </g>
     <g id="xtick_14">
@@ -12404,7 +12404,7 @@ L 857.99981 640.839296
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_28">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="627.139296" transform="rotate(-0 857.99981 627.139296)">-90°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="627.139296" transform="rotate(-0 857.99981 627.139296)">-90°</text>
      </g>
     </g>
     <g id="xtick_15">
@@ -12414,7 +12414,7 @@ L 952.059527 679.800107
 " clip-path="url(#p1438ff380f)" style="fill: none; stroke: #b0b0b0; stroke-width: 2; stroke-linecap: round"/>
      </g>
      <g id="text_29">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="967.96943" y="672.690204" transform="rotate(-0 967.96943 672.690204)">-45°</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="967.96943" y="672.690204" transform="rotate(-0 967.96943 672.690204)">-45°</text>
      </g>
     </g>
    </g>
@@ -12747,7 +12747,7 @@ C 987.579504 808.62616 991.020338 791.32792 991.020338 773.859824
 " style="fill: none; stroke: #262626; stroke-width: 2.5; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_30">
-    <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="595.839296" transform="rotate(-0 857.99981 595.839296)">Head direction</text>
+    <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="857.99981" y="595.839296" transform="rotate(-0 857.99981 595.839296)">Head direction</text>
    </g>
   </g>
   <g id="axes_6">
@@ -12765,12 +12765,12 @@ iVBORw0KGgoAAAANSUhEUgAABAsAAAMICAYAAACuCWyXAAEAAElEQVR4nOyd67IlOW6dVeNja/oiyT/8
    </g>
    <g id="matplotlib.axis_5">
     <g id="text_31">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="215.821868" y="1224.2" transform="rotate(-0 215.821868 1224.2)">x</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="215.821868" y="1224.2" transform="rotate(-0 215.821868 1224.2)">x</text>
     </g>
    </g>
    <g id="matplotlib.axis_6">
     <g id="text_32">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="82.869375" y="1103.08563" transform="rotate(-90 82.869375 1103.08563)">y</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="82.869375" y="1103.08563" transform="rotate(-90 82.869375 1103.08563)">y</text>
     </g>
    </g>
    <g id="PathCollection_2">
@@ -12830,7 +12830,7 @@ z
       </g>
      </g>
      <g id="text_33">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="472.469375" y="1233.7" transform="rotate(-0 472.469375 1233.7)">10</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="472.469375" y="1233.7" transform="rotate(-0 472.469375 1233.7)">10</text>
      </g>
     </g>
     <g id="xtick_17">
@@ -12840,7 +12840,7 @@ z
       </g>
      </g>
      <g id="text_34">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="552.256042" y="1233.7" transform="rotate(-0 552.256042 1233.7)">12</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="552.256042" y="1233.7" transform="rotate(-0 552.256042 1233.7)">12</text>
      </g>
     </g>
     <g id="xtick_18">
@@ -12850,7 +12850,7 @@ z
       </g>
      </g>
      <g id="text_35">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="632.042708" y="1233.7" transform="rotate(-0 632.042708 1233.7)">14</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="632.042708" y="1233.7" transform="rotate(-0 632.042708 1233.7)">14</text>
      </g>
     </g>
     <g id="xtick_19">
@@ -12860,7 +12860,7 @@ z
       </g>
      </g>
      <g id="text_36">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="711.829375" y="1233.7" transform="rotate(-0 711.829375 1233.7)">16</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="711.829375" y="1233.7" transform="rotate(-0 711.829375 1233.7)">16</text>
      </g>
     </g>
     <g id="xtick_20">
@@ -12870,7 +12870,7 @@ z
       </g>
      </g>
      <g id="text_37">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="791.616042" y="1233.7" transform="rotate(-0 791.616042 1233.7)">18</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="791.616042" y="1233.7" transform="rotate(-0 791.616042 1233.7)">18</text>
      </g>
     </g>
     <g id="xtick_21">
@@ -12880,7 +12880,7 @@ z
       </g>
      </g>
      <g id="text_38">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="871.402708" y="1233.7" transform="rotate(-0 871.402708 1233.7)">20</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="871.402708" y="1233.7" transform="rotate(-0 871.402708 1233.7)">20</text>
      </g>
     </g>
     <g id="xtick_22">
@@ -12890,7 +12890,7 @@ z
       </g>
      </g>
      <g id="text_39">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="951.189375" y="1233.7" transform="rotate(-0 951.189375 1233.7)">22</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="951.189375" y="1233.7" transform="rotate(-0 951.189375 1233.7)">22</text>
      </g>
     </g>
     <g id="xtick_23">
@@ -12900,11 +12900,11 @@ z
       </g>
      </g>
      <g id="text_40">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1030.976042" y="1233.7" transform="rotate(-0 1030.976042 1233.7)">24</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1030.976042" y="1233.7" transform="rotate(-0 1030.976042 1233.7)">24</text>
      </g>
     </g>
     <g id="text_41">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="771.669375" y="1266.1" transform="rotate(-0 771.669375 1266.1)">time (s)</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="771.669375" y="1266.1" transform="rotate(-0 771.669375 1266.1)">time (s)</text>
     </g>
    </g>
    <g id="matplotlib.axis_8">
@@ -12915,7 +12915,7 @@ z
       </g>
      </g>
      <g id="text_42">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1175.820984" transform="rotate(-0 456.969375 1175.820984)">−500</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1175.820984" transform="rotate(-0 456.969375 1175.820984)">−500</text>
      </g>
     </g>
     <g id="ytick_8">
@@ -12925,7 +12925,7 @@ z
       </g>
      </g>
      <g id="text_43">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1115.804969" transform="rotate(-0 456.969375 1115.804969)">0</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1115.804969" transform="rotate(-0 456.969375 1115.804969)">0</text>
      </g>
     </g>
     <g id="ytick_9">
@@ -12935,11 +12935,11 @@ z
       </g>
      </g>
      <g id="text_44">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1055.788954" transform="rotate(-0 456.969375 1055.788954)">500</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #262626" x="456.969375" y="1055.788954" transform="rotate(-0 456.969375 1055.788954)">500</text>
      </g>
     </g>
     <g id="text_45">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="401" y="1103.08563" transform="rotate(-90 401 1103.08563)">velocity (px/s)</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="401" y="1103.08563" transform="rotate(-90 401 1103.08563)">velocity (px/s)</text>
     </g>
    </g>
    <g id="line2d_37">
@@ -13539,7 +13539,7 @@ L 1070.869375 1196.2
 " style="fill: none; stroke: #262626; stroke-width: 2.5; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_46">
-    <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="771.669375" y="1003.971261" transform="rotate(-0 771.669375 1003.971261)">Pupil centroid x velocity</text>
+    <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="771.669375" y="1003.971261" transform="rotate(-0 771.669375 1003.971261)">Pupil centroid x velocity</text>
    </g>
   </g>
   <g id="axes_8">
@@ -13565,7 +13565,7 @@ L 12 0
       </g>
      </g>
      <g id="text_47">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="548.748387" transform="rotate(-0 467.624279 548.748387)">240</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="548.748387" transform="rotate(-0 467.624279 548.748387)">240</text>
      </g>
     </g>
     <g id="ytick_11">
@@ -13575,7 +13575,7 @@ L 12 0
       </g>
      </g>
      <g id="text_48">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="495.540176" transform="rotate(-0 467.624279 495.540176)">242</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="495.540176" transform="rotate(-0 467.624279 495.540176)">242</text>
      </g>
     </g>
     <g id="ytick_12">
@@ -13585,7 +13585,7 @@ L 12 0
       </g>
      </g>
      <g id="text_49">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="442.331965" transform="rotate(-0 467.624279 442.331965)">244</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="442.331965" transform="rotate(-0 467.624279 442.331965)">244</text>
      </g>
     </g>
     <g id="ytick_13">
@@ -13595,7 +13595,7 @@ L 12 0
       </g>
      </g>
      <g id="text_50">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="389.123754" transform="rotate(-0 467.624279 389.123754)">246</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="389.123754" transform="rotate(-0 467.624279 389.123754)">246</text>
      </g>
     </g>
     <g id="ytick_14">
@@ -13605,7 +13605,7 @@ L 12 0
       </g>
      </g>
      <g id="text_51">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="335.915543" transform="rotate(-0 467.624279 335.915543)">248</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="335.915543" transform="rotate(-0 467.624279 335.915543)">248</text>
      </g>
     </g>
     <g id="ytick_15">
@@ -13615,11 +13615,11 @@ L 12 0
       </g>
      </g>
      <g id="text_52">
-      <text style="font-size: 22px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="282.707331" transform="rotate(-0 467.624279 282.707331)">250</text>
+      <text style="font-size: 22px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #262626" x="467.624279" y="282.707331" transform="rotate(-0 467.624279 282.707331)">250</text>
      </g>
     </g>
     <g id="text_53">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="531.965529" y="404.727859" transform="rotate(-90 531.965529 404.727859)">time (s)</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="531.965529" y="404.727859" transform="rotate(-90 531.965529 404.727859)">time (s)</text>
     </g>
    </g>
    <image xlink:href="data:image/png;base64,
@@ -13786,7 +13786,7 @@ L 8 0
      </g>
     </g>
     <g id="text_56">
-     <text style="font-size: 24px; font-family: 'Barlow', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1110.987262" y="404.727859" transform="rotate(-90 1110.987262 404.727859)"># frames</text>
+     <text style="font-size: 24px; font-family: 'Barlow', 'Liberation Sans', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #262626" x="1110.987262" y="404.727859" transform="rotate(-90 1110.987262 404.727859)"># frames</text>
     </g>
    </g>
    <image xlink:href="data:image/png;base64,

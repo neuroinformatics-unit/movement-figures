@@ -1,4 +1,4 @@
-font.sans-serif: Barlow, DejaVu Sans, sans-serif
+font.sans-serif: Barlow, Liberation Sans, DejaVu Sans, sans-serif
 font.size: 24
 axes.titlesize: 24
 axes.labelsize: 24

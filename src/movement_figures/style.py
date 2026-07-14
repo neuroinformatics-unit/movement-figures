@@ -5,10 +5,26 @@ from typing import Literal, get_args
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from matplotlib import font_manager
 
 AVAILABLE_MEDIA: tuple[str, ...] = ("manuscript", "poster", "presentation")
 
 _STYLE_DIR = files("movement_figures") / "styles"
+_FONT_DIR = files("movement_figures") / "fonts"
+
+
+def _register_bundled_fonts() -> None:
+    """Make the fonts shipped with this package visible to matplotlib.
+
+    Without this, matplotlib only sees system-installed fonts, so the same
+    figure picks up a different typeface on each machine (and on CI).
+    """
+    for path in _FONT_DIR.iterdir():
+        if path.name.endswith(".ttf"):
+            font_manager.fontManager.addfont(str(path))
+
+
+_register_bundled_fonts()
 
 # The medium of the most recent ``apply_style`` call; used by ``figure_size``.
 _active_medium: str = "manuscript"

@@ -19,7 +19,7 @@ xtick.bottom: True
 ytick.left: True
 lines.solid_capstyle: round
 font.family: sans-serif
-font.sans-serif: Arial, DejaVu Sans, Liberation Sans, Bitstream Vera Sans, sans-serif
+font.sans-serif: Liberation Sans, DejaVu Sans, sans-serif
 axes.prop_cycle: cycler('color', ['66c2a5', 'fc8d62', '8da0cb', 'e78ac3', 'a6d854', 'ffd92f', 'e5c494', 'b3b3b3'])
 savefig.dpi: 300
 savefig.bbox: tight
