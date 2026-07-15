@@ -6,6 +6,9 @@ Reproducible figures for research outputs related to
 Each figure is generated via a Quarto document under `figures/`, sharing a
 single plotting style from the `movement_figures` package.
 
+The rendered gallery is published at
+[neuroinformatics.dev/movement-figures](https://neuroinformatics.dev/movement-figures/).
+
 ## Setup
 
 Requires [uv](https://docs.astral.sh/uv/) and the
@@ -65,6 +68,10 @@ uv run pre-commit run --all-files
 
 Generated figures under `outputs/` are excluded from the hooks so their
 committed vector files stay byte-stable across re-renders.
+
+Every pull request re-renders the site as a CI check that all figures still
+build, and every merge to `main` redeploys the gallery to GitHub Pages (see
+`.github/workflows/render_and_deploy.yml`).
 
 > [!NOTE]
 > ruff only lints `.py` files—the Python inside `figures/*.qmd` code cells is
