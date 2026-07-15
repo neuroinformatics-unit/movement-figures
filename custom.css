@@ -1,0 +1,7 @@
+/* Scale figure outputs to fit the page container width.
+   Keeps matplotlib figsize (and the exported PDF) untouched -- this only
+   affects how the rendered PNG is displayed in the HTML preview/site. */
+.cell-output-display img {
+  max-width: 100%;
+  height: auto;
+}
