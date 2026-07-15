@@ -7,12 +7,16 @@ requires-python = ">=3.12,<3.15"
 dependencies = [
     "movement>=0.17",
     "matplotlib",
+    "pyyaml",
     "seaborn",
     "numpy",
     "jupyter",
     "nbformat",
     "nbclient",
 ]
+
+[project.scripts]
+prefetch-sample-data = "movement_figures.sample_data:main"
 
 [build-system]
 requires = ["setuptools>=64"]

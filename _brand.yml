@@ -1,0 +1,37 @@
+color:
+  palette:
+    white: "#FFFFFF"
+    dark-grey: "#1E1E1E"
+    niu-green: "#03A062"
+    niu-green-dark: "#04B46D"
+    bg-orange: "#EE9040"
+    blue: "#4178F3"
+  background: white
+  foreground: dark-grey
+  primary: niu-green
+  info: blue
+  success: niu-green
+  warning: bg-orange
+
+typography:
+  fonts:
+    - family: Barlow
+      source: file
+      files:
+        - path: src/movement_figures/fonts/Barlow-Regular.ttf
+          weight: 400
+          style: normal
+        - path: src/movement_figures/fonts/Barlow-Italic.ttf
+          weight: 400
+          style: italic
+        - path: src/movement_figures/fonts/Barlow-Bold.ttf
+          weight: 700
+          style: normal
+        - path: src/movement_figures/fonts/Barlow-BoldItalic.ttf
+          weight: 700
+          style: italic
+  base:
+    family: Barlow
+  headings:
+    family: Barlow
+    weight: 600

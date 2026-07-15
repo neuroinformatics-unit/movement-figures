@@ -4,15 +4,34 @@ project:
   execute-dir: project
   render:
     - index.qmd
+    - readme.qmd
     - figures/*.qmd
 
 website:
   title: "movement figures"
   description: "Reproducible figures for movement research outputs."
+  navbar:
+    left:
+      - href: readme.qmd
+        text: README
+      - text: "movement docs"
+        icon: box-arrow-up-right
+        href: https://movement.neuroinformatics.dev/
+    right:
+      - icon: github
+        href: https://github.com/neuroinformatics-unit/movement-figures
+        aria-label: GitHub
+  sidebar:
+    contents:
+      - href: index.qmd
+        text: Gallery
+      - section: Figures
+        contents: "figures/*.qmd"
 
 format:
   html:
-    theme: cosmo
+    theme: brand
+    highlight-style: github
     css: custom.css
     code-fold: true
     toc: true
