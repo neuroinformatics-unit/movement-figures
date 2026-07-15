@@ -11,8 +11,6 @@ website:
   description: "Reproducible figures for movement research outputs."
   navbar:
     left:
-      - href: index.qmd
-        text: Gallery
       - text: "movement docs"
         icon: box-arrow-up-right
         href: https://movement.neuroinformatics.dev/
@@ -20,6 +18,12 @@ website:
       - icon: github
         href: https://github.com/neuroinformatics-unit/movement-figures
         aria-label: GitHub
+  sidebar:
+    contents:
+      - href: index.qmd
+        text: Gallery
+      - section: Figures
+        contents: "figures/*.qmd"
 
 format:
   html:
