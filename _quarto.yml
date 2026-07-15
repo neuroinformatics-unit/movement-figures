@@ -4,6 +4,7 @@ project:
   execute-dir: project
   render:
     - index.qmd
+    - readme.qmd
     - figures/*.qmd
 
 website:
@@ -11,6 +12,8 @@ website:
   description: "Reproducible figures for movement research outputs."
   navbar:
     left:
+      - href: readme.qmd
+        text: README
       - text: "movement docs"
         icon: box-arrow-up-right
         href: https://movement.neuroinformatics.dev/

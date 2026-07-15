@@ -1,6 +1,4 @@
-# movement-figures
-
-Reproducible figures for research outputs related to
+`movement-figures`: reproducible figures for research outputs related to the
 [`movement` Python package](https://movement.neuroinformatics.dev/).
 
 Each figure is generated via a Quarto document under `figures/`, sharing a
@@ -118,11 +116,10 @@ uv run pre-commit run --all-files
 Generated figures under `outputs/` are excluded from the hooks so their
 committed vector files stay byte-stable across re-renders.
 
+**NOTE:** `ruff` only lints `.py` files—the Python inside `figures/*.qmd` code cells is
+not checked for now. Keep figure code tidy by hand, or factor reusable logic
+into `src/movement_figures/` where it is linted.
+
 Every pull request re-renders the site as a CI check that all figures still
 build, and every merge to `main` redeploys the gallery to GitHub Pages (see
 `.github/workflows/render_and_deploy.yml`).
-
-> [!NOTE]
-> ruff only lints `.py` files—the Python inside `figures/*.qmd` code cells is
-> not checked for now. Keep figure code tidy by hand, or factor reusable logic
-> into `src/movement_figures/` where it is linted.
