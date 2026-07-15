@@ -9,6 +9,17 @@ project:
 website:
   title: "movement figures"
   description: "Reproducible figures for movement research outputs."
+  navbar:
+    left:
+      - href: index.qmd
+        text: Gallery
+      - text: "movement docs"
+        icon: box-arrow-up-right
+        href: https://movement.neuroinformatics.dev/
+    right:
+      - icon: github
+        href: https://github.com/neuroinformatics-unit/movement-figures
+        aria-label: GitHub
 
 format:
   html:
