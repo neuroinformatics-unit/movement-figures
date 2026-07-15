@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pytest
 import seaborn as sns
 from matplotlib.colors import to_hex
+from matplotlib.font_manager import FontProperties, findfont
 
 from movement_figures import (
     AVAILABLE_MEDIA,
@@ -75,6 +76,21 @@ def test_get_color_covers_every_hue():
         expected = sns.color_palette(palette, len(get_args(Hue))).as_hex()
         for i, hue_name in enumerate(get_args(Hue)):
             assert get_color(hue_name, palette) == expected[i]
+
+
+@pytest.mark.parametrize(
+    ("medium", "expected_font_file"),
+    [
+        ("manuscript", "LiberationSans-Regular.ttf"),
+        ("presentation", "LiberationSans-Regular.ttf"),
+        ("poster", "Barlow-Regular.ttf"),
+    ],
+)
+def test_apply_style_resolves_to_bundled_font(medium, expected_font_file):
+    """Each medium must resolve to a font we ship, not a system fallback."""
+    apply_style(medium)
+    resolved = findfont(FontProperties(family=["sans-serif"]))
+    assert resolved.endswith(expected_font_file)
 
 
 def test_apply_style_keeps_base_params():

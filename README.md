@@ -6,6 +6,9 @@ Reproducible figures for research outputs related to
 Each figure is generated via a Quarto document under `figures/`, sharing a
 single plotting style from the `movement_figures` package.
 
+The rendered gallery is published at
+[neuroinformatics.dev/movement-figures](https://neuroinformatics.dev/movement-figures/).
+
 ## Setup
 
 Requires [uv](https://docs.astral.sh/uv/) and the
@@ -35,6 +38,14 @@ rendered figure gallery website (`_site/`) and caches are not.
 - End with `save_figure(fig, "<name>")`
 - Run `uv run quarto render` and inspect the new files in `outputs/` or the whole gallery in `_site/index.html`.
 
+## Fonts
+
+The fonts used by the figures—Liberation Sans (all media) and Barlow
+(posters)—are bundled under `src/movement_figures/fonts/` and registered with
+matplotlib by `apply_style`. Nothing needs to be installed system-wide, and
+figures render identically on every machine and on CI. Both are licensed under
+the SIL Open Font License; see the `LICENSE-*` files alongside them.
+
 ## Development
 
 Code quality is enforced with [ruff](https://docs.astral.sh/ruff/) (linting and
@@ -57,6 +68,10 @@ uv run pre-commit run --all-files
 
 Generated figures under `outputs/` are excluded from the hooks so their
 committed vector files stay byte-stable across re-renders.
+
+Every pull request re-renders the site as a CI check that all figures still
+build, and every merge to `main` redeploys the gallery to GitHub Pages (see
+`.github/workflows/render_and_deploy.yml`).
 
 > [!NOTE]
 > ruff only lints `.py` files—the Python inside `figures/*.qmd` code cells is
