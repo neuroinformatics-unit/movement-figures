@@ -1,5 +1,10 @@
 ---
 title: "movement applications (poster)"
+sample_data:
+    - filename: DLC_single-mouse_EPM.predictions.h5
+      with_video: true
+    - filename: DLC_rotating-mouse_eye-tracking_stim-black.predictions.h5
+      with_video: true
 ---
 
 A poster figure with 7 panels—split across 4 rows—showcasing `movement` application examples.

@@ -59,6 +59,11 @@ jobs:
           path: _freeze
           key: freeze-${{ runner.os }}-${{ hashFiles('figures/**', 'src/movement_figures/**', 'uv.lock') }}
           restore-keys: freeze-${{ runner.os }}-
+      
+      # Ensure the sammple-data cache is prepopulated before figures are built
+      # This avoids 'polluting' Qarto render's captured stdout with pooch progress bars.
+      - name: Prefetch movement sample data
+        run: uv run prefetch-sample-data
 
       - name: Render Quarto project
         run: uv run quarto render

@@ -1987,6 +1987,7 @@ dependencies = [
     { name = "nbclient" },
     { name = "nbformat" },
     { name = "numpy" },
+    { name = "pyyaml" },
     { name = "seaborn" },
 ]
 
@@ -2006,6 +2007,7 @@ requires-dist = [
     { name = "nbclient" },
     { name = "nbformat" },
     { name = "numpy" },
+    { name = "pyyaml" },
     { name = "seaborn" },
 ]
 
