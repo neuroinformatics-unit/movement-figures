@@ -17,7 +17,7 @@ Clone the repo and navigate into it:
 ```bash
 git clone https://github.com/neuroinformatics-unit/movement-figures
 cd movement-figures
-``` 
+```
 
 Install dependencies and set up the environment with:
 
