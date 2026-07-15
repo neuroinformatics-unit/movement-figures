@@ -39,6 +39,27 @@ jobs:
       - name: Install Python dependencies
         run: uv sync
 
+      # movement downloads sample datasets with pooch into ~/.movement.
+      # Caching them avoids re-fetching on every run.
+      - name: Cache movement sample data
+        uses: actions/cache@v6
+        with:
+          path: ~/.movement
+          key: sample-data-${{ runner.os }}
+          restore-keys: sample-data
+
+      # Quarto's freeze (execute: freeze: auto) stores each figure's execution
+      # results in _freeze and re-runs only figures whose source changed. Caching
+      # it keyed on the figure/style sources skips re-executing unchanged figures;
+      # the restore-keys fallback is safe because Quarto re-executes on its own
+      # when a source hash no longer matches.
+      - name: Cache Quarto freeze
+        uses: actions/cache@v6
+        with:
+          path: _freeze
+          key: freeze-${{ runner.os }}-${{ hashFiles('figures/**', 'src/movement_figures/**', 'uv.lock') }}
+          restore-keys: freeze-${{ runner.os }}-
+
       - name: Render Quarto project
         run: uv run quarto render
 
