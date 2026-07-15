@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>movement figures</title>
+<title>README – movement figures</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -33,8 +68,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -76,65 +109,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="custom.css">
 </head>
@@ -157,7 +132,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./readme.html"> 
+    <a class="nav-link active" href="./readme.html" aria-current="page"> 
 <span class="menu-text">README</span></a>
   </li>  
   <li class="nav-item">
@@ -183,7 +158,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Gallery</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">README</li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -197,7 +172,7 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Gallery</span></a>
   </div>
 </li>
@@ -223,15 +198,26 @@ window.Quarto = {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a></li>
+  <li><a href="#figure-data-sources" id="toc-figure-data-sources" class="nav-link" data-scroll-target="#figure-data-sources">Figure data sources</a></li>
+  <li><a href="#adding-a-figure" id="toc-adding-a-figure" class="nav-link" data-scroll-target="#adding-a-figure">Adding a figure</a></li>
+  <li><a href="#fonts" id="toc-fonts" class="nav-link" data-scroll-target="#fonts">Fonts</a></li>
+  <li><a href="#development" id="toc-development" class="nav-link" data-scroll-target="#development">Development</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">movement figures</h1>
+<h1 class="title">README</h1>
 </div>
 
 
@@ -248,35 +234,71 @@ window.Quarto = {
 </header>
 
 
-<p>Reproducible figures for research outputs related to <a href="https://movement.neuroinformatics.dev/">movement</a>. Each card below links to a figure generated from a single Quarto document.</p>
+<p><code>movement-figures</code>: reproducible figures for research outputs related to the <a href="https://movement.neuroinformatics.dev/"><code>movement</code> Python package</a>.</p>
+<p>Each figure is generated via a Quarto document under <code>figures/</code>, sharing a single plotting style from the <code>movement_figures</code> package.</p>
+<p>The rendered gallery is published at <a href="https://neuroinformatics.dev/movement-figures/">neuroinformatics.dev/movement-figures</a>.</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Requires <a href="https://docs.astral.sh/uv/">uv</a> and the <a href="https://quarto.org/docs/get-started/">Quarto CLI</a>.</p>
+<p>Clone the repo and navigate into it:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/neuroinformatics-unit/movement-figures</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> movement-figures</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Install dependencies and set up the environment with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="figures" class="level2">
+<h2 class="anchored" data-anchor-id="figures">Figures</h2>
+<p>Each figure is a self-contained Quarto document under <code>figures/</code>—one <code>.qmd</code> per figure—and they all share execution settings from <code>figures/_metadata.yml</code>.</p>
+<p>The reusable plotting style and helpers live in the <code>movement_figures</code> package under <code>src/</code>, so every figure looks consistent.</p>
+<p>The <code>index.qmd</code> and <code>_quarto.yml</code> at the repo root assemble the rendered figures into the published gallery.</p>
+<p>To render the gallery locally, run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run quarto preview                  <span class="co"># live-reload while authoring one figure</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run quarto render                   <span class="co"># build all figures + the gallery</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The rendered gallery is written to <code>_site/</code> and can be opened in a browser by double-clicking <code>_site/index.html</code>.</p>
+<p>Vector exports (<code>pdf</code> + <code>svg</code>) are written to <code>outputs/</code> and committed; the rendered figure gallery website (<code>_site/</code>) and caches are not.</p>
+</section>
+<section id="figure-data-sources" class="level2">
+<h2 class="anchored" data-anchor-id="figure-data-sources">Figure data sources</h2>
+<p>Figures may draw on two data sources:</p>
+<ul>
+<li><p><strong>movement sample data</strong>: the primary source for most inputs, and the only option for large files (tracks, videos). Figures fetch these via <a href="https://movement.neuroinformatics.dev/latest/api/movement.sample_data.html">movement.sample_data</a> in their code cells, and each <code>.qmd</code> declares its datasets in Quarto frontmatter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sample_data</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">filename</span><span class="kw">:</span><span class="at"> DLC_single-mouse_EPM.predictions.h5</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">with_video</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The <code>prefetch-sample-data</code> helper reads these declarations and downloads everything up front, so a render finds the data already cached:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run prefetch-sample-data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>The <code>data/</code> folder in this repo</strong>: for <em>small</em> files only (&lt; 500 KB), such as the ROI coordinates. This folder is git-tracked, so anything large would bloat the repo. Access it from a figure via <code>movement_figures.data_dir()</code>.</p></li>
+</ul>
+</section>
+<section id="adding-a-figure" class="level2">
+<h2 class="anchored" data-anchor-id="adding-a-figure">Adding a figure</h2>
+<ul>
+<li>Copy an existing <code>.qmd</code> file in <code>figures/</code>;</li>
+<li>Pick a target <code>medium</code>: <code>manuscript</code>, <code>poster</code>, or <code>presentation</code> for <code>apply_style</code>;</li>
+<li>Adapt the <code>.qmd</code> frontmatter and source to fetch/process necessary data and build the figure;</li>
+<li>End with <code>save_figure(fig, "&lt;name&gt;")</code></li>
+<li>Run <code>uv run quarto render</code> and inspect the new files in <code>outputs/</code> or the whole gallery in <code>_site/index.html</code>.</li>
+</ul>
+</section>
+<section id="fonts" class="level2">
+<h2 class="anchored" data-anchor-id="fonts">Fonts</h2>
+<p>The fonts used by the figures—Liberation Sans (all media) and Barlow (posters)—are bundled under <code>src/movement_figures/fonts/</code> and registered with matplotlib by <code>apply_style</code>. Nothing needs to be installed system-wide, and figures render identically on every machine and on CI. Both are licensed under the SIL Open Font License; see the <code>LICENSE-*</code> files alongside them.</p>
+</section>
+<section id="development" class="level2">
+<h2 class="anchored" data-anchor-id="development">Development</h2>
+<p>Code quality is enforced with <a href="https://docs.astral.sh/ruff/">ruff</a> (linting and formatting), <a href="https://github.com/codespell-project/codespell">codespell</a>, and a set of <a href="https://pre-commit.com/">pre-commit</a> hooks (<code>uv sync</code> installs all of these into the environment).</p>
+<p>Install the git hook once, so the checks run automatically on every commit:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pre-commit install</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>After that, committing runs the hooks against your staged files. To run every hook across the whole repo on demand:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pre-commit run <span class="at">--all-files</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Generated figures under <code>outputs/</code> are excluded from the hooks so their committed vector files stay byte-stable across re-renders.</p>
+<p><strong>NOTE:</strong> <code>ruff</code> only lints <code>.py</code> files—the Python inside <code>figures/*.qmd</code> code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into <code>src/movement_figures/</code> where it is linted.</p>
+<p>Every pull request re-renders the site as a CI check that all figures still build, and every merge to <code>main</code> redeploys the gallery to GitHub Pages (see <code>.github/workflows/render_and_deploy.yml</code>).</p>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-2">
-<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1784120341505" data-listing-reading-time-sort="8" data-listing-word-count-sort="1519">
-<a href="./figures/movement_applications_poster.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="figures/movement_applications_poster_files/figure-html/cell-5-output-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-movement applications (poster)
-</h5>
-<div class="card-text listing-description delink">
-A poster figure with 7 panels—split across 4 rows—showcasing <code>movement</code> application examples.
-</div>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
