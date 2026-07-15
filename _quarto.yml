@@ -30,7 +30,8 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme: brand
+    highlight-style: github
     css: custom.css
     code-fold: true
     toc: true
