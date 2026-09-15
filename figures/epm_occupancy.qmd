@@ -1,0 +1,81 @@
+---
+title: "EPM occupancy (manuscript)"
+sample_data:
+    - filename: DLC_single-mouse_EPM.predictions.h5
+      with_video: true
+---
+
+A single-panel figure showing the occupancy heatmap of a mouse's centroid
+across an elevated plus maze (EPM).
+
+## Imports and style
+
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+from movement import sample_data
+from movement.filtering import filter_by_confidence, rolling_filter
+from movement.plots import plot_occupancy
+
+from movement_figures import apply_style, figure_size, move_colorbar_to_divider, save_figure
+
+apply_style("manuscript")
+```
+
+## Load and prepare data
+
+We fetch the EPM sample dataset together with its still frame,
+then apply a two-step cleaning pipeline:
+a confidence filter followed by a rolling median filter.
+
+```{python}
+ds = sample_data.fetch_dataset(
+    "DLC_single-mouse_EPM.predictions.h5", with_video=True
+)
+frame = plt.imread(ds.frame_path)
+frame_h, frame_w = frame.shape[:2]
+
+position_conf = filter_by_confidence(
+    ds.position, ds.confidence, threshold=0.95
+)
+position_clean = rolling_filter(
+    position_conf, window=5, statistic="median", min_periods=2
+)
+```
+
+## Build the figure
+
+```{python}
+fig, ax = plt.subplots(figsize=figure_size("single", height=4.0))
+ax.imshow(frame, cmap="gray")
+
+# Bins of 30x30 pixels, covering the whole frame.
+BIN_PIX = 30
+bins = [
+    np.arange(0, frame_w + BIN_PIX, BIN_PIX),
+    np.arange(0, frame_h + BIN_PIX, BIN_PIX),
+]
+
+_, ax, _ = plot_occupancy(
+    da=position_clean,
+    ax=ax,
+    bins=bins,
+    alpha=0.8,
+    cmin=10,  # hide bins with fewer than 10 frames
+    norm="log",
+)
+move_colorbar_to_divider(ax, "# frames")
+ax.set_xlim(0, frame_w)
+ax.set_ylim(frame_h, 0)
+ax.set_title("Occupancy heatmap")
+ax.axis("off")
+```
+
+## Save the figure
+
+```{python}
+fig_name = "epm_occupancy"
+save_paths = save_figure(fig, fig_name, formats=("pdf", "svg"))
+print(f"Saved '{fig_name}' figure to {save_paths[0].parent}.")
+```
