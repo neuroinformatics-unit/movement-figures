@@ -5,7 +5,7 @@ description = "Reproducible figures for movement research outputs"
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [
-    "movement>=0.17",
+    "movement[napari]>=0.17",
     "matplotlib",
     "pyyaml",
     "seaborn",
