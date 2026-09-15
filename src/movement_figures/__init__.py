@@ -5,6 +5,7 @@ from movement_figures.layout import (
     move_colorbar_to_divider,
     reserve_colorbar_space,
 )
+from movement_figures.napari_utils import napari_canvas_screenshot
 from movement_figures.style import (
     AVAILABLE_MEDIA,
     WIDTHS,
@@ -25,6 +26,7 @@ __all__ = [
     "figure_size",
     "get_color",
     "move_colorbar_to_divider",
+    "napari_canvas_screenshot",
     "reserve_colorbar_space",
     "save_figure",
 ]
