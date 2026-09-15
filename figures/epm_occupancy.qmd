@@ -5,8 +5,10 @@ sample_data:
       with_video: true
 ---
 
-A single-panel figure showing the occupancy heatmap of a mouse's centroid
-across an elevated plus maze (EPM).
+A two-panel figure on an elevated plus maze (EPM) dataset: a napari-style
+snapshot of a single video frame overlaid with keypoints and short trailing
+tracks (**A**), alongside the occupancy heatmap of the mouse's centroid
+across the whole session (**B**).
 
 ## Imports and style
 
@@ -18,7 +20,13 @@ from movement import sample_data
 from movement.filtering import filter_by_confidence, rolling_filter
 from movement.plots import plot_occupancy
 
-from movement_figures import apply_style, figure_size, move_colorbar_to_divider, save_figure
+from movement_figures import (
+    apply_style,
+    figure_size,
+    move_colorbar_to_divider,
+    napari_canvas_screenshot,
+    save_figure,
+)
 
 apply_style("manuscript")
 ```
@@ -42,13 +50,44 @@ position_conf = filter_by_confidence(
 position_clean = rolling_filter(
     position_conf, window=5, statistic="median", min_periods=2
 )
+ds["position"] = position_clean
+```
+
+We also grab a napari canvas screenshot of a single frame, with the tracked
+points and a short (10-frame) trailing track, mirroring what the
+[`movement` GUI](https://movement.neuroinformatics.dev/latest/user_guide/gui.html)
+would show: the video loaded via the `napari-video` plugin, and the dataset's
+points/tracks layers as added by the `movement` napari plugin.
+
+```{python}
+FRAME_SEC = 60  # timestamp (s) of the snapshot; mouse is in an open arm here
+TAIL_SEC = 2    # number of seconds to show in the trailing track tail
+frame_index = int(FRAME_SEC * ds.fps)
+tail_length = int(TAIL_SEC * ds.fps)
+
+napari_frame = napari_canvas_screenshot(
+    ds, ds.video_path, frame_index, tail_length=tail_length
+)
 ```
 
 ## Build the figure
 
 ```{python}
-fig, ax = plt.subplots(figsize=figure_size("single", height=4.0))
-ax.imshow(frame, cmap="gray")
+fig, (ax_napari, ax_heat) = plt.subplots(
+    1, 2, figsize=figure_size("double", height=4.0)
+)
+
+# ------------------------------------------------------------------ #
+# Panel A: napari canvas screenshot                                   #
+# ------------------------------------------------------------------ #
+ax_napari.imshow(napari_frame)
+ax_napari.set_title("Video frame with tracked keypoints")
+ax_napari.axis("off")
+
+# ------------------------------------------------------------------ #
+# Panel B: occupancy heatmap                                          #
+# ------------------------------------------------------------------ #
+ax_heat.imshow(frame, cmap="gray")
 
 # Bins of 30x30 pixels, covering the whole frame.
 BIN_PIX = 30
@@ -57,19 +96,19 @@ bins = [
     np.arange(0, frame_h + BIN_PIX, BIN_PIX),
 ]
 
-_, ax, _ = plot_occupancy(
+_, ax_heat, _ = plot_occupancy(
     da=position_clean,
-    ax=ax,
+    ax=ax_heat,
     bins=bins,
     alpha=0.8,
     cmin=10,  # hide bins with fewer than 10 frames
     norm="log",
 )
-move_colorbar_to_divider(ax, "# frames")
-ax.set_xlim(0, frame_w)
-ax.set_ylim(frame_h, 0)
-ax.set_title("Occupancy heatmap")
-ax.axis("off")
+move_colorbar_to_divider(ax_heat, "# frames")
+ax_heat.set_xlim(0, frame_w)
+ax_heat.set_ylim(frame_h, 0)
+ax_heat.set_title("Occupancy heatmap")
+ax_heat.axis("off")
 ```
 
 ## Save the figure
