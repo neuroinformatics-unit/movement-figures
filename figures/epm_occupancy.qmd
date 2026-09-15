@@ -17,7 +17,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from movement import sample_data
-from movement.filtering import filter_by_confidence, rolling_filter
+from movement.filtering import (
+    filter_by_confidence, rolling_filter, interpolate_over_time
+)
 from movement.plots import plot_occupancy
 
 from movement_figures import (
@@ -25,6 +27,7 @@ from movement_figures import (
     figure_size,
     move_colorbar_to_divider,
     napari_canvas_screenshot,
+    reserve_colorbar_space,
     save_figure,
 )
 
@@ -60,13 +63,17 @@ would show: the video loaded via the `napari-video` plugin, and the dataset's
 points/tracks layers as added by the `movement` napari plugin.
 
 ```{python}
-FRAME_SEC = 60  # timestamp (s) of the snapshot; mouse is in an open arm here
-TAIL_SEC = 2    # number of seconds to show in the trailing track tail
+FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
+TAIL_SEC = 2     # number of seconds to show in the trailing track tail
 frame_index = int(FRAME_SEC * ds.fps)
 tail_length = int(TAIL_SEC * ds.fps)
 
 napari_frame = napari_canvas_screenshot(
-    ds, ds.video_path, frame_index, tail_length=tail_length
+    ds, ds.video_path,
+    frame_index,
+    tail_length=tail_length,
+    zoom=True,
+    display_text=True,
 )
 ```
 
@@ -83,6 +90,7 @@ fig, (ax_napari, ax_heat) = plt.subplots(
 ax_napari.imshow(napari_frame)
 ax_napari.set_title("Video frame with tracked keypoints")
 ax_napari.axis("off")
+reserve_colorbar_space(ax_napari)
 
 # ------------------------------------------------------------------ #
 # Panel B: occupancy heatmap                                          #
