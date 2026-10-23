@@ -24,11 +24,10 @@ from movement.filtering import (
 from movement.plots import plot_occupancy
 
 from movement_figures import (
+    add_inset_colorbar,
     apply_style,
     figure_size,
-    move_colorbar_to_divider,
     napari_canvas_screenshot,
-    reserve_colorbar_space,
     save_figure,
 )
 
@@ -37,7 +36,7 @@ apply_style("manuscript")
 
 ## Load and prepare data
 
-We fetch the EPM sample dataset together and apply a two-step cleaning pipeline:
+We fetch the EPM sample dataset and apply a two-step cleaning pipeline:
 a confidence filter followed by a rolling median filter.
 We also (lazily) load the corresponding video.
 
@@ -47,6 +46,7 @@ ds = sample_data.fetch_dataset(
 )
 video = sio.load_video(ds.video_path)
 n_frames, height, width, n_channels = video.shape
+aspect_ratio = height / width
 
 position_conf = filter_by_confidence(
     ds.position, ds.confidence, threshold=0.95
@@ -65,7 +65,7 @@ would show: the video loaded via the `napari-video` plugin, and the dataset's
 points/tracks layers as added by the `movement` napari plugin.
 
 ```{python}
-FRAME_SEC = 285 # time (s) of the snapshot; mouse is in an open arm here
+FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
 TAIL_SEC = 1     # number of seconds to show in the trailing track tail
 frame_index = int(FRAME_SEC * ds.fps)
 tail_length = int(TAIL_SEC * ds.fps)
@@ -79,7 +79,7 @@ napari_frame = napari_canvas_screenshot(
 )
 ```
 
-We also laod a grayscale version of the same frame, which will be used
+We also load a grayscale version of the same frame, which will be used
 as the background for the occupancy heatmap.
 
 ```{python}
@@ -89,7 +89,9 @@ frame = video[frame_index].mean(axis=2)  # grayscale
 ## Build the figure
 
 ```{python}
-fig, (ax_napari, ax_heat) = plt.subplots(1, 2, figsize=figure_size("double"))
+fig, (ax_napari, ax_heat) = plt.subplots(
+    1, 2, figsize=figure_size("double", aspect=aspect_ratio, ncols=2, extra=0)
+)
 
 # ------------------------------------------------------------------ #
 # Panel A: napari canvas screenshot                                   #
@@ -97,7 +99,6 @@ fig, (ax_napari, ax_heat) = plt.subplots(1, 2, figsize=figure_size("double"))
 ax_napari.imshow(napari_frame)
 ax_napari.set_title("Example video frame")
 ax_napari.axis("off")
-reserve_colorbar_space(ax_napari)
 
 # ------------------------------------------------------------------ #
 # Panel B: occupancy heatmap                                          #
@@ -119,7 +120,7 @@ _, ax_heat, _ = plot_occupancy(
     cmin=10,  # hide bins with fewer than 10 frames
     norm="log",
 )
-move_colorbar_to_divider(ax_heat, "# frames")
+add_inset_colorbar(ax_heat, "# frames")
 ax_heat.set_xlim(0, width)
 ax_heat.set_ylim(height, 0)
 ax_heat.set_title("Occupancy heatmap")
