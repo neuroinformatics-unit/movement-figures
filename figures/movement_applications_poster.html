@@ -244,12 +244,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>a raw-vs-clean position trace (<strong>A</strong>)</li>
 <li>centroid trajectory and occupancy heatmap side-by-side (<strong>B</strong>, <strong>C</strong>)</li>
-<li>ROI time-fractions overlaid on the maze frame alongside a head-angle polar histogram (<strong>D</strong>, <strong>E</strong>).</li>
+<li>ROI time-fractions overlaid on the maze frame alongside a head-angle polar histogram (<strong>D</strong>, <strong>E</strong>)</li>
 <li>the four tracked keypoints (plus the pupil centroid) on an example video frame (<strong>F</strong>), and the pupil centroid’s horizontal velocity over time (<strong>G</strong>).</li>
 </ol>
 <section id="imports-and-style" class="level2">
 <h2 class="anchored" data-anchor-id="imports-and-style">Imports and style</h2>
-<div id="d1451da6" class="cell" data-execution_count="1">
+<div id="118f85aa" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -268,16 +268,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> movement.roi <span class="im">import</span> compute_region_occupancy, load_rois</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> movement_figures <span class="im">import</span> (</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    apply_style,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    data_dir,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    figure_size,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    get_color,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    move_colorbar_to_divider,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    reserve_colorbar_space,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    save_figure,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>apply_style(<span class="st">"poster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    add_inset_colorbar,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    apply_style,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    data_dir,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    figure_size,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    get_color,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    save_figure,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>apply_style(<span class="st">"poster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -287,286 +286,265 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="epm-dataset">EPM dataset</h3>
 <p>The EPM dataset ships with <code>movement</code>’s sample data. We apply a three-step cleaning pipeline (confidence filter, rolling median, linear gap interpolation) and keep both the raw and clean positions so we can compare them in the first panel.</p>
 <p>We also compute the time fraction spent in each ROI and the head direction angle for the clean positions, which will be visualized in the third figure row.</p>
-<div id="5fc15283" class="cell" data-execution_count="2">
+<div id="c2a7ee66" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset and background frame.</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> sample_data.fetch_dataset(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DLC_single-mouse_EPM.predictions.h5"</span>, with_video<span class="op">=</span><span class="va">True</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>frame <span class="op">=</span> plt.imread(ds.frame_path)  <span class="co"># 1300 x 1028 px maze image for heatmap/ROI panels</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>frame_h, frame_w <span class="op">=</span> frame.shape[:<span class="dv">2</span>]</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Video frame at the end of trajectory time window</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># (to use as background for the trajectory panel).</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>video <span class="op">=</span> sio.load_video(ds.video_path)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>traj_end_sec <span class="op">=</span> <span class="dv">250</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>traj_frame <span class="op">=</span> video[<span class="bu">int</span>(traj_end_sec <span class="op">*</span> ds.fps)]</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Cleaning pipeline.</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>pos_conf <span class="op">=</span> filter_by_confidence(ds.position, ds.confidence, threshold<span class="op">=</span><span class="fl">0.99</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>pos_smooth <span class="op">=</span> rolling_filter(pos_conf, window<span class="op">=</span><span class="dv">9</span>, statistic<span class="op">=</span><span class="st">"median"</span>, min_periods<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>pos_clean <span class="op">=</span> interpolate_over_time(pos_smooth, method<span class="op">=</span><span class="st">"linear"</span>, max_gap<span class="op">=</span><span class="dv">5</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> sample_data.fetch_dataset(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DLC_single-mouse_EPM.predictions.h5"</span>, with_video<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>frame <span class="op">=</span> plt.imread(ds.frame_path)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>frame_h, frame_w <span class="op">=</span> frame.shape[:<span class="dv">2</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Trajectory-panel background: the frame at the end of its time window.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>video <span class="op">=</span> sio.load_video(ds.video_path)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>traj_end_sec <span class="op">=</span> <span class="dv">250</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>traj_frame <span class="op">=</span> video[<span class="bu">int</span>(traj_end_sec <span class="op">*</span> ds.fps)]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>pos_conf <span class="op">=</span> filter_by_confidence(ds.position, ds.confidence, threshold<span class="op">=</span><span class="fl">0.99</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>pos_smooth <span class="op">=</span> rolling_filter(pos_conf, window<span class="op">=</span><span class="dv">9</span>, statistic<span class="op">=</span><span class="st">"median"</span>, min_periods<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>pos_clean <span class="op">=</span> interpolate_over_time(pos_smooth, method<span class="op">=</span><span class="st">"linear"</span>, max_gap<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> xr.concat([ds.position, pos_clean], dim<span class="op">=</span><span class="st">"data"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>positions.coords[<span class="st">"data"</span>] <span class="op">=</span> [<span class="st">"raw"</span>, <span class="st">"clean"</span>]</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack raw and clean for the trace panel.</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> xr.concat([ds.position, pos_clean], dim<span class="op">=</span><span class="st">"data"</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>positions.coords[<span class="st">"data"</span>] <span class="op">=</span> [<span class="st">"raw"</span>, <span class="st">"clean"</span>]</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Regions of interest.</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>rois <span class="op">=</span> load_rois(data_dir() <span class="op">/</span> <span class="st">"EPM_rois.geojson"</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Time fraction per ROI (mouse considered "in" a region only when both</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># the centre and tailbase keypoints are inside it simultaneously).</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>roi_occ <span class="op">=</span> compute_region_occupancy(pos_clean, rois)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>mouse_in_roi <span class="op">=</span> roi_occ.sel(</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>],</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>).<span class="bu">all</span>(dim<span class="op">=</span><span class="st">"keypoint"</span>)</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>pct_time_in_roi <span class="op">=</span> (</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    mouse_in_roi.<span class="bu">sum</span>(dim<span class="op">=</span><span class="st">"time"</span>) <span class="op">/</span> mouse_in_roi.sizes[<span class="st">"time"</span>] <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Head direction angle (radians, clockwise from positive x-axis).</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>head_angle <span class="op">=</span> compute_forward_vector_angle(</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(individual<span class="op">=</span><span class="st">"individual_0"</span>),</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    left_keypoint<span class="op">=</span><span class="st">"left_ear"</span>,</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    right_keypoint<span class="op">=</span><span class="st">"right_ear"</span>,</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    reference_vector<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    camera_view<span class="op">=</span><span class="st">"top_down"</span>,</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    in_degrees<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>rois <span class="op">=</span> load_rois(data_dir() <span class="op">/</span> <span class="st">"EPM_rois.geojson"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># The mouse is "in" an ROI only when both centre and tailbase are inside it.</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>roi_occ <span class="op">=</span> compute_region_occupancy(pos_clean, rois)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>mouse_in_roi <span class="op">=</span> roi_occ.sel(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>],</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>).<span class="bu">all</span>(dim<span class="op">=</span><span class="st">"keypoint"</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>pct_time_in_roi <span class="op">=</span> (</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    mouse_in_roi.<span class="bu">sum</span>(dim<span class="op">=</span><span class="st">"time"</span>) <span class="op">/</span> mouse_in_roi.sizes[<span class="st">"time"</span>] <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Radians, clockwise from the positive x-axis.</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>head_angle <span class="op">=</span> compute_forward_vector_angle(</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(individual<span class="op">=</span><span class="st">"individual_0"</span>),</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    left_keypoint<span class="op">=</span><span class="st">"left_ear"</span>,</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    right_keypoint<span class="op">=</span><span class="st">"right_ear"</span>,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    reference_vector<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    camera_view<span class="op">=</span><span class="st">"top_down"</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    in_degrees<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 <section id="eye-tracking-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="eye-tracking-dataset">Eye-tracking dataset</h3>
 <p>We use a dataset that’s already part of <code>movement</code>’s sample data and has been thoroughly explored in <code>movement</code>’s <a href="https://movement.neuroinformatics.dev/latest/examples/mouse_eye_movements.html">‘Pupil tracking’ example</a>. Here we extract the first video frame with tracked keypoints and the pupil centroid, as well as the pupil centroid’s horizontal velocity over a specific window (normalised by the mean eye position to remove head/camera motion).</p>
-<div id="54793f8c" class="cell" data-execution_count="3">
+<div id="7cb7ee74" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the black (dark surround) eye-tracking dataset together with its video.</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>eye_ds <span class="op">=</span> sample_data.fetch_dataset(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DLC_rotating-mouse_eye-tracking_stim-black.predictions.h5"</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    with_video<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>frame0 <span class="op">=</span> sio.load_video(eye_ds.video_path)[<span class="dv">0</span>]</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F data: keypoints at the first frame and the pupil centroid.</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>pos0 <span class="op">=</span> eye_ds.position.isel(time<span class="op">=</span><span class="dv">0</span>).squeeze()</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>centroid0 <span class="op">=</span> pos0.sel(keypoint<span class="op">=</span>[<span class="st">"pupil-L"</span>, <span class="st">"pupil-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G data: x-velocity of the normalized pupil centroid over time.</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>eye_mid <span class="op">=</span> eye_ds.position.sel(keypoint<span class="op">=</span>[<span class="st">"eye-L"</span>, <span class="st">"eye-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>pos_norm <span class="op">=</span> eye_ds.position <span class="op">-</span> eye_mid</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>pupil_c <span class="op">=</span> pos_norm.sel(keypoint<span class="op">=</span>[<span class="st">"pupil-L"</span>, <span class="st">"pupil-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>velocity <span class="op">=</span> compute_velocity(pupil_c)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>vx <span class="op">=</span> velocity.sel(space<span class="op">=</span><span class="st">"x"</span>).squeeze().sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">10</span>, <span class="dv">25</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>eye_ds <span class="op">=</span> sample_data.fetch_dataset(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DLC_rotating-mouse_eye-tracking_stim-black.predictions.h5"</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    with_video<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>frame0 <span class="op">=</span> sio.load_video(eye_ds.video_path)[<span class="dv">0</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>pos0 <span class="op">=</span> eye_ds.position.isel(time<span class="op">=</span><span class="dv">0</span>).squeeze()</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>centroid0 <span class="op">=</span> pos0.sel(keypoint<span class="op">=</span>[<span class="st">"pupil-L"</span>, <span class="st">"pupil-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G: relative to the eye midpoint, to remove head/camera motion.</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>eye_mid <span class="op">=</span> eye_ds.position.sel(keypoint<span class="op">=</span>[<span class="st">"eye-L"</span>, <span class="st">"eye-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>pos_norm <span class="op">=</span> eye_ds.position <span class="op">-</span> eye_mid</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>pupil_c <span class="op">=</span> pos_norm.sel(keypoint<span class="op">=</span>[<span class="st">"pupil-L"</span>, <span class="st">"pupil-R"</span>]).mean(<span class="st">"keypoint"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>velocity <span class="op">=</span> compute_velocity(pupil_c)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>vx <span class="op">=</span> velocity.sel(space<span class="op">=</span><span class="st">"x"</span>).squeeze().sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">10</span>, <span class="dv">25</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
 </section>
 <section id="build-the-figure" class="level2">
 <h2 class="anchored" data-anchor-id="build-the-figure">Build the figure</h2>
-<div id="f24430b4" class="cell" data-execution_count="4">
+<div id="f57dd467" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>figure_size(<span class="st">"double"</span>, height<span class="op">=</span><span class="fl">17.5</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gs <span class="op">=</span> fig.add_gridspec(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>, <span class="dv">2</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    height_ratios<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="fl">3.5</span>],</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    hspace<span class="op">=</span><span class="fl">0.5</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    wspace<span class="op">=</span><span class="fl">0.3</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    left<span class="op">=</span><span class="fl">0.1</span>, right<span class="op">=</span><span class="fl">0.95</span>, top<span class="op">=</span><span class="fl">0.95</span>, bottom<span class="op">=</span><span class="fl">0.05</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>ax_trace <span class="op">=</span> fig.add_subplot(gs[<span class="dv">0</span>, :])           <span class="co"># row 0 -- full width</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ax_traj  <span class="op">=</span> fig.add_subplot(gs[<span class="dv">1</span>, <span class="dv">0</span>])           <span class="co"># row 1 left</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ax_heat  <span class="op">=</span> fig.add_subplot(gs[<span class="dv">1</span>, <span class="dv">1</span>])           <span class="co"># row 1 right</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ax_roi   <span class="op">=</span> fig.add_subplot(gs[<span class="dv">2</span>, <span class="dv">0</span>])           <span class="co"># row 2 left</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>ax_polar <span class="op">=</span> fig.add_subplot(gs[<span class="dv">2</span>, <span class="dv">1</span>], projection<span class="op">=</span><span class="st">"polar"</span>)  <span class="co"># row 2 right</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Row 3 keeps the pupil pair's original narrow-frame / wide-trace proportion.</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>gs_pupil <span class="op">=</span> gs[<span class="dv">3</span>, :].subgridspec(<span class="dv">1</span>, <span class="dv">2</span>, width_ratios<span class="op">=</span>[<span class="dv">5</span>, <span class="dv">11</span>], wspace<span class="op">=</span><span class="fl">0.25</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>ax_frame <span class="op">=</span> fig.add_subplot(gs_pupil[<span class="dv">0</span>, <span class="dv">0</span>])     <span class="co"># row 3 left</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>ax_vel   <span class="op">=</span> fig.add_subplot(gs_pupil[<span class="dv">0</span>, <span class="dv">1</span>])     <span class="co"># row 3 right</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel A: raw vs clean snout y-position                              #</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>pos_sel <span class="op">=</span> positions.sel(</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span><span class="st">"snout"</span>,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    space<span class="op">=</span><span class="st">"y"</span>,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">240</span>, <span class="dv">300</span>),</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>pos_sel.sel(data<span class="op">=</span><span class="st">"raw"</span>).plot.line(</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_trace, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Pastel2"</span>), alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Raw snout position"</span>,</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>pos_sel.sel(data<span class="op">=</span><span class="st">"clean"</span>).plot.line(</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_trace, color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>), alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Clean (after dropping outliers and smoothing)"</span>,</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>ax_trace.set_xlim(<span class="bu">float</span>(pos_sel.time.<span class="bu">min</span>()), <span class="bu">float</span>(pos_sel.time.<span class="bu">max</span>()))</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>ax_trace.set_title(<span class="st">""</span>)</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>ax_trace.set_xlabel(<span class="st">"time (s)"</span>)</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>ax_trace.set_ylabel(<span class="st">"y position (px)"</span>)</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Anchor the legend on top of the panel (where the title would normally go) so it doesn't overlap the data.</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>ax_trace.legend(</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    loc<span class="op">=</span><span class="st">"lower center"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>), frameon<span class="op">=</span><span class="va">True</span>, framealpha<span class="op">=</span><span class="fl">0.6</span>, ncols<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel B: centroid trajectory                                        #</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>ax_traj.imshow(traj_frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>plot_centroid_trajectory(</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(time<span class="op">=</span><span class="bu">slice</span>(traj_end_sec <span class="op">-</span> <span class="dv">10</span>, traj_end_sec)),</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    keypoints<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>, <span class="st">"left_ear"</span>, <span class="st">"right_ear"</span>],</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_traj,</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.8</span>,</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">"viridis"</span>,</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co"># anchor="W" left-justifies the equal-aspect image within its divider cell so</span></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># its left edge lines up with panel A's left plot-area edge.</span></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>move_colorbar_to_divider(ax_traj, <span class="st">"time (s)"</span>, anchor<span class="op">=</span><span class="st">"W"</span>)</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>ax_traj.set_xlim(<span class="dv">0</span>, frame_w)</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>ax_traj.set_ylim(frame_h, <span class="dv">0</span>)</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>ax_traj.set_title(<span class="st">"Centroid trajectory"</span>)</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>ax_traj.axis(<span class="st">"off"</span>)</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel C: occupancy heatmap                                          #</span></span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Occupancy histogram bins (30 px cells covering the full frame).</span></span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>BIN_PIX <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> [</span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>    np.arange(<span class="dv">0</span>, frame_w <span class="op">+</span> BIN_PIX, BIN_PIX),</span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    np.arange(<span class="dv">0</span>, frame_h <span class="op">+</span> BIN_PIX, BIN_PIX),</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>ax_heat.imshow(frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>_, ax_heat, _ <span class="op">=</span> plot_occupancy(</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>    da<span class="op">=</span>pos_clean,</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_heat,</span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.8</span>,</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>bins,</span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>    cmin<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>    norm<span class="op">=</span><span class="st">"log"</span>,</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">"turbo"</span>,</span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>move_colorbar_to_divider(ax_heat, <span class="st">"# frames"</span>)</span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>ax_heat.set_xlim(<span class="dv">0</span>, frame_w)</span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>ax_heat.set_ylim(frame_h, <span class="dv">0</span>)</span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>ax_heat.set_title(<span class="st">"Occupancy heatmap"</span>)</span>
-<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>ax_heat.axis(<span class="st">"off"</span>)</span>
-<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel D: time in ROIs                                               #</span></span>
-<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>roi_colors <span class="op">=</span> [</span>
-<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>    get_color(<span class="st">"teal"</span>, <span class="st">"Dark2"</span>) <span class="cf">if</span> roi.name.startswith(<span class="st">"open"</span>)</span>
-<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> get_color(<span class="st">"pink"</span>, <span class="st">"Dark2"</span>) <span class="cf">for</span> roi <span class="kw">in</span> rois</span>
-<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>ax_roi.imshow(frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
-<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, roi <span class="kw">in</span> <span class="bu">enumerate</span>(rois):</span>
-<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>    roi.plot(</span>
-<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>        ax<span class="op">=</span>ax_roi,</span>
-<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>        edgecolor<span class="op">=</span>roi_colors[i],</span>
-<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>        facecolor<span class="op">=</span><span class="st">"none"</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fig.get_layout_engine().<span class="bu">set</span>(hspace<span class="op">=</span><span class="fl">0.06</span>, wspace<span class="op">=</span><span class="fl">0.08</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># One grid for all rows (no subgridspec) so constrained layout aligns edges.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Columns split rows 2-3 in halves (5+3 | 8) and row 4 narrow/wide (5 | 3+8).</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>gs <span class="op">=</span> fig.add_gridspec(<span class="dv">4</span>, <span class="dv">3</span>, height_ratios<span class="op">=</span>[<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">3</span>], width_ratios<span class="op">=</span>[<span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">8</span>])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>ax_trace <span class="op">=</span> fig.add_subplot(gs[<span class="dv">0</span>, :])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>ax_traj  <span class="op">=</span> fig.add_subplot(gs[<span class="dv">1</span>, :<span class="dv">2</span>])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>ax_heat  <span class="op">=</span> fig.add_subplot(gs[<span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>ax_roi   <span class="op">=</span> fig.add_subplot(gs[<span class="dv">2</span>, :<span class="dv">2</span>])</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>ax_polar <span class="op">=</span> fig.add_subplot(gs[<span class="dv">2</span>, <span class="dv">2</span>], projection<span class="op">=</span><span class="st">"polar"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ax_frame <span class="op">=</span> fig.add_subplot(gs[<span class="dv">3</span>, <span class="dv">0</span>])</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ax_vel   <span class="op">=</span> fig.add_subplot(gs[<span class="dv">3</span>, <span class="dv">1</span>:])</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel A: raw vs clean snout y-position                              #</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>pos_sel <span class="op">=</span> positions.sel(</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span><span class="st">"snout"</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    space<span class="op">=</span><span class="st">"y"</span>,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">240</span>, <span class="dv">300</span>),</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>pos_sel.sel(data<span class="op">=</span><span class="st">"raw"</span>).plot.line(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_trace, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Pastel2"</span>), alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Raw snout position"</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>pos_sel.sel(data<span class="op">=</span><span class="st">"clean"</span>).plot.line(</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_trace, color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>), alpha<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Clean (after dropping outliers and smoothing)"</span>,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>ax_trace.set_xlim(<span class="bu">float</span>(pos_sel.time.<span class="bu">min</span>()), <span class="bu">float</span>(pos_sel.time.<span class="bu">max</span>()))</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>ax_trace.set_title(<span class="st">""</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>ax_trace.set_xlabel(<span class="st">"time (s)"</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>ax_trace.set_ylabel(<span class="st">"y position (px)"</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Legend in place of the title, clear of the data.</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>ax_trace.legend(</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    loc<span class="op">=</span><span class="st">"lower center"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>), frameon<span class="op">=</span><span class="va">True</span>, framealpha<span class="op">=</span><span class="fl">0.6</span>, ncols<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel B: centroid trajectory                                        #</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>ax_traj.imshow(traj_frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>plot_centroid_trajectory(</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(time<span class="op">=</span><span class="bu">slice</span>(traj_end_sec <span class="op">-</span> <span class="dv">10</span>, traj_end_sec)),</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    keypoints<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>, <span class="st">"left_ear"</span>, <span class="st">"right_ear"</span>],</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_traj,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.8</span>,</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">"viridis"</span>,</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>add_inset_colorbar(ax_traj, <span class="st">"time (s)"</span>)</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>ax_traj.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-align the equal-aspect image with panel A</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>ax_traj.set_xlim(<span class="dv">0</span>, frame_w)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>ax_traj.set_ylim(frame_h, <span class="dv">0</span>)</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>ax_traj.set_title(<span class="st">"Centroid trajectory"</span>)</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>ax_traj.axis(<span class="st">"off"</span>)</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel C: occupancy heatmap                                          #</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>BIN_PIX <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> [</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    np.arange(<span class="dv">0</span>, frame_w <span class="op">+</span> BIN_PIX, BIN_PIX),</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>    np.arange(<span class="dv">0</span>, frame_h <span class="op">+</span> BIN_PIX, BIN_PIX),</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>ax_heat.imshow(frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>_, ax_heat, _ <span class="op">=</span> plot_occupancy(</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>    da<span class="op">=</span>pos_clean,</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_heat,</span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.8</span>,</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>bins,</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    cmin<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>    norm<span class="op">=</span><span class="st">"log"</span>,</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">"turbo"</span>,</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>add_inset_colorbar(ax_heat, <span class="st">"# frames"</span>)</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>ax_heat.set_xlim(<span class="dv">0</span>, frame_w)</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>ax_heat.set_ylim(frame_h, <span class="dv">0</span>)</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>ax_heat.set_title(<span class="st">"Occupancy heatmap"</span>)</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>ax_heat.axis(<span class="st">"off"</span>)</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel D: time in ROIs                                               #</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>roi_colors <span class="op">=</span> [</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>    get_color(<span class="st">"teal"</span>, <span class="st">"Dark2"</span>) <span class="cf">if</span> roi.name.startswith(<span class="st">"open"</span>)</span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> get_color(<span class="st">"pink"</span>, <span class="st">"Dark2"</span>) <span class="cf">for</span> roi <span class="kw">in</span> rois</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>ax_roi.imshow(frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, roi <span class="kw">in</span> <span class="bu">enumerate</span>(rois):</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>    roi.plot(</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>        ax<span class="op">=</span>ax_roi,</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>        edgecolor<span class="op">=</span>roi_colors[i],</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>        facecolor<span class="op">=</span><span class="st">"none"</span>,</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>    cx, cy <span class="op">=</span> roi.region.centroid.x, roi.region.centroid.y</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>    ax_roi.text(</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>        cx, cy,</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span><span class="bu">float</span>(pct_time_in_roi[i])<span class="sc">:.0f}</span><span class="ss">%"</span>,</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>roi_colors[i],</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>        ha<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>        va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>        fontsize<span class="op">=</span><span class="st">"small"</span>,</span>
 <span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>    cx, cy <span class="op">=</span> roi.region.centroid.x, roi.region.centroid.y</span>
-<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>    ax_roi.text(</span>
-<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>        cx, cy,</span>
-<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"</span><span class="sc">{</span><span class="bu">float</span>(pct_time_in_roi[i])<span class="sc">:.0f}</span><span class="ss">%"</span>,</span>
-<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>roi_colors[i],</span>
-<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>        ha<span class="op">=</span><span class="st">"center"</span>,</span>
-<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>        va<span class="op">=</span><span class="st">"center"</span>,</span>
-<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>        fontsize<span class="op">=</span><span class="st">"small"</span>,</span>
-<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>ax_roi.set_xlim(<span class="dv">0</span>, frame_w)</span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>ax_roi.set_ylim(frame_h, <span class="dv">0</span>)</span>
-<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>ax_roi.set_title(<span class="st">"Time spent in ROIs"</span>)</span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>ax_roi.axis(<span class="st">"off"</span>)</span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="co"># Reserve an invisible colorbar-sized strip so this panel's image box matches</span></span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="co"># the colorbar-bearing trajectory panel directly above it. anchor="W" keeps the</span></span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="co"># image left-justified, matching panel A's left edge (as in the trajectory panel).</span></span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>reserve_colorbar_space(ax_roi, anchor<span class="op">=</span><span class="st">"W"</span>)</span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel E: head direction polar histogram                             #</span></span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>BIN_WIDTH_DEG <span class="op">=</span> <span class="dv">15</span></span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>n_bins <span class="op">=</span> <span class="bu">int</span>(<span class="dv">360</span> <span class="op">/</span> BIN_WIDTH_DEG)</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>ax_roi.set_xlim(<span class="dv">0</span>, frame_w)</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>ax_roi.set_ylim(frame_h, <span class="dv">0</span>)</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>ax_roi.set_title(<span class="st">"Time spent in ROIs"</span>)</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>ax_roi.axis(<span class="st">"off"</span>)</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>ax_roi.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-align with panel A</span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel E: head direction polar histogram                             #</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>BIN_WIDTH_DEG <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>n_bins <span class="op">=</span> <span class="bu">int</span>(<span class="dv">360</span> <span class="op">/</span> BIN_WIDTH_DEG)</span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>head_angle.sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">150</span>, <span class="dv">300</span>)).plot.hist(</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>np.linspace(<span class="op">-</span>np.pi, np.pi, n_bins <span class="op">+</span> <span class="dv">1</span>),</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_polar,</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>    density<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="st">"white"</span>,</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_direction(<span class="op">-</span><span class="dv">1</span>)   <span class="co"># clockwise</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_offset(<span class="dv">0</span>)       <span class="co"># 0 deg at the right</span></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xlabel(<span class="st">""</span>)</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>ax_polar.set_yticklabels([])</span>
 <span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>head_angle.sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">150</span>, <span class="dv">300</span>)).plot.hist(</span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>np.linspace(<span class="op">-</span>np.pi, np.pi, n_bins <span class="op">+</span> <span class="dv">1</span>),</span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_polar,</span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>    density<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_direction(<span class="op">-</span><span class="dv">1</span>)   <span class="co"># clockwise</span></span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_offset(<span class="dv">0</span>)       <span class="co"># 0 deg at the right</span></span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xlabel(<span class="st">""</span>)</span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>ax_polar.set_yticklabels([])  <span class="co"># auto radial gridlines, hide density labels</span></span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>tick_angles <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">9</span>)[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>tick_labels_deg <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">181</span>, <span class="dv">45</span>)) <span class="op">+</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="op">-</span><span class="dv">180</span>, <span class="op">-</span><span class="dv">45</span>))[<span class="op">-</span><span class="dv">1</span>:<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticks(tick_angles)</span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticklabels([<span class="ss">f"</span><span class="sc">{</span>t<span class="sc">}</span><span class="ch">\N{DEGREE SIGN}</span><span class="ss">"</span> <span class="cf">for</span> t <span class="kw">in</span> tick_labels_deg])</span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>ax_polar.set_title(<span class="st">"Head direction"</span>, pad<span class="op">=</span><span class="dv">45</span>)</span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F: example eye frame with tracked keypoints + centroid        #</span></span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>ax_frame.imshow(frame0, cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="co"># All 4 tracked keypoints share one color and one label -&gt; a single legend entry.</span></span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
-<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
-<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>ax_frame.invert_yaxis()  <span class="co"># the dataset was captured flipped</span></span>
-<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="co"># Hide ticks and spines but keep the axis labels</span></span>
-<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xticks([])</span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>ax_frame.set_yticks([])</span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> ax_frame.spines.values():</span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>    spine.set_visible(<span class="va">False</span>)</span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xlabel(<span class="st">"x"</span>)</span>
-<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a>ax_frame.set_ylabel(<span class="st">"y"</span>)</span>
-<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a>ax_frame.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-justify to align with panel A's left edge</span></span>
-<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G: pupil centroid x-velocity over time                        #</span></span>
-<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>vx.plot.line(</span>
-<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_vel, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>), label<span class="op">=</span><span class="st">"Pupil centroid x velocity"</span></span>
-<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlim(<span class="bu">float</span>(vx.time.<span class="bu">min</span>()), <span class="bu">float</span>(vx.time.<span class="bu">max</span>()))</span>
-<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>ax_vel.set_title(<span class="st">"Pupil centroid x velocity"</span>)</span>
-<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlabel(<span class="st">"time (s)"</span>)</span>
-<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>ax_vel.set_ylabel(<span class="st">"velocity (px/s)"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>tick_angles <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">9</span>)[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>tick_labels_deg <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">181</span>, <span class="dv">45</span>)) <span class="op">+</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="op">-</span><span class="dv">180</span>, <span class="op">-</span><span class="dv">45</span>))[<span class="op">-</span><span class="dv">1</span>:<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticks(tick_angles)</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticklabels([<span class="ss">f"</span><span class="sc">{</span>t<span class="sc">}</span><span class="ch">\N{DEGREE SIGN}</span><span class="ss">"</span> <span class="cf">for</span> t <span class="kw">in</span> tick_labels_deg])</span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>ax_polar.set_title(<span class="st">"Head direction"</span>, pad<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F: example eye frame with tracked keypoints + centroid        #</span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>ax_frame.imshow(frame0, cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>ax_frame.invert_yaxis()  <span class="co"># the dataset was captured flipped</span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="co"># Like axis("off"), but keeping the x/y labels.</span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xticks([])</span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>ax_frame.set_yticks([])</span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> ax_frame.spines.values():</span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>    spine.set_visible(<span class="va">False</span>)</span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xlabel(<span class="st">"x"</span>)</span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>ax_frame.set_ylabel(<span class="st">"y"</span>)</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>ax_frame.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-align with panel A</span></span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G: pupil centroid x-velocity over time                        #</span></span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>vx.plot.line(</span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_vel, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>), label<span class="op">=</span><span class="st">"Pupil centroid x velocity"</span></span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlim(<span class="bu">float</span>(vx.time.<span class="bu">min</span>()), <span class="bu">float</span>(vx.time.<span class="bu">max</span>()))</span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>ax_vel.set_title(<span class="st">"Pupil centroid x velocity"</span>)</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlabel(<span class="st">"time (s)"</span>)</span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>ax_vel.set_ylabel(<span class="st">"velocity (px/s)"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="movement_applications_poster_files/figure-html/cell-5-output-1.png" width="1497" height="1704" class="figure-img"></p>
+<p><img src="movement_applications_poster_files/figure-html/cell-5-output-1.png" width="1547" height="1691" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -574,7 +552,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="save-the-figure" class="level2">
 <h2 class="anchored" data-anchor-id="save-the-figure">Save the figure</h2>
-<div id="c0452d34" class="cell" data-execution_count="5">
+<div id="5c5e10f2" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig_name <span class="op">=</span> <span class="st">"movement_applications_poster"</span></span>
