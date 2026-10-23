@@ -39,6 +39,15 @@ jobs:
       - name: Install Python dependencies
         run: uv sync
 
+      # Some figures screenshot a real (visible) napari canvas, which needs
+      # a GL-capable display even in headless CI.
+      - name: Install Xvfb and OpenGL libraries for napari
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libegl1 libopengl0 libxkbcommon-x11-0 \
+            libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+            libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0
+
       # movement downloads sample datasets with pooch into ~/.movement.
       # Caching them avoids re-fetching on every run.
       - name: Cache movement sample data
@@ -66,7 +75,7 @@ jobs:
         run: uv run prefetch-sample-data
 
       - name: Render Quarto project
-        run: uv run quarto render
+        run: xvfb-run -a uv run quarto render
 
       # Publishing pushes _site to gh-pages and adds the .nojekyll file that
       # stops GitHub Pages from running the site through Jekyll.

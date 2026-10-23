@@ -2,6 +2,7 @@
 
 from movement_figures.io import data_dir, save_figure
 from movement_figures.layout import add_inset_colorbar
+from movement_figures.napari_utils import napari_canvas_screenshot
 from movement_figures.style import (
     AVAILABLE_MEDIA,
     GOLDEN_RATIO,
@@ -24,5 +25,6 @@ __all__ = [
     "data_dir",
     "figure_size",
     "get_color",
+    "napari_canvas_screenshot",
     "save_figure",
 ]
