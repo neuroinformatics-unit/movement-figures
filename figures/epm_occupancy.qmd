@@ -13,6 +13,7 @@ across the whole session (**B**).
 ## Imports and style
 
 ```{python}
+import sleap_io as sio
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -36,16 +37,16 @@ apply_style("manuscript")
 
 ## Load and prepare data
 
-We fetch the EPM sample dataset together with its still frame,
-then apply a two-step cleaning pipeline:
+We fetch the EPM sample dataset together and apply a two-step cleaning pipeline:
 a confidence filter followed by a rolling median filter.
+We also (lazily) load the corresponding video.
 
 ```{python}
 ds = sample_data.fetch_dataset(
     "DLC_single-mouse_EPM.predictions.h5", with_video=True
 )
-frame = plt.imread(ds.frame_path)
-frame_h, frame_w = frame.shape[:2]
+video = sio.load_video(ds.video_path)
+n_frames, height, width, n_channels = video.shape
 
 position_conf = filter_by_confidence(
     ds.position, ds.confidence, threshold=0.95
@@ -53,18 +54,19 @@ position_conf = filter_by_confidence(
 position_clean = rolling_filter(
     position_conf, window=5, statistic="median", min_periods=2
 )
+
 ds["position"] = position_clean
 ```
 
-We also grab a napari canvas screenshot of a single frame, with the tracked
-points and a short (10-frame) trailing track, mirroring what the
+We grab a napari canvas screenshot of a single frame, with the tracked
+points and a short trailing track "tail", mirroring what the
 [`movement` GUI](https://movement.neuroinformatics.dev/latest/user_guide/gui.html)
 would show: the video loaded via the `napari-video` plugin, and the dataset's
 points/tracks layers as added by the `movement` napari plugin.
 
 ```{python}
-FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
-TAIL_SEC = 2     # number of seconds to show in the trailing track tail
+FRAME_SEC = 285 # time (s) of the snapshot; mouse is in an open arm here
+TAIL_SEC = 1     # number of seconds to show in the trailing track tail
 frame_index = int(FRAME_SEC * ds.fps)
 tail_length = int(TAIL_SEC * ds.fps)
 
@@ -77,18 +79,23 @@ napari_frame = napari_canvas_screenshot(
 )
 ```
 
+We also laod a grayscale version of the same frame, which will be used
+as the background for the occupancy heatmap.
+
+```{python}
+frame = video[frame_index].mean(axis=2)  # grayscale
+```
+
 ## Build the figure
 
 ```{python}
-fig, (ax_napari, ax_heat) = plt.subplots(
-    1, 2, figsize=figure_size("double", height=4.0)
-)
+fig, (ax_napari, ax_heat) = plt.subplots(1, 2, figsize=figure_size("double"))
 
 # ------------------------------------------------------------------ #
 # Panel A: napari canvas screenshot                                   #
 # ------------------------------------------------------------------ #
 ax_napari.imshow(napari_frame)
-ax_napari.set_title("Video frame with tracked keypoints")
+ax_napari.set_title("Example video frame")
 ax_napari.axis("off")
 reserve_colorbar_space(ax_napari)
 
@@ -100,8 +107,8 @@ ax_heat.imshow(frame, cmap="gray")
 # Bins of 30x30 pixels, covering the whole frame.
 BIN_PIX = 30
 bins = [
-    np.arange(0, frame_w + BIN_PIX, BIN_PIX),
-    np.arange(0, frame_h + BIN_PIX, BIN_PIX),
+    np.arange(0, width + BIN_PIX, BIN_PIX),
+    np.arange(0, height + BIN_PIX, BIN_PIX),
 ]
 
 _, ax_heat, _ = plot_occupancy(
@@ -113,8 +120,8 @@ _, ax_heat, _ = plot_occupancy(
     norm="log",
 )
 move_colorbar_to_divider(ax_heat, "# frames")
-ax_heat.set_xlim(0, frame_w)
-ax_heat.set_ylim(frame_h, 0)
+ax_heat.set_xlim(0, width)
+ax_heat.set_ylim(height, 0)
 ax_heat.set_title("Occupancy heatmap")
 ax_heat.axis("off")
 ```
