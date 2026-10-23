@@ -1,11 +1,7 @@
 """Shared style and helpers for movement research figures."""
 
 from movement_figures.io import data_dir, save_figure
-from movement_figures.layout import (
-    add_inset_colorbar,
-    move_colorbar_to_divider,
-    reserve_colorbar_space,
-)
+from movement_figures.layout import add_inset_colorbar
 from movement_figures.style import (
     AVAILABLE_MEDIA,
     GOLDEN_RATIO,
@@ -28,7 +24,5 @@ __all__ = [
     "data_dir",
     "figure_size",
     "get_color",
-    "move_colorbar_to_divider",
-    "reserve_colorbar_space",
     "save_figure",
 ]
