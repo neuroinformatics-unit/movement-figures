@@ -173,4 +173,5 @@ def _zoom_to_data(
     size[size <= 0] = 1.0  # avoid division by zero for degenerate boxes
 
     viewer.camera.center = tuple((lower + upper) / 2)
-    viewer.camera.zoom = np.min(np.array(viewer._canvas_size) / size)
+    canvas_size = viewer.window._qt_viewer.canvas.size
+    viewer.camera.zoom = np.min(np.array(canvas_size) / size)
