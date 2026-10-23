@@ -1,4 +1,7 @@
+import warnings
+
 import matplotlib.pyplot as plt
+import pytest
 
 from movement_figures import data_dir, save_figure
 from movement_figures.io import _default_output_dir
@@ -69,3 +72,22 @@ def test_default_output_dir_independent_of_cwd(monkeypatch):
     # Simulate interactive execution from inside the figures/ directory.
     monkeypatch.chdir(root / "figures")
     assert _default_output_dir() == root / "outputs"
+
+
+def test_save_figure_keeps_figure_size(tmp_path):
+    fig, ax = plt.subplots(figsize=(3.5, 2.0))
+    ax.plot([0, 1], [0, 1])
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        (path,) = save_figure(
+            fig, "demo", formats=("png",), output_dir=tmp_path, dpi=100
+        )
+    height_px, width_px = plt.imread(path).shape[:2]
+    assert (width_px, height_px) == (350, 200)
+
+
+def test_save_figure_warns_on_tight_bbox(tmp_path):
+    fig, ax = plt.subplots()
+    ax.plot([0, 1], [0, 1])
+    with pytest.warns(UserWarning, match="bbox_inches='tight'"):
+        save_figure(fig, "demo", output_dir=tmp_path, bbox_inches="tight")

@@ -37,12 +37,11 @@ from movement.plots import plot_centroid_trajectory, plot_occupancy
 from movement.roi import compute_region_occupancy, load_rois
 
 from movement_figures import (
+    add_inset_colorbar,
     apply_style,
     data_dir,
     figure_size,
     get_color,
-    move_colorbar_to_divider,
-    reserve_colorbar_space,
     save_figure,
 )
 
@@ -141,13 +140,10 @@ vx = velocity.sel(space="x").squeeze().sel(time=slice(10, 25))
 
 ```{python}
 fig = plt.figure(figsize=figure_size("double", height=17.5))
-gs = fig.add_gridspec(
-    4, 2,
-    height_ratios=[2, 5, 5, 3.5],
-    hspace=0.5,
-    wspace=0.3,
-    left=0.1, right=0.95, top=0.95, bottom=0.05,
-)
+# Constrained layout (on by default in our style) fits the panels to the fixed
+# canvas, so no manual margins are needed; only the inter-panel spacing is set.
+fig.get_layout_engine().set(hspace=0.06, wspace=0.08)
+gs = fig.add_gridspec(4, 2, height_ratios=[2, 4.5, 4.5, 4])
 
 ax_trace = fig.add_subplot(gs[0, :])           # row 0 -- full width
 ax_traj  = fig.add_subplot(gs[1, 0])           # row 1 left
@@ -156,7 +152,7 @@ ax_roi   = fig.add_subplot(gs[2, 0])           # row 2 left
 ax_polar = fig.add_subplot(gs[2, 1], projection="polar")  # row 2 right
 
 # Row 3 keeps the pupil pair's original narrow-frame / wide-trace proportion.
-gs_pupil = gs[3, :].subgridspec(1, 2, width_ratios=[5, 11], wspace=0.25)
+gs_pupil = gs[3, :].subgridspec(1, 2, width_ratios=[5, 11])
 ax_frame = fig.add_subplot(gs_pupil[0, 0])     # row 3 left
 ax_vel   = fig.add_subplot(gs_pupil[0, 1])     # row 3 right
 
@@ -198,9 +194,9 @@ plot_centroid_trajectory(
     alpha=0.8,
     cmap="viridis",
 )
-# anchor="W" left-justifies the equal-aspect image within its divider cell so
-# its left edge lines up with panel A's left plot-area edge.
-move_colorbar_to_divider(ax_traj, "time (s)", anchor="W")
+add_inset_colorbar(ax_traj, "time (s)")
+# Left-justify the equal-aspect image so its left edge lines up with panel A's.
+ax_traj.set_anchor("W")
 ax_traj.set_xlim(0, frame_w)
 ax_traj.set_ylim(frame_h, 0)
 ax_traj.set_title("Centroid trajectory")
@@ -227,7 +223,7 @@ _, ax_heat, _ = plot_occupancy(
     norm="log",
     cmap="turbo",
 )
-move_colorbar_to_divider(ax_heat, "# frames")
+add_inset_colorbar(ax_heat, "# frames")
 ax_heat.set_xlim(0, frame_w)
 ax_heat.set_ylim(frame_h, 0)
 ax_heat.set_title("Occupancy heatmap")
@@ -261,11 +257,9 @@ ax_roi.set_xlim(0, frame_w)
 ax_roi.set_ylim(frame_h, 0)
 ax_roi.set_title("Time spent in ROIs")
 ax_roi.axis("off")
-
-# Reserve an invisible colorbar-sized strip so this panel's image box matches
-# the colorbar-bearing trajectory panel directly above it. anchor="W" keeps the
-# image left-justified, matching panel A's left edge (as in the trajectory panel).
-reserve_colorbar_space(ax_roi, anchor="W")
+# Inset colorbars don't shrink their host axes, so this colorbar-less panel
+# already matches the trajectory panel above; just left-justify it the same way.
+ax_roi.set_anchor("W")
 
 # ------------------------------------------------------------------ #
 # Panel E: head direction polar histogram                             #

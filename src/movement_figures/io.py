@@ -1,8 +1,10 @@
 """Consistent vector export for figures."""
 
+import warnings
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 import matplotlib as mpl
 from matplotlib.figure import Figure
@@ -65,6 +67,7 @@ def save_figure(
     name: str,
     formats: Sequence[str] = ("pdf",),
     output_dir: str | Path | None = None,
+    **savefig_kwargs: Any,
 ) -> list[Path]:
     """Save ``fig`` as vector files named ``<name>.<fmt>`` in ``output_dir``.
 
@@ -76,7 +79,22 @@ def save_figure(
     Outputs are written without an embedded wall-clock timestamp and with a
     fixed SVG hash salt so that re-rendering the same figure produces
     byte-identical files, enabling clean git diffs on committed vector outputs.
+
+    Extra keyword arguments are forwarded to :meth:`matplotlib.figure.Figure.savefig`.
+    A warning is emitted if they (or ``rcParams``) crop the output, e.g. via
+    ``bbox_inches="tight"``: the saved file would then no longer match the
+    standardized ``fig.get_size_inches()``, so it would be rescaled on
+    placement, changing font sizes and line widths.
     """
+    bbox = savefig_kwargs.get("bbox_inches", mpl.rcParams["savefig.bbox"])
+    if bbox not in (None, "standard"):
+        width, height = fig.get_size_inches()
+        warnings.warn(
+            f"Saving {name!r} with bbox_inches={bbox!r}: the output will not be "
+            f"the figure's {width:.2f} x {height:.2f} in size, so text and lines "
+            "may be rescaled when the figure is placed.",
+            stacklevel=2,
+        )
     output_dir = _default_output_dir() if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
@@ -85,9 +103,9 @@ def save_figure(
         metadata = _TIMESTAMP_SUPPRESS.get(fmt.lower(), {})
         if fmt.lower() == "svg":
             with _deterministic_svg_context():
-                fig.savefig(path, metadata=metadata)
+                fig.savefig(path, metadata=metadata, **savefig_kwargs)
         else:
-            fig.savefig(path, metadata=metadata)
+            fig.savefig(path, metadata=metadata, **savefig_kwargs)
 
         paths.append(path)
     return paths

@@ -8,6 +8,7 @@ from matplotlib.font_manager import FontProperties, findfont
 
 from movement_figures import (
     AVAILABLE_MEDIA,
+    GOLDEN_RATIO,
     WIDTHS,
     Hue,
     Palette,
@@ -121,3 +122,34 @@ def test_figure_size_uses_active_medium():
     assert figure_size("double", height=5.0) == (16.0, 5.0)
     apply_style("manuscript")
     assert figure_size("single", height=2.6) == (3.5, 2.6)
+
+
+def test_figure_size_defaults_to_golden_ratio():
+    apply_style("manuscript")
+    width, height = figure_size("double")
+    assert width == WIDTHS["manuscript"]["double"]
+    assert height == pytest.approx(width / GOLDEN_RATIO)
+
+
+def test_figure_size_from_aspect():
+    apply_style("manuscript")
+    # Two 4:3 landscape panels side by side, plus 0.5 in for titles.
+    assert figure_size("double", aspect=0.75, ncols=2, extra=0.5) == pytest.approx(
+        (7.0, 7.0 / 2 * 0.75 + 0.5)
+    )
+
+
+def test_figure_size_height_overrides_aspect():
+    apply_style("manuscript")
+    assert figure_size("single", height=2.0, aspect=1.0) == (3.5, 2.0)
+
+
+def test_figure_size_medium_override():
+    apply_style("manuscript")
+    assert figure_size("double", height=5.0, medium="poster") == (16.0, 5.0)
+
+
+def test_base_style_keeps_figure_size_on_save():
+    apply_style()
+    assert plt.rcParams["figure.constrained_layout.use"] is True
+    assert plt.rcParams["savefig.bbox"] in (None, "standard")

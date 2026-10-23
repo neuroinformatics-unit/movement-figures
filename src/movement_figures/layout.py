@@ -9,6 +9,51 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 _CBAR_SIZE: str = "5%"
 _CBAR_PAD: float = 0.1
 
+# Default inset colorbar geometry, as fractions of the host axes' width.
+_INSET_CBAR_WIDTH: float = 0.05
+_INSET_CBAR_PAD: float = 0.03
+
+
+def add_inset_colorbar(
+    ax: Axes,
+    label: str,
+    width: float = _INSET_CBAR_WIDTH,
+    pad: float = _INSET_CBAR_PAD,
+) -> Axes:
+    """Move an auto-generated colorbar into an inset axes beside ``ax``.
+
+    The ``movement`` plotting helpers add colorbars via ``fig.colorbar(ax=ax)``,
+    which steals width from the host axes and breaks alignment across panels.
+    An inset axes placed just outside ``ax`` leaves the host box untouched, so
+    every image panel keeps the same size without reserving space on the
+    colorbar-less ones. Unlike :func:`move_colorbar_to_divider`, this works
+    with constrained layout, which accounts for the inset when laying out the
+    figure.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        The axes whose colorbar should be relocated. Its first collection is
+        assumed to carry the colorbar, as created by the ``movement`` plotting
+        helpers.
+    label : str
+        Label for the relocated colorbar.
+    width : float
+        Width of the colorbar as a fraction of ``ax`` width.
+    pad : float
+        Gap between ``ax`` and the colorbar as a fraction of ``ax`` width.
+
+    Returns
+    -------
+    matplotlib.axes.Axes
+        The colorbar axes.
+    """
+    mappable = ax.collections[0]
+    mappable.colorbar.remove()
+    cax = ax.inset_axes((1 + pad, 0, width, 1))
+    ax.figure.colorbar(mappable, cax=cax, label=label)
+    return cax
+
 
 def move_colorbar_to_divider(
     ax: Axes,
@@ -26,6 +71,10 @@ def move_colorbar_to_divider(
     axes keeps every image panel's box identical. Pair this with
     :func:`reserve_colorbar_space` on a colorbar-less panel to keep it aligned
     too.
+
+    Not compatible with constrained layout (the default in this package's
+    style); create the figure with ``layout="none"`` or prefer
+    :func:`add_inset_colorbar`.
 
     Parameters
     ----------
@@ -64,6 +113,10 @@ def reserve_colorbar_space(
     Shrinks ``ax`` by the same amount a colorbar would, so a colorbar-less
     panel stays aligned with neighbouring panels that carry one via
     :func:`move_colorbar_to_divider`. Use matching ``size`` and ``pad``.
+
+    Not compatible with constrained layout (the default in this package's
+    style); create the figure with ``layout="none"`` or prefer
+    :func:`add_inset_colorbar`.
 
     Parameters
     ----------
