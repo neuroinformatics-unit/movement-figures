@@ -55,7 +55,7 @@ GOLDEN_RATIO: float = (1 + 5**0.5) / 2
 # Standardized figure widths (inches) per medium and column span. Heights are
 # set per figure, or derived, via figure_size().
 WIDTHS: dict[str, dict[str, float]] = {
-    "manuscript": {"single": 3.5, "double": 7.0},
+    "manuscript": {"single": 3.0, "double": 6.25},
     "poster": {"single": 8.0, "double": 16.0},
     "presentation": {"single": 6.0, "double": 12.0},
 }

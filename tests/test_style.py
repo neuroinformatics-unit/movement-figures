@@ -121,7 +121,7 @@ def test_figure_size_uses_active_medium():
     apply_style("poster")
     assert figure_size("double", height=5.0) == (16.0, 5.0)
     apply_style("manuscript")
-    assert figure_size("single", height=2.6) == (3.5, 2.6)
+    assert figure_size("single", height=2.6) == (WIDTHS["manuscript"]["single"], 2.6)
 
 
 def test_figure_size_defaults_to_golden_ratio():
@@ -133,15 +133,19 @@ def test_figure_size_defaults_to_golden_ratio():
 
 def test_figure_size_from_aspect():
     apply_style("manuscript")
+    width = WIDTHS["manuscript"]["double"]
     # Two 4:3 landscape panels side by side, plus 0.5 in for titles.
     assert figure_size("double", aspect=0.75, ncols=2, extra=0.5) == pytest.approx(
-        (7.0, 7.0 / 2 * 0.75 + 0.5)
+        (width, width / 2 * 0.75 + 0.5)
     )
 
 
 def test_figure_size_height_overrides_aspect():
     apply_style("manuscript")
-    assert figure_size("single", height=2.0, aspect=1.0) == (3.5, 2.0)
+    assert figure_size("single", height=2.0, aspect=1.0) == (
+        WIDTHS["manuscript"]["single"],
+        2.0,
+    )
 
 
 def test_figure_size_medium_override():
