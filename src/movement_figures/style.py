@@ -49,8 +49,11 @@ def get_color(hue_name: Hue, palette: Palette = "Set2") -> str:
     return _PALETTES[palette][_HUE_INDEX[hue_name]]
 
 
+# Default height-to-width divisor for figures without a natural aspect ratio.
+GOLDEN_RATIO: float = (1 + 5**0.5) / 2
+
 # Standardized figure widths (inches) per medium and column span. Heights are
-# chosen per figure via figure_size(..., height=...).
+# set per figure, or derived, via figure_size().
 WIDTHS: dict[str, dict[str, float]] = {
     "manuscript": {"single": 3.5, "double": 7.0},
     "poster": {"single": 8.0, "double": 16.0},
@@ -80,11 +83,50 @@ def apply_style(medium: str = "manuscript") -> None:
     _active_medium = medium
 
 
-def figure_size(width: str = "double", height: float = 4.0) -> tuple[float, float]:
+def figure_size(
+    width: str = "double",
+    height: float | None = None,
+    *,
+    aspect: float | None = None,
+    ncols: int = 1,
+    extra: float = 0.4,
+    medium: str | None = None,
+) -> tuple[float, float]:
     """Return a ``(width, height)`` figure size in inches.
 
-    The width is the standardized width for the active medium (set by the most
-    recent :func:`apply_style` call) and the given column ``width`` (``"single"``
-    or ``"double"``). ``height`` is chosen freely per figure.
+    The width is the standardized width for the medium and the given column
+    span. The height is resolved in order of precedence:
+
+    1. ``height``, if given, is used as-is.
+    2. ``aspect``, if given, sizes the figure to fit a row of ``ncols``
+       equal-aspect panels (e.g. video frames) without leftover whitespace:
+       ``width / ncols * aspect + extra``.
+    3. Otherwise the golden ratio, ``width / 1.618``, a sensible default for
+       line and scatter plots.
+
+    Parameters
+    ----------
+    width : str
+        Column span, ``"single"`` or ``"double"``.
+    height : float, optional
+        Explicit figure height in inches.
+    aspect : float, optional
+        Height-to-width ratio of each panel's content (``img_h / img_w`` for
+        an image). Ignored if ``height`` is given.
+    ncols : int
+        Number of side-by-side panels sharing the width. Only used with
+        ``aspect``.
+    extra : float
+        Inches added to an ``aspect``-derived height for titles, labels and
+        margins. Only used with ``aspect``.
+    medium : str, optional
+        One of ``AVAILABLE_MEDIA``. Defaults to the medium of the most recent
+        :func:`apply_style` call.
     """
-    return (WIDTHS[_active_medium][width], height)
+    fig_width = WIDTHS[medium or _active_medium][width]
+    if height is None:
+        if aspect is not None:
+            height = fig_width / ncols * aspect + extra
+        else:
+            height = fig_width / GOLDEN_RATIO
+    return (fig_width, height)

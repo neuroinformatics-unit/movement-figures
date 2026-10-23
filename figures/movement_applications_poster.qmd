@@ -14,7 +14,7 @@ whereas row 4 covers the rotating-mouse eye-tracking dataset:
 
 1. a raw-vs-clean position trace (**A**)
 2. centroid trajectory and occupancy heatmap side-by-side (**B**, **C**)
-3. ROI time-fractions overlaid on the maze frame alongside a head-angle polar histogram (**D**, **E**).
+3. ROI time-fractions overlaid on the maze frame alongside a head-angle polar histogram (**D**, **E**)
 4. the four tracked keypoints (plus the pupil centroid) on an example video frame
 (**F**), and the pupil centroid's horizontal velocity over time (**G**).
 
@@ -37,12 +37,11 @@ from movement.plots import plot_centroid_trajectory, plot_occupancy
 from movement.roi import compute_region_occupancy, load_rois
 
 from movement_figures import (
+    add_inset_colorbar,
     apply_style,
     data_dir,
     figure_size,
     get_color,
-    move_colorbar_to_divider,
-    reserve_colorbar_space,
     save_figure,
 )
 
@@ -62,33 +61,27 @@ We also compute the time fraction spent in each ROI and the head direction angle
 for the clean positions, which will be visualized in the third figure row.
 
 ```{python}
-# Dataset and background frame.
 ds = sample_data.fetch_dataset(
     "DLC_single-mouse_EPM.predictions.h5", with_video=True
 )
-frame = plt.imread(ds.frame_path)  # 1300 x 1028 px maze image for heatmap/ROI panels
+frame = plt.imread(ds.frame_path)
 frame_h, frame_w = frame.shape[:2]
 
-# Video frame at the end of trajectory time window
-# (to use as background for the trajectory panel).
+# Trajectory-panel background: the frame at the end of its time window.
 video = sio.load_video(ds.video_path)
 traj_end_sec = 250
 traj_frame = video[int(traj_end_sec * ds.fps)]
 
-# Cleaning pipeline.
 pos_conf = filter_by_confidence(ds.position, ds.confidence, threshold=0.99)
 pos_smooth = rolling_filter(pos_conf, window=9, statistic="median", min_periods=3)
 pos_clean = interpolate_over_time(pos_smooth, method="linear", max_gap=5)
 
-# Stack raw and clean for the trace panel.
 positions = xr.concat([ds.position, pos_clean], dim="data")
 positions.coords["data"] = ["raw", "clean"]
 
-# Regions of interest.
 rois = load_rois(data_dir() / "EPM_rois.geojson")
 
-# Time fraction per ROI (mouse considered "in" a region only when both
-# the centre and tailbase keypoints are inside it simultaneously).
+# The mouse is "in" an ROI only when both centre and tailbase are inside it.
 roi_occ = compute_region_occupancy(pos_clean, rois)
 mouse_in_roi = roi_occ.sel(
     keypoint=["centre", "tailbase"],
@@ -99,7 +92,7 @@ pct_time_in_roi = (
     mouse_in_roi.sum(dim="time") / mouse_in_roi.sizes["time"] * 100
 )
 
-# Head direction angle (radians, clockwise from positive x-axis).
+# Radians, clockwise from the positive x-axis.
 head_angle = compute_forward_vector_angle(
     pos_clean.sel(individual="individual_0"),
     left_keypoint="left_ear",
@@ -118,18 +111,17 @@ Here we extract the first video frame with tracked keypoints and the pupil centr
 as well as the pupil centroid's horizontal velocity over a specific window (normalised by the mean eye position to remove head/camera motion).
 
 ```{python}
-# Load the black (dark surround) eye-tracking dataset together with its video.
 eye_ds = sample_data.fetch_dataset(
     "DLC_rotating-mouse_eye-tracking_stim-black.predictions.h5",
     with_video=True,
 )
 frame0 = sio.load_video(eye_ds.video_path)[0]
 
-# Panel F data: keypoints at the first frame and the pupil centroid.
+# Panel F
 pos0 = eye_ds.position.isel(time=0).squeeze()
 centroid0 = pos0.sel(keypoint=["pupil-L", "pupil-R"]).mean("keypoint")
 
-# Panel G data: x-velocity of the normalized pupil centroid over time.
+# Panel G: relative to the eye midpoint, to remove head/camera motion.
 eye_mid = eye_ds.position.sel(keypoint=["eye-L", "eye-R"]).mean("keypoint")
 pos_norm = eye_ds.position - eye_mid
 pupil_c = pos_norm.sel(keypoint=["pupil-L", "pupil-R"]).mean("keypoint")
@@ -141,24 +133,18 @@ vx = velocity.sel(space="x").squeeze().sel(time=slice(10, 25))
 
 ```{python}
 fig = plt.figure(figsize=figure_size("double", height=17.5))
-gs = fig.add_gridspec(
-    4, 2,
-    height_ratios=[2, 5, 5, 3.5],
-    hspace=0.5,
-    wspace=0.3,
-    left=0.1, right=0.95, top=0.95, bottom=0.05,
-)
+fig.get_layout_engine().set(hspace=0.06, wspace=0.08)
+# One grid for all rows (no subgridspec) so constrained layout aligns edges.
+# Columns split rows 2-3 in halves (5+3 | 8) and row 4 narrow/wide (5 | 3+8).
+gs = fig.add_gridspec(4, 3, height_ratios=[2, 5, 5, 3], width_ratios=[5, 3, 8])
 
-ax_trace = fig.add_subplot(gs[0, :])           # row 0 -- full width
-ax_traj  = fig.add_subplot(gs[1, 0])           # row 1 left
-ax_heat  = fig.add_subplot(gs[1, 1])           # row 1 right
-ax_roi   = fig.add_subplot(gs[2, 0])           # row 2 left
-ax_polar = fig.add_subplot(gs[2, 1], projection="polar")  # row 2 right
-
-# Row 3 keeps the pupil pair's original narrow-frame / wide-trace proportion.
-gs_pupil = gs[3, :].subgridspec(1, 2, width_ratios=[5, 11], wspace=0.25)
-ax_frame = fig.add_subplot(gs_pupil[0, 0])     # row 3 left
-ax_vel   = fig.add_subplot(gs_pupil[0, 1])     # row 3 right
+ax_trace = fig.add_subplot(gs[0, :])
+ax_traj  = fig.add_subplot(gs[1, :2])
+ax_heat  = fig.add_subplot(gs[1, 2])
+ax_roi   = fig.add_subplot(gs[2, :2])
+ax_polar = fig.add_subplot(gs[2, 2], projection="polar")
+ax_frame = fig.add_subplot(gs[3, 0])
+ax_vel   = fig.add_subplot(gs[3, 1:])
 
 # ------------------------------------------------------------------ #
 # Panel A: raw vs clean snout y-position                              #
@@ -181,7 +167,7 @@ ax_trace.set_xlim(float(pos_sel.time.min()), float(pos_sel.time.max()))
 ax_trace.set_title("")
 ax_trace.set_xlabel("time (s)")
 ax_trace.set_ylabel("y position (px)")
-# Anchor the legend on top of the panel (where the title would normally go) so it doesn't overlap the data.
+# Legend in place of the title, clear of the data.
 ax_trace.legend(
     loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=True, framealpha=0.6, ncols=2
 )
@@ -198,9 +184,8 @@ plot_centroid_trajectory(
     alpha=0.8,
     cmap="viridis",
 )
-# anchor="W" left-justifies the equal-aspect image within its divider cell so
-# its left edge lines up with panel A's left plot-area edge.
-move_colorbar_to_divider(ax_traj, "time (s)", anchor="W")
+add_inset_colorbar(ax_traj, "time (s)")
+ax_traj.set_anchor("W")  # left-align the equal-aspect image with panel A
 ax_traj.set_xlim(0, frame_w)
 ax_traj.set_ylim(frame_h, 0)
 ax_traj.set_title("Centroid trajectory")
@@ -209,8 +194,6 @@ ax_traj.axis("off")
 # ------------------------------------------------------------------ #
 # Panel C: occupancy heatmap                                          #
 # ------------------------------------------------------------------ #
-
-# Occupancy histogram bins (30 px cells covering the full frame).
 BIN_PIX = 30
 bins = [
     np.arange(0, frame_w + BIN_PIX, BIN_PIX),
@@ -227,7 +210,7 @@ _, ax_heat, _ = plot_occupancy(
     norm="log",
     cmap="turbo",
 )
-move_colorbar_to_divider(ax_heat, "# frames")
+add_inset_colorbar(ax_heat, "# frames")
 ax_heat.set_xlim(0, frame_w)
 ax_heat.set_ylim(frame_h, 0)
 ax_heat.set_title("Occupancy heatmap")
@@ -261,11 +244,7 @@ ax_roi.set_xlim(0, frame_w)
 ax_roi.set_ylim(frame_h, 0)
 ax_roi.set_title("Time spent in ROIs")
 ax_roi.axis("off")
-
-# Reserve an invisible colorbar-sized strip so this panel's image box matches
-# the colorbar-bearing trajectory panel directly above it. anchor="W" keeps the
-# image left-justified, matching panel A's left edge (as in the trajectory panel).
-reserve_colorbar_space(ax_roi, anchor="W")
+ax_roi.set_anchor("W")  # left-align with panel A
 
 # ------------------------------------------------------------------ #
 # Panel E: head direction polar histogram                             #
@@ -284,7 +263,7 @@ head_angle.sel(time=slice(150, 300)).plot.hist(
 ax_polar.set_theta_direction(-1)   # clockwise
 ax_polar.set_theta_offset(0)       # 0 deg at the right
 ax_polar.set_xlabel("")
-ax_polar.set_yticklabels([])  # auto radial gridlines, hide density labels
+ax_polar.set_yticklabels([])
 
 tick_angles = np.linspace(0, 2 * np.pi, 9)[:-1]
 tick_labels_deg = list(range(0, 181, 45)) + list(range(0, -180, -45))[-1:0:-1]
@@ -296,7 +275,6 @@ ax_polar.set_title("Head direction", pad=45)
 # Panel F: example eye frame with tracked keypoints + centroid        #
 # ------------------------------------------------------------------ #
 ax_frame.imshow(frame0, cmap="gray")
-# All 4 tracked keypoints share one color and one label -> a single legend entry.
 ax_frame.scatter(
     pos0.sel(space="x"),
     pos0.sel(space="y"),
@@ -311,7 +289,7 @@ ax_frame.scatter(
 )
 ax_frame.invert_yaxis()  # the dataset was captured flipped
 
-# Hide ticks and spines but keep the axis labels
+# Like axis("off"), but keeping the x/y labels.
 ax_frame.set_xticks([])
 ax_frame.set_yticks([])
 for spine in ax_frame.spines.values():
@@ -319,7 +297,7 @@ for spine in ax_frame.spines.values():
 
 ax_frame.set_xlabel("x")
 ax_frame.set_ylabel("y")
-ax_frame.set_anchor("W")  # left-justify to align with panel A's left edge
+ax_frame.set_anchor("W")  # left-align with panel A
 
 # ------------------------------------------------------------------ #
 # Panel G: pupil centroid x-velocity over time                        #
