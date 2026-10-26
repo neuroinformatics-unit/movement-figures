@@ -5,9 +5,11 @@ sample_data:
       with_video: true
 ---
 
-A two-panel figure on an elevated plus maze (EPM) dataset: a napari-style
-snapshot of a single video frame overlaid with keypoints and short trailing
-tracks (**A**), alongside the occupancy heatmap of the mouse's centroid
+A two-panel figure on an elevated plus maze (EPM) dataset:
+
+1. a napari snapshot of a single video frame overlaid with keypoints and short trailing
+tracks (**A**).
+2. the occupancy heatmap of the mouse's centroid
 across the whole session (**B**).
 
 ## Imports and style
@@ -61,8 +63,8 @@ ds["position"] = position_clean
 We grab a napari canvas screenshot of a single frame, with the tracked
 points and a short trailing track "tail", mirroring what the
 [`movement` GUI](https://movement.neuroinformatics.dev/latest/user_guide/gui.html)
-would show: the video loaded via the `napari-video` plugin, and the dataset's
-points/tracks layers as added by the `movement` napari plugin.
+would show. The vide is loaded via the `napari-video` plugin, and the dataset's
+points and tracks layers are added via the `movement` napari plugin.
 
 ```{python}
 FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
