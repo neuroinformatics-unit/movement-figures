@@ -10,6 +10,7 @@ project:
 website:
   title: "movement figures"
   description: "Reproducible figures for movement research outputs."
+  favicon: movement_favicon.png
   navbar:
     left:
       - href: readme.qmd
