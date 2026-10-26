@@ -60,17 +60,6 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "movement figures",
-    "section": "",
-    "text": "Reproducible figures for research outputs related to movement. Each card below links to a figure generated from a single Quarto document.\n\n\n\n\n\n\n\n\n\n\n\n\nmovement applications (poster)\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items",
-    "crumbs": [
-      "README",
-      "Gallery"
-    ]
-  },
-  {
     "objectID": "readme.html",
     "href": "readme.html",
     "title": "README",
@@ -118,5 +107,76 @@
     "title": "README",
     "section": "Development",
     "text": "Development\nCode quality is enforced with ruff (linting and formatting), codespell, and a set of pre-commit hooks (uv sync installs all of these into the environment).\nInstall the git hook once, so the checks run automatically on every commit:\nuv run pre-commit install\nAfter that, committing runs the hooks against your staged files. To run every hook across the whole repo on demand:\nuv run pre-commit run --all-files\nGenerated figures under outputs/ are excluded from the hooks so their committed vector files stay byte-stable across re-renders.\nNOTE: ruff only lints .py files—the Python inside figures/*.qmd code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into src/movement_figures/ where it is linted.\nEvery pull request re-renders the site as a CI check that all figures still build, and every merge to main redeploys the gallery to GitHub Pages (see .github/workflows/render_and_deploy.yml)."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "movement figures",
+    "section": "",
+    "text": "Reproducible figures for research outputs related to movement. Each card below links to a figure generated from a single Quarto document.\n\n\n\n\n\n\n\n\n\n\n\n\nEPM occupancy (manuscript)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmovement applications (poster)\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "README",
+      "Gallery"
+    ]
+  },
+  {
+    "objectID": "figures/epm_occupancy.html",
+    "href": "figures/epm_occupancy.html",
+    "title": "EPM occupancy (manuscript)",
+    "section": "",
+    "text": "A two-panel figure on an elevated plus maze (EPM) dataset:",
+    "crumbs": [
+      "README",
+      "Figures",
+      "EPM occupancy (manuscript)"
+    ]
+  },
+  {
+    "objectID": "figures/epm_occupancy.html#imports-and-style",
+    "href": "figures/epm_occupancy.html#imports-and-style",
+    "title": "EPM occupancy (manuscript)",
+    "section": "Imports and style",
+    "text": "Imports and style\n\n\nCode\nimport sleap_io as sio\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nfrom movement import sample_data\nfrom movement.filtering import (\n    filter_by_confidence, rolling_filter, interpolate_over_time\n)\nfrom movement.plots import plot_occupancy\n\nfrom movement_figures import (\n    add_inset_colorbar,\n    apply_style,\n    figure_size,\n    napari_canvas_screenshot,\n    save_figure,\n)\n\napply_style(\"manuscript\")",
+    "crumbs": [
+      "README",
+      "Figures",
+      "EPM occupancy (manuscript)"
+    ]
+  },
+  {
+    "objectID": "figures/epm_occupancy.html#load-and-prepare-data",
+    "href": "figures/epm_occupancy.html#load-and-prepare-data",
+    "title": "EPM occupancy (manuscript)",
+    "section": "Load and prepare data",
+    "text": "Load and prepare data\nWe fetch the EPM sample dataset and apply a two-step cleaning pipeline: a confidence filter followed by a rolling median filter. We also (lazily) load the corresponding video.\n\n\nCode\nds = sample_data.fetch_dataset(\n    \"DLC_single-mouse_EPM.predictions.h5\", with_video=True\n)\nvideo = sio.load_video(ds.video_path)\nn_frames, height, width, n_channels = video.shape\naspect_ratio = height / width\n\nposition_conf = filter_by_confidence(\n    ds.position, ds.confidence, threshold=0.95\n)\nposition_clean = rolling_filter(\n    position_conf, window=5, statistic=\"median\", min_periods=2\n)\n\nds[\"position\"] = position_clean\n\n\nWe grab a napari canvas screenshot of a single frame, with the tracked points and a short trailing track “tail”, mirroring what the movement GUI would show. The vide is loaded via the napari-video plugin, and the dataset’s points and tracks layers are added via the movement napari plugin.\n\n\nCode\nFRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here\nTAIL_SEC = 1     # number of seconds to show in the trailing track tail\nframe_index = int(FRAME_SEC * ds.fps)\ntail_length = int(TAIL_SEC * ds.fps)\n\nnapari_frame = napari_canvas_screenshot(\n    ds, ds.video_path,\n    frame_index,\n    tail_length=tail_length,\n    zoom=True,\n    display_text=True,\n)\n\n\nWe also load a grayscale version of the same frame, which will be used as the background for the occupancy heatmap.\n\n\nCode\nframe = video[frame_index].mean(axis=2)  # grayscale",
+    "crumbs": [
+      "README",
+      "Figures",
+      "EPM occupancy (manuscript)"
+    ]
+  },
+  {
+    "objectID": "figures/epm_occupancy.html#build-the-figure",
+    "href": "figures/epm_occupancy.html#build-the-figure",
+    "title": "EPM occupancy (manuscript)",
+    "section": "Build the figure",
+    "text": "Build the figure\n\n\nCode\nfig, (ax_napari, ax_heat) = plt.subplots(\n    1, 2, figsize=figure_size(\"double\", aspect=aspect_ratio, ncols=2, extra=0)\n)\n\n# ------------------------------------------------------------------ #\n# Panel A: napari canvas screenshot                                   #\n# ------------------------------------------------------------------ #\nax_napari.imshow(napari_frame)\nax_napari.set_title(\"Example video frame\")\nax_napari.axis(\"off\")\n\n# ------------------------------------------------------------------ #\n# Panel B: occupancy heatmap                                          #\n# ------------------------------------------------------------------ #\nax_heat.imshow(frame, cmap=\"gray\")\n\n# Bins of 30x30 pixels, covering the whole frame.\nBIN_PIX = 30\nbins = [\n    np.arange(0, width + BIN_PIX, BIN_PIX),\n    np.arange(0, height + BIN_PIX, BIN_PIX),\n]\n\n_, ax_heat, _ = plot_occupancy(\n    da=position_clean,\n    ax=ax_heat,\n    bins=bins,\n    alpha=0.8,\n    cmin=10,  # hide bins with fewer than 10 frames\n    norm=\"log\",\n)\nadd_inset_colorbar(ax_heat, \"# frames\")\nax_heat.set_xlim(0, width)\nax_heat.set_ylim(height, 0)\nax_heat.set_title(\"Occupancy heatmap\")\nax_heat.axis(\"off\")",
+    "crumbs": [
+      "README",
+      "Figures",
+      "EPM occupancy (manuscript)"
+    ]
+  },
+  {
+    "objectID": "figures/epm_occupancy.html#save-the-figure",
+    "href": "figures/epm_occupancy.html#save-the-figure",
+    "title": "EPM occupancy (manuscript)",
+    "section": "Save the figure",
+    "text": "Save the figure\n\n\nCode\nfig_name = \"epm_occupancy\"\nsave_paths = save_figure(fig, fig_name, formats=(\"pdf\", \"svg\"))\nprint(f\"Saved '{fig_name}' figure to {save_paths[0].parent}.\")\n\n\nSaved 'epm_occupancy' figure to /home/runner/work/movement-figures/movement-figures/outputs.",
+    "crumbs": [
+      "README",
+      "Figures",
+      "EPM occupancy (manuscript)"
+    ]
   }
 ]

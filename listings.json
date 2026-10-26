@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/figures/epm_occupancy.html",
       "/figures/movement_applications_poster.html"
     ]
   }
