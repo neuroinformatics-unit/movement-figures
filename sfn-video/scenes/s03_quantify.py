@@ -6,7 +6,8 @@ from bees import ARENA, COLOURS, FPS, load_clean, skeleton_edges, video_frames
 from common import (
     SMALL_DATASET_CENTRE,
     SMALL_DATASET_SCALE,
-    arrow_label,
+    THUMB_CENTRE,
+    THUMB_HEIGHT,
     badge,
     data_cube,
     dataset_arrow,
@@ -29,8 +30,6 @@ from manim import (
 
 # The dataset and arrow stay where the analysis segment left them; the bee
 # clip plays as a thumbnail below the dataset, the plots fill the right
-VIDEO_HEIGHT = 2.0
-VIDEO_CENTRE = SMALL_DATASET_CENTRE + np.array([0, -1.95, 0])
 FIGURE_CENTRE = np.array([2.0, -0.2, 0])
 FIGURE_HEIGHT = 5.6
 PLAYBACK = 1.5  # times real time
@@ -60,16 +59,16 @@ class Quantify(Scene):
             img = ImageMobject(
                 np.repeat(frames[int(step.get_value())][..., None], 3, axis=2)
             )
-            img.height = VIDEO_HEIGHT
-            return img.move_to(VIDEO_CENTRE)
+            img.height = THUMB_HEIGHT
+            return img.move_to(THUMB_CENTRE)
 
         def to_scene(p):
-            left = VIDEO_CENTRE[0] - VIDEO_HEIGHT / 2
-            top = VIDEO_CENTRE[1] + VIDEO_HEIGHT / 2
+            left = THUMB_CENTRE[0] - THUMB_HEIGHT / 2
+            top = THUMB_CENTRE[1] + THUMB_HEIGHT / 2
             return np.array(
                 [
-                    left + (p[0] - x0) / size * VIDEO_HEIGHT,
-                    top - (p[1] - y0) / size * VIDEO_HEIGHT,
+                    left + (p[0] - x0) / size * THUMB_HEIGHT,
+                    top - (p[1] - y0) / size * THUMB_HEIGHT,
                     0,
                 ]
             )
@@ -98,15 +97,10 @@ class Quantify(Scene):
         clip = always_redraw(video)
         overlay = always_redraw(skeletons)
 
-        # --- The arrow now computes; the source clip plays as a thumbnail --
+        # --- The source clip plays as a thumbnail -------------------------
         # One caption for the whole segment, while the plots build up
         show_caption(self, CAPTION, 0)
-        self.play(
-            FadeIn(arrow_label("compute", arrow)),
-            FadeIn(clip),
-            FadeIn(overlay),
-            run_time=0.6,
-        )
+        self.play(FadeIn(clip), FadeIn(overlay), run_time=0.6)
         self.play(
             step.animate.set_value(len(frames) - 1),
             run_time=len(frames) / (FPS * PLAYBACK),

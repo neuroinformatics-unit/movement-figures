@@ -85,17 +85,12 @@ def dataset_arrow(cube):
     """The arrow leading from the small dataset to the analysis plots.
 
     Shared by the analysis and quantification segments, so it stays put
-    across the cut while only its label changes.
+    across the cut.
     """
     from manim import Arrow
 
     start = cube.get_right() + 0.2 * RIGHT
     return Arrow(start, start + 2.0 * RIGHT, color=LIGHT_GREY, stroke_width=6, buff=0)
-
-
-def arrow_label(text, arrow):
-    """A label centred above ``arrow``."""
-    return Text(text, font=FONT, font_size=32, color=GREY).next_to(arrow, UP, 0.15)
 
 
 def right_of(mob, arrow, gap=0.1):
@@ -217,6 +212,9 @@ DATASET_CENTRE = np.array([4.1, -0.1, 0.0])
 # ...and where it waits, small, during the analysis segments
 SMALL_DATASET_SCALE = 0.4
 SMALL_DATASET_CENTRE = np.array([-5.7, 0.4, 0.0])
+# The source clip plays as a thumbnail below the small dataset
+THUMB_HEIGHT = 2.0
+THUMB_CENTRE = SMALL_DATASET_CENTRE + np.array([0, -1.95, 0])
 
 
 def data_cube(gap=2.75, cell=0.36):

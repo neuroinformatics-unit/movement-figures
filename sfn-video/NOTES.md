@@ -46,9 +46,8 @@ Not committed (see `.gitignore`):
   isometric data cube and its labels, the shared dataset arrow, and the
   dataset positions used for the hand-overs between segments.
 - `mouse.py`: DBTravelator skeletons and video frames (segment 1).
-- `analysis_data.py` + `vis_plots.py`: cleaned SLEAP EPM data and the
-  trajectory/occupancy frames (segment 2). `octagon_motion()` (two-mice
-  octagon speed/distance) is left over and currently unused.
+- `analysis_data.py` + `vis_plots.py`: cleaned DLC EPM data and the
+  trajectory/occupancy frames and the video thumbnail (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
 - `s01_formats.py`, `s02_analysis.py`, `s03_quantify.py`: the scenes.
@@ -68,7 +67,7 @@ Not committed (see `.gitignore`):
   LightningPose and NWB, plus "and more…" with a generic file icon. Only
   tools the loaders support today; no "coming soon", no code on screen.
 - Mouse-first, then a different species. Datasets: DLC DBTravelator 2D
-  (segment 1), SLEAP single-mouse EPM (segment 2), SLEAP two bees
+  (segment 1), DLC single-mouse EPM (segment 2), SLEAP two bees
   (segment 3).
 - The data cube is a true isometric copy of the docs' `data_icon.png`.
 - Any real plot must be made with movement's (or xarray's) own plotting
@@ -81,7 +80,7 @@ Not committed (see `.gitignore`):
 - End card should credit SWC / NIU and the contributor community, plus the
   Font Awesome icon (CC BY 4.0).
 
-## Status (2026-10-28): segments 1–3, ~60 s combined at 720p
+## Status (2026-10-28): segments 1–3, ~66 s combined at 720p
 
 Segment 1, `scenes/s01_formats.py` (~25 s):
 
@@ -97,18 +96,29 @@ Segment 1, `scenes/s01_formats.py` (~25 s):
 4. The cube and dimension labels appear beside them: "…into one tidy
    dataset". Tools and mice fade, leaving the cube.
 
-Segment 2, `scenes/s02_analysis.py` (~16 s):
+Segment 2, `scenes/s02_analysis.py` (~22 s). Uses the DLC EPM sample
+over 240–260 s, cleaned with the movement applications poster's pipeline
+(confidence ≥ 0.99, rolling median 9, linear gaps ≤ 5), so it matches the
+poster's panels A–C:
 
-1. Cube shrinks left; a "clean" arrow (shared with segment 3):
-   "Drop outliers, smooth and interpolate tracks".
-2. `plot_centroid_trajectory` reveal on cleaned SLEAP EPM: "Visualise
-   trajectories"; then the `plot_occupancy` subplot appears and the caption
-   completes in place: "… and occupancy heatmaps".
-3. Everything but the header, cube and arrow fades.
+1. Cube shrinks left; the EPM video (cropped to the maze, 4×, ~5 s) plays
+   as a thumbnail below it with the cleaned 8-keypoint skeleton in green,
+   as in segment 3, and holds on its last frame. Caption: "Drop outliers,
+   smooth and interpolate tracks". Keypoints dropped by cleaning are not
+   drawn (snout missing in ~23% of the clip, others ≤ 13%).
+2. An unlabelled arrow (shared with segment 3) grows from the cube to a
+   raw (orange) vs clean (green) plot of the snout's x and y
+   (xarray `.plot.line`).
+3. The plot is replaced by the static `plot_centroid_trajectory` figure
+   (centroid of centre, tailbase and ears, as on the poster), titled
+   "Centroid trajectory": "Visualise trajectories"; then the
+   `plot_occupancy` subplot (whole recording, turbo colormap) appears and
+   the caption completes in place: "… and occupancy heatmaps".
+4. Everything but the header, cube and arrow fades.
 
 Segment 3, `scenes/s03_quantify.py` (~19 s):
 
-1. The arrow is relabelled "compute"; the bee clip (49–57 s of
+1. The bee clip (49–57 s of
    `sleap_data/bees…`, 1.5× speed, green/orange skeletons) plays as a
    thumbnail below the cube. Caption for the whole segment (wording still
    open): "Quantify motion any way you like".
@@ -129,7 +139,7 @@ size (`screen_pixels`, `image`) to avoid aliasing; final renders need
 - napari ROI clip (Niko's screen recording).
 - End card: SWC / NIU credit, contributor count, URL, QR code, Font Awesome
   credit.
-- Remove `octagon_motion()` and the netCDF icon if they stay unused.
+- Remove the netCDF icon if it stays unused.
 - Final 1080p30 render of all segments.
 
 ## Notes
