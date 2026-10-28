@@ -1,7 +1,8 @@
 .venv/
-assets/
+assets/*
 cache/
 media/
 previews/
 __pycache__/
 sleap_data/
+!assets/file-solid-full.svg

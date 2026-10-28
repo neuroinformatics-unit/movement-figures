@@ -11,6 +11,7 @@ from common import (
     cube_labels,
     data_cube,
     image,
+    more_chip,
     show_caption,
 )
 from manim import (
@@ -40,20 +41,22 @@ TOOLS = [
 
 class Formats(Scene):
     def construct(self):
-        # --- Title card -----------------------------------------------------
-        logo = image("movement_logo_on-transparent.png", 3.7).shift(0.5 * UP)
+        # --- Title card: the header URL and the logo are there from frame 1
+        corner = badge()
+        corner_logo, corner_url = corner
+        logo = image("movement_logo_on-transparent.png", 3.7).shift(0.3 * UP)
         tagline = Text(
             "Python tools for analysing animal motion",
             font=FONT,
             font_size=52,
             color=GREY,
         ).next_to(logo, DOWN, buff=0.3)
-        self.play(FadeIn(logo, scale=0.85), run_time=1.2)
+        self.add(corner_url, logo)
+        self.wait(0.8)
         self.play(FadeIn(tagline, shift=0.2 * UP), run_time=0.8)
         self.wait(3.5)
 
-        corner = badge()
-        corner_logo, corner_url = corner
+        # The logo alone flies into the header
         self.play(
             FadeOut(tagline),
             logo.animate.scale(corner_logo.height / logo.height).move_to(corner_logo),
@@ -61,7 +64,6 @@ class Formats(Scene):
         )
         self.remove(logo)
         self.add(corner_logo)
-        self.play(FadeIn(corner_url), run_time=0.5)
 
         # --- Real video → skeleton -----------------------------------------
         # The top lane is the real recording, zoomed in on the mouse
@@ -118,7 +120,9 @@ class Formats(Scene):
         stop_frame = (run_to - run_from) / (run_scale * px_per_frame)
 
         chips = Group(*[chip(name, logo) for name, logo in TOOLS])
-        chips.arrange(DOWN, buff=0.2).to_edge(LEFT, buff=0.6).shift(0.35 * UP)
+        chips.add(more_chip())  # more formats are supported than listed
+        chips.arrange(DOWN, buff=0.12, aligned_edge=LEFT)
+        chips.to_edge(LEFT, buff=0.8).shift(0.35 * UP)
         cube = data_cube().scale(DATASET_SCALE).move_to(DATASET_CENTRE)
         cap = show_caption(
             self, "Bring tracks from all your favourite\ntools and file formats", 0

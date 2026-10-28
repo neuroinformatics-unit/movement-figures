@@ -32,7 +32,8 @@ frames) is cached in `cache/` on first render; delete it to rebuild.
 - Concept: "many tools in, one dataset out", then what you can do with it.
   Built with manim from movement's real sample data.
 - Format: 1920×1080, 30 fps, white background, Barlow typeface, Set2 colours
-  (`#66c2a5`, `#8da0cb`, `#fc8d62`). Persistent corner badge (logo + URL).
+  (`#66c2a5`, `#8da0cb`, `#fc8d62`). Persistent header: URL centred in teal (regular weight), logo top right; the
+  URL is on screen, unchanged, for the whole video.
   Combined length limit: 45 s for the segments so far.
 - Glanceable for passers-by: big, short captions; one thing to look at at a
   time; restrained animation (things appear rather than fly in); the end
@@ -53,11 +54,14 @@ frames) is cached in `cache/` on first render; delete it to rebuild.
 
 Segment 1, `scenes/s01_formats.py` (~26 s):
 
-1. Title card → logo shrinks into the corner badge.
+1. Title card: logo and header URL already there on frame 1; tagline fades
+   in; the logo alone flies into the header's right corner.
 2. Real DBTravelator video (247 fps, ~18× slower) alone for ~2 s, then its
    skeleton fades in, the video fades out, the bare skeleton walks on:
    "Do you track animals with / DeepLabCut, SLEAP or similar tools?"
-3. Four tool cards (logo + name: DeepLabCut, SLEAP, LightningPose, NWB);
+3. Four tools (logo + name, no boxes: DeepLabCut, SLEAP, LightningPose, NWB)
+   plus "and more…" with a Font Awesome file icon (CC BY 4.0 – credit it on
+   the end card);
    three skeleton mice run right and stop: "Bring tracks from all your
    favourite / tools and file formats".
 4. The cube and labels appear beside them: "…into one tidy dataset".
@@ -81,12 +85,16 @@ Segment 3, `scenes/s03_quantify.py` (~19 s):
    histograms (antenna bases as left/right pair, 30° bins), all from
    movement + xarray plotting in brand colours. Fades to badge.
 
-Plots are rendered at their exact on-screen pixel size (`screen_pixels`)
-to avoid aliasing; final renders need `-qh --fps 30`.
+Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
+size (`screen_pixels`, `image`) to avoid aliasing; final renders need
+`-qh --fps 30`.
 
 ## Next
 
 - Settle the segment 3 caption wording.
+- Use the space freed by the header: enlarge content between header and
+  caption.
+- Optional seamless loop: corner logo grows back to centre at the very end.
 - napari ROI clip (Niko's screen recording).
 - End card: SWC / NIU credit, contributor count, URL, QR code.
 - `sleap_data/` (bees, flies; not committed) is needed to render segment 3.

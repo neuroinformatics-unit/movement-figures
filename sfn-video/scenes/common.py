@@ -12,7 +12,7 @@ from manim import (
     Group,
     ImageMobject,
     Polygon,
-    RoundedRectangle,
+    Rectangle,
     Text,
     VGroup,
     config,
@@ -52,7 +52,17 @@ def screen_pixels(height):
 
 
 def image(name, height):
-    img = ImageMobject(str(ASSETS / name))
+    """An asset image, ``height`` scene units tall.
+
+    The bitmap is resampled (Lanczos) to its exact on-screen size first;
+    manim's own downscaling does not filter, so small logos would alias.
+    """
+    from PIL import Image
+
+    src = Image.open(ASSETS / name).convert("RGBA")
+    px = screen_pixels(height)
+    src = src.resize((max(1, round(src.width * px / src.height)), px), Image.LANCZOS)
+    img = ImageMobject(np.asarray(src))
     img.height = height
     return img
 
@@ -117,61 +127,56 @@ def show_caption(scene, text, hold, previous=None, **kwargs):
     return new
 
 
+HEADER_HEIGHT = 0.75  # logo height; the header row spans this at the top
+
+
 def badge():
-    """Persistent corner badge so any glance identifies the project."""
-    logo = image("movement_logo_on-transparent.png", 0.84)
+    """Persistent header: the URL centred, the logo at the right.
+
+    Returns ``Group(logo, url)``, so any glance identifies the project.
+    """
+    logo = image("movement_logo_on-transparent.png", HEADER_HEIGHT)
+    logo.to_corner(UP + RIGHT, buff=0.25)
     url = Text(
         "movement.neuroinformatics.dev",
         font=FONT,
-        font_size=20,
-        color=LIGHT_GREY,
+        font_size=34,
+        color=GREEN,
     )
-    url.next_to(logo, DOWN, buff=0.02)
-    return Group(logo, url).to_corner(UP + RIGHT, buff=0.25)
+    url.move_to([0, logo.get_y(), 0])
+    return Group(logo, url)
 
 
-def file_glyph(colour=LIGHT_GREY, height=0.6):
-    """Generic dog-eared document icon for formats without a logo."""
-    w, h, ear = 0.75, 1.0, 0.28
-    outline = Polygon(
-        [0, 0, 0],
-        [w, 0, 0],
-        [w, h - ear, 0],
-        [w - ear, h, 0],
-        [0, h, 0],
-        color=colour,
-        stroke_width=4,
-    )
-    fold = Polygon(
-        [w - ear, h, 0],
-        [w - ear, h - ear, 0],
-        [w, h - ear, 0],
-        color=colour,
-        stroke_width=4,
-    )
-    glyph = VGroup(outline, fold)
+def file_glyph(height=0.6, colour="#c4c4c4"):
+    """Generic document icon (Font Awesome Free "file", CC BY 4.0)."""
+    from manim import SVGMobject
+
+    glyph = SVGMobject(str(ASSETS / "file-solid-full.svg"))
+    glyph.set_fill(colour, opacity=1).set_stroke(width=0)
     glyph.height = height
     return glyph
 
 
-def chip(label, logo, width=4.2, height=0.9):
-    """A tool card: its logo and name."""
-    box = RoundedRectangle(
-        width=width,
-        height=height,
-        corner_radius=0.14,
-        fill_color=PANEL,
-        fill_opacity=1,
-        stroke_width=0,
-    )
+def chip(label, logo, height=0.9):
+    """A tool's logo and name in a fixed-size row, so rows align and space
+    evenly whatever each logo's shape."""
+    slot = Rectangle(width=height, height=height, stroke_width=0, fill_opacity=0)
     icon = image(logo, height * 0.68)
-    icon_slot = height * 1.0  # logos of any aspect share one column
-    if icon.width > icon_slot:
-        icon.width = icon_slot
-    icon.move_to(box.get_left() + RIGHT * (0.18 + icon_slot / 2))
+    if icon.width > height:
+        icon.width = height
+    icon.move_to(slot)
     name = Text(label, font=FONT, font_size=30, color=GREY)
-    name.next_to(box.get_left() + RIGHT * (0.18 + icon_slot), RIGHT, buff=0.25)
-    return Group(box, icon, name)
+    name.next_to(slot, RIGHT, buff=0.25)
+    return Group(slot, icon, name)
+
+
+def more_chip(height=0.9):
+    """A trailing row hinting at further formats, laid out like a ``chip``."""
+    slot = Rectangle(width=height, height=height, stroke_width=0, fill_opacity=0)
+    icon = file_glyph(height=height * 0.68).move_to(slot)
+    name = Text("and more…", font=FONT, font_size=30, color=GREY)
+    name.next_to(slot, RIGHT, buff=0.25)
+    return Group(slot, icon, name)
 
 
 def slab(tone, rows=4, cols=2, depth=6, cell=0.36):
