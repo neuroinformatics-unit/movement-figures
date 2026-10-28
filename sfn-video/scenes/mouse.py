@@ -30,13 +30,16 @@ for name, (knee, ankle, toe) in LIMBS.items():
     hip = "Back3" if name.startswith("Fore") else "Back9"
     EDGES += [(hip, knee), (knee, ankle), (ankle, toe)]
 
-# (colour, frame offset, horizontal stagger in px), top lane first
-INDIVIDUALS = [(GREEN, 0, 30), (BLUE, 22, -40), (ORANGE, 44, 10)]
+# (colour, frame offset, horizontal stagger in px), top lane first.
+# The first is the real, unshifted recording, so it lines up with the video.
+INDIVIDUALS = [(GREEN, 0, 0), (BLUE, 22, -40), (ORANGE, 44, 10)]
 MAX_OFFSET = max(offset for _, offset, _ in INDIVIDUALS)
 
+VIDEO = Path.home() / ".movement/data/videos/single-mouse_DBTravelator_video.avi"
+VIDEO_CACHE = CACHE.with_name("dbtravelator_frames.npy")
+VIDEO_HEIGHT, VIDEO_WIDTH = 230, 1920
+
 PIX_CY = 142  # vertical pixel coordinate mapped to a lane's centre
-GROUND = 203  # paw contact level on the travelator, in pixels
-GRID = 48  # spacing of the backdrop grid, in pixels
 FAR_SIDE_OPACITY = 0.4  # left limbs face away from the camera
 
 
@@ -78,12 +81,44 @@ def load():
     return pos, camera_x
 
 
+def load_video():
+    """Greyscale video frames aligned with ``load()``, as [time, y, x]."""
+    if not VIDEO_CACHE.exists():
+        import subprocess
+
+        raw = subprocess.run(
+            [
+                "ffmpeg",
+                "-loglevel",
+                "error",
+                "-i",
+                str(VIDEO),
+                "-vf",
+                f"select=between(n\\,{FIRST}\\,{LAST})",
+                "-vsync",
+                "0",
+                "-f",
+                "rawvideo",
+                "-pix_fmt",
+                "gray",
+                "-",
+            ],  # fmt: skip
+            capture_output=True,
+            check=True,
+        ).stdout
+        frames = np.frombuffer(raw, np.uint8).reshape(-1, VIDEO_HEIGHT, VIDEO_WIDTH)
+        np.save(VIDEO_CACHE, frames)
+    return np.load(VIDEO_CACHE)
+
+
 class Herd:
-    """Three walking skeletons in stacked lanes, driven by value trackers.
+    """Walking skeletons in stacked lanes, driven by value trackers.
 
     ``frame`` scrubs through the (interpolated) recording, ``scale`` maps
-    pixels to scene units, ``cx``/``cy`` place the middle lane and
-    ``spacing`` sets the distance between lanes.
+    pixels to scene units, ``cx``/``cy`` place the top lane and ``spacing``
+    sets the distance between lanes. Each lane has its own ``dots`` and
+    ``edges`` opacity, so individuals can be revealed one at a time, and
+    ``follow`` switches between a camera that tracks the mice and fixed ground.
     """
 
     def __init__(self, scale, centre, spacing):
@@ -96,8 +131,11 @@ class Herd:
         self.cx = ValueTracker(centre[0])
         self.cy = ValueTracker(centre[1])
         self.spacing = ValueTracker(spacing)
-        self.lines = ValueTracker(0)
-        self.grid = ValueTracker(0)
+        self.dots = [ValueTracker(0) for _ in INDIVIDUALS]
+        self.edges = [ValueTracker(0) for _ in INDIVIDUALS]
+        self.video = ValueTracker(0)
+        self.follow = ValueTracker(1)
+        self._frames = None
 
     def _at(self, f):
         i = min(int(np.floor(f)), len(self.pos) - 2)
@@ -108,13 +146,13 @@ class Herd:
 
     def _to_scene(self, lane, px, py, cam):
         s = self.scale.get_value()
-        _, _, stagger = INDIVIDUALS[lane]
-        x = self.cx.get_value() + s * (px - cam + stagger)
-        y = (
-            self.cy.get_value()
-            + (1 - lane) * self.spacing.get_value()
-            - s * (py - PIX_CY)
-        )
+        _, offset, stagger = INDIVIDUALS[lane]
+        # follow=1: camera tracks the mouse; follow=0: fixed ground, with
+        # each mouse starting at cx so they run across the screen together
+        follow = self.follow.get_value()
+        ref = follow * cam + (1 - follow) * self.camera_x[offset]
+        x = self.cx.get_value() + s * (px - ref + stagger)
+        y = self.cy.get_value() - lane * self.spacing.get_value() - s * (py - PIX_CY)
         return np.stack([x, y, np.zeros_like(x)], axis=-1)
 
     def _lane_frame(self, lane, f):
@@ -134,6 +172,10 @@ class Herd:
         herd = VGroup()
         for lane in range(len(INDIVIDUALS)):
             colour = self.colour(lane)
+            dot_op = self.dots[lane].get_value()
+            edge_op = self.edges[lane].get_value()
+            if dot_op == 0 and edge_op == 0:
+                continue
             pts = dict(zip(KEYPOINTS, self.keypoints(lane), strict=True))
             edges = VGroup(
                 *[
@@ -142,7 +184,7 @@ class Herd:
                         pts[b],
                         color=colour,
                         stroke_width=6,
-                        stroke_opacity=self.lines.get_value()
+                        stroke_opacity=edge_op
                         * (FAR_SIDE_OPACITY if _far_side(b) else 1),
                     )
                     for a, b in sorted(EDGES, key=lambda e: not _far_side(e[1]))
@@ -154,7 +196,7 @@ class Herd:
                         pts[k],
                         radius=0.07,
                         color=colour,
-                        fill_opacity=FAR_SIDE_OPACITY if _far_side(k) else 1,
+                        fill_opacity=dot_op * (FAR_SIDE_OPACITY if _far_side(k) else 1),
                     )
                     for k in KEYPOINTS
                 ]
@@ -162,28 +204,24 @@ class Herd:
             herd.add(VGroup(edges, dots))
         return herd
 
-    def backdrop(self, half_width=7.6):
-        from manim import Line, VGroup
+    def video_frame(self, width_px=800):
+        """Crop of the real recording around the top-lane mouse."""
+        from manim import ImageMobject
 
-        op = self.grid.get_value()
+        if self._frames is None:
+            self._frames = load_video()
+        f = self.frame.get_value()
+        img = self._frames[min(round(f), len(self._frames) - 1)]
+        _, cam = self._at(f)
+        left = int(round(cam)) - width_px // 2
+        padded = np.pad(img, ((0, 0), (width_px, width_px)), mode="edge")
+        crop = padded[:, left + width_px : left + 2 * width_px]
+        rgb = np.repeat(crop[:, :, None], 3, axis=2)
+        mob = ImageMobject(rgb)
         s = self.scale.get_value()
-        span = half_width / s
-        lines = VGroup()
-        grid = {"color": "#e0e0e0", "stroke_width": 2, "stroke_opacity": op}
-        ground = {"color": "#b0b0b0", "stroke_width": 4, "stroke_opacity": op}
-        top, bottom = GROUND - 2 * GRID, GROUND
-        for lane in range(len(INDIVIDUALS)):
-            _, cam = self._lane_frame(lane, None)
-            stagger = INDIVIDUALS[lane][2]
-            left, right = cam - stagger - span, cam - stagger + span
-            for x in np.arange(np.ceil(left / GRID) * GRID, right, GRID):
-                a, b = self._to_scene(
-                    lane, np.array([x, x]), np.array([top, bottom]), cam
-                )
-                lines.add(Line(a, b, **grid))
-            for y, style in ((top, grid), (top + GRID, grid), (bottom, ground)):
-                a, b = self._to_scene(
-                    lane, np.array([left, right]), np.array([y, y]), cam
-                )
-                lines.add(Line(a, b, **style))
-        return lines
+        mob.width = width_px * s
+        centre = self._to_scene(
+            0, np.array(left + width_px / 2), np.array(VIDEO_HEIGHT / 2), cam
+        )
+        mob.move_to(centre)
+        return mob.set_opacity(self.video.get_value())

@@ -50,8 +50,17 @@ def image(name, height):
 
 
 def caption(text, size=44, colour=GREY):
-    """Lower-third subtitle, the main carrier of narration."""
-    return Text(text, font=FONT, font_size=size, color=colour).to_edge(DOWN, buff=0.45)
+    """Lower-third subtitle, the main carrier of narration.
+
+    Multi-line captions (separated by newlines) are centred line by line.
+    """
+    lines = VGroup(
+        *[
+            Text(line, font=FONT, font_size=size, color=colour)
+            for line in text.split("\n")
+        ]
+    )
+    return lines.arrange(DOWN, buff=0.12).to_edge(DOWN, buff=0.45)
 
 
 def show_caption(scene, text, hold, previous=None, **kwargs):
@@ -103,8 +112,8 @@ def file_glyph(colour=LIGHT_GREY, height=0.6):
     return glyph
 
 
-def chip(label, logo=None, extensions="", width=4.9, height=0.8):
-    """A software/format card: logo (or file glyph), name and extensions."""
+def chip(label, extensions="", width=3.6, height=0.8):
+    """A compact format card: file glyph, name, and extensions beneath."""
     box = RoundedRectangle(
         width=width,
         height=height,
@@ -113,28 +122,24 @@ def chip(label, logo=None, extensions="", width=4.9, height=0.8):
         fill_opacity=1,
         stroke_width=0,
     )
-    icon = image(logo, height * 0.72) if logo else file_glyph(height=height * 0.66)
-    if icon.width > height * 0.95:
-        icon.width = height * 0.95
+    icon = file_glyph(height=height * 0.66)
     icon.move_to(box.get_left() + RIGHT * (0.2 + height * 0.48))
-    name = Text(label, font=FONT, font_size=30, color=GREY)
-    name.next_to(icon, RIGHT, buff=0.25)
-    parts = [box, icon, name]
+    text = VGroup(Text(label, font=FONT, font_size=26, color=GREY))
     if extensions:
-        ext = Text(extensions, font=MONO, font_size=20, color=LIGHT_GREY)
-        ext.move_to(box.get_right() + LEFT * (0.2 + ext.width / 2))
-        parts.append(ext)
-    return Group(*parts)
+        text.add(Text(extensions, font=MONO, font_size=16, color=LIGHT_GREY))
+    text.arrange(DOWN, aligned_edge=LEFT, buff=0.06)
+    text.next_to(icon, RIGHT, buff=0.22)
+    return Group(box, icon, text)
 
 
-def slab(tone, rows=4, cols=2, depth=6, cell=0.36, dv=(0.27, 0.17)):
+def slab(tone, rows=4, cols=2, depth=6, cell=0.36):
     """One isometric slab of the data cube (one individual).
 
-    Front face: time (rows) x space (cols); depth runs along keypoints.
+    Light face: time (rows) x space (cols), receding down-right; dark face:
+    time x keypoints (depth), receding up-right.
     """
     front_c, top_c, side_c = SLAB_TONES[tone]
-    dv = np.array([*dv, 0.0])
-    stroke = {"stroke_color": "#4a4a4a", "stroke_width": 1.2}
+    stroke = {"stroke_color": "#808080", "stroke_width": 1.4}
     cells = VGroup()
 
     def quad(p, a, b, colour):
@@ -142,27 +147,37 @@ def slab(tone, rows=4, cols=2, depth=6, cell=0.36, dv=(0.27, 0.17)):
             p, p + a, p + a + b, p + b, fill_color=colour, fill_opacity=1, **stroke
         )
 
-    right, down = np.array([cell, 0, 0]), np.array([0, -cell, 0])
+    u, v, down = (
+        cell * np.array([np.cos(np.pi / 6), -0.5, 0]),
+        cell * np.array([np.cos(np.pi / 6), 0.5, 0]),
+        cell * np.array([0, -1.0, 0]),
+    )
     for c in range(cols):
         for k in range(depth):
-            cells.add(quad(np.array([c * cell, 0, 0]) + k * dv, right, dv, top_c))
+            cells.add(quad(c * u + k * v, u, v, top_c))
     for r in range(rows):
         for k in range(depth):
-            p = np.array([cols * cell, -r * cell, 0]) + k * dv
-            cells.add(quad(p, dv, down, side_c))
+            cells.add(quad(cols * u + k * v + r * down, v, down, side_c))
     for r in range(rows):
         for c in range(cols):
-            p = np.array([c * cell, -r * cell, 0])
-            cells.add(quad(p, right, down, front_c))
+            cells.add(quad(c * u + r * down, u, down, front_c))
     return cells
 
 
-def data_cube(offset=(0.62, -0.55)):
-    """Three stacked slabs, back (green) to front (orange)."""
-    offset = np.array([*offset, 0.0])
-    slabs = [slab(t) for t in ("green", "purple", "orange")]
+# Where the tidy dataset sits when segment 1 hands over to segment 2
+DATASET_SCALE = 0.8
+DATASET_CENTRE = np.array([4.1, -0.1, 0.0])
+
+
+def data_cube(gap=2.75, cell=0.36):
+    """Three slabs side by side along the space axis, as in data_icon.png.
+
+    ``gap`` is the spacing between slabs, in cells along the space axis.
+    """
+    u = cell * np.array([np.cos(np.pi / 6), -0.5, 0])
+    slabs = [slab(t, cell=cell) for t in ("green", "purple", "orange")]
     for i, s in enumerate(slabs):
-        s.shift(i * offset)
+        s.shift(i * gap * u)
     return VGroup(*slabs).move_to(np.zeros(3))
 
 
@@ -180,3 +195,27 @@ def slab_corners(s, rows=4, cols=2, depth=6):
         "far_bottom": s[n_top + (rows - 1) * depth + depth - 1].get_vertices()[2],
         "far_top": s[(cols - 1) * depth + depth - 1].get_vertices()[2],
     }
+
+
+def _along(text, a, b, normal_shift):
+    """Place text parallel to segment a->b, offset perpendicular to it."""
+    d = b - a
+    text.rotate(np.arctan2(d[1], d[0]))
+    n = np.array([-d[1], d[0], 0]) / np.linalg.norm(d)
+    return text.move_to((a + b) / 2 + normal_shift * n)
+
+
+def cube_labels(cube):
+    """Dimension labels around the data cube, as in the overview figure."""
+    back, _, front = cube
+    bc, fc = slab_corners(back), slab_corners(front)
+    style = {"font": MONO, "font_size": 24, "color": LIGHT_GREY}
+    time = _along(Text("time", **style), bc["front_bl"], bc["front_tl"], 0.25)
+    space = _along(Text("space", **style), bc["front_bl"], fc["front_br"], -0.3)
+    keypoints = _along(
+        Text("keypoints", **style), fc["front_br"], fc["far_bottom"], -0.28
+    )
+    individuals = Text("individuals", font=MONO, font_size=24)
+    individuals.set_color_by_gradient(GREEN, BLUE, ORANGE)
+    _along(individuals, bc["far_top"], fc["far_top"], 0.3)
+    return VGroup(time, space, keypoints, individuals)
