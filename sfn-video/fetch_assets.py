@@ -5,8 +5,9 @@ are third-party logos. Override the location with ``MOVEMENT_RESOURCES``.
 """
 
 import os
-import shutil
 from pathlib import Path
+
+from PIL import Image
 
 RESOURCES = Path(
     os.environ.get(
@@ -16,6 +17,9 @@ RESOURCES = Path(
 )
 SOURCES = [
     "logos/movement/movement_logo_on-transparent.png",
+    "figures/movement/DLC_logo.png",
+    "figures/movement/SLEAP_logo.png",
+    "figures/movement/LightningPose_logo.png",
     "figures/movement/NWB_logo.png",
     "figures/movement/netcdf_icon.png",
 ]
@@ -23,5 +27,7 @@ SOURCES = [
 dest = Path(__file__).resolve().parent / "assets"
 dest.mkdir(exist_ok=True)
 for rel in SOURCES:
-    shutil.copy(RESOURCES / rel, dest)
+    # RGBA, trimmed to the visible content, so logos size consistently
+    img = Image.open(RESOURCES / rel).convert("RGBA")
+    img.crop(img.getchannel("A").getbbox()).save(dest / Path(rel).name)
     print(f"copied {rel}")

@@ -19,7 +19,7 @@ uv pip install --python .venv -r requirements.txt
 cd scenes
 ../.venv/bin/manim -qm --media_dir ../media s01_formats.py Formats   # 720p draft
 ../.venv/bin/manim -qm --media_dir ../media s02_analysis.py Analysis
-../.venv/bin/manim -qh ...                                           # 1080p30
+../.venv/bin/manim -qh --fps 30 ...  # final 1080p30 (the -qh preset is 60 fps)
 ```
 
 Segments are rendered separately and joined with ffmpeg's concat demuxer;
@@ -49,43 +49,47 @@ frames) is cached in `cache/` on first render; delete it to rebuild.
 - Saving/export (NWB, netCDF) dropped for now in favour of analysis.
 - End card should credit SWC / NIU and the contributor community.
 
-## Status (2026-10-28): segments 1 and 2, ~44 s combined
+## Status (2026-10-28): segments 1–3, ~61 s combined
 
 Segment 1, `scenes/s01_formats.py` (~26 s):
 
 1. Title card → logo shrinks into the corner badge.
-2. Real DBTravelator video (247 fps, played ~18× slower) alone for ~2 s, then
-   its skeleton fades in on the mouse, the video fades out and the bare
-   skeleton walks on: "Do you track animals in videos with / DeepLabCut,
-   SLEAP or similar tools?" (cleaned as in movement's `scale` example,
-   23 of 43 keypoints; far-side limbs at 40% opacity).
-3. Format cards appear; three skeleton mice (green / purple / orange, the
-   same track replayed with different gait phases) run right and stop:
-   "Bring tracks from your favourite tool or format…"
-4. The cube and its labels appear beside them: "…into one tidy dataset".
-   Cards and mice fade, leaving the cube for the handover.
+2. Real DBTravelator video (247 fps, ~18× slower) alone for ~2 s, then its
+   skeleton fades in, the video fades out, the bare skeleton walks on:
+   "Do you track animals with / DeepLabCut, SLEAP or similar tools?"
+3. Four tool cards (logo + name: DeepLabCut, SLEAP, LightningPose, NWB);
+   three skeleton mice run right and stop: "Bring tracks from all your
+   favourite / tools and file formats".
+4. The cube and labels appear beside them: "…into one tidy dataset".
 
-Segment 2, `scenes/s02_analysis.py` (~18 s):
+Segment 2, `scenes/s02_analysis.py` (~16 s):
 
-1. Cube shrinks left (labels vanish instantly); a "clean" arrow appears:
+1. Cube shrinks left; a "clean" arrow (shared with segment 3):
    "Drop outliers, smooth and interpolate tracks".
-2. A matplotlib figure from `plot_centroid_trajectory` (60 s of cleaned
-   SLEAP EPM, each video frame a real re-plot of a growing time slice):
-   "Visualise trajectories".
-3. Only then does the `plot_occupancy` subplot appear (whole session):
-   "Visualise trajectories and occupancy heatmaps". Holds, fades to badge.
-   Both panels sit on the video frame where the trajectory ends (borrowed
-   from the DLC EPM sample, which tracks the same recording).
+2. `plot_centroid_trajectory` reveal on cleaned SLEAP EPM: "Visualise
+   trajectories"; then the `plot_occupancy` subplot appears and the caption
+   completes in place: "… and occupancy heatmaps".
+3. Everything but the cube and arrow fades.
+
+Segment 3, `scenes/s03_quantify.py` (~19 s):
+
+1. The arrow is relabelled "compute"; the bee clip (49–57 s of
+   `sleap_data/bees…`, 1.5× speed, brand-coloured skeletons) plays as a
+   thumbnail below the cube. Caption for the whole segment (wording still
+   open): "Quantify motion any way you like".
+2. Figure builds up: speed, inter-bee distance, head-direction polar
+   histograms (antenna bases as left/right pair, 30° bins), all from
+   movement + xarray plotting in brand colours. Fades to badge.
+
+Plots are rendered at their exact on-screen pixel size (`screen_pixels`)
+to avoid aliasing; final renders need `-qh --fps 30`.
 
 ## Next
 
-- Quantification panel (after Visualise): options discussed so far are the
-  octagon mice's speed (`compute_speed`) and inter-mouse distance, plotted
-  with xarray's `.plot`, or heading (`compute_forward_vector_angle`).
-  `analysis_data.octagon_motion()` already computes the first two.
+- Settle the segment 3 caption wording.
 - napari ROI clip (Niko's screen recording).
 - End card: SWC / NIU credit, contributor count, URL, QR code.
-- Species variety: bees / flies SLEAP data in `sleap_data/` (not committed).
+- `sleap_data/` (bees, flies; not committed) is needed to render segment 3.
 
 ## Notes
 

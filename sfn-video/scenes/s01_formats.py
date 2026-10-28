@@ -30,21 +30,18 @@ from mouse import Herd
 VIDEO_FPS = 14  # ~18x slow motion
 RUN_FPS = 24  # ~10x slow motion
 
-FORMATS = [
-    ("DeepLabCut", ".h5 .csv"),
-    ("SLEAP", ".slp .h5"),
-    ("LightningPose", ".csv"),
-    ("Anipose", ".csv"),
-    ("COCO", ".json"),
-    ("VIA-tracks", ".csv"),
-    ("NWB", ".nwb"),
+TOOLS = [
+    ("DeepLabCut", "DLC_logo.png"),
+    ("SLEAP", "SLEAP_logo.png"),
+    ("LightningPose", "LightningPose_logo.png"),
+    ("NWB", "NWB_logo.png"),
 ]
 
 
 class Formats(Scene):
     def construct(self):
         # --- Title card -----------------------------------------------------
-        logo = image("movement_logo_on-transparent.png", 4.2).shift(0.5 * UP)
+        logo = image("movement_logo_on-transparent.png", 3.7).shift(0.5 * UP)
         tagline = Text(
             "Python tools for analysing animal motion",
             font=FONT,
@@ -84,7 +81,7 @@ class Formats(Scene):
         play_recording(VIDEO_FPS)
         cap = show_caption(
             self,
-            "Do you track animals in videos with\nDeepLabCut, SLEAP or similar tools?",
+            "Do you track animals with\nDeepLabCut, SLEAP or similar tools?",
             0,
         )
         self.play(herd.video.animate.set_value(1), run_time=0.8)
@@ -106,7 +103,7 @@ class Formats(Scene):
         self.remove(video)
 
         # --- Many formats → mice run up to one tidy dataset ----------------
-        run_scale, run_from, run_to = 0.0045, -1.5, 1.0  # mouse centre, in x
+        run_scale, run_from, run_to = 0.0045, -1.2, 1.0  # mouse centre, in x
         herd.frame.clear_updaters()
         for tracker, value in (
             (herd.frame, 0),
@@ -120,10 +117,12 @@ class Formats(Scene):
         px_per_frame = np.diff(herd.camera_x).mean()
         stop_frame = (run_to - run_from) / (run_scale * px_per_frame)
 
-        chips = Group(*[chip(name, extensions=ext) for name, ext in FORMATS])
-        chips.arrange(DOWN, buff=0.13).to_edge(LEFT, buff=0.6).shift(0.35 * UP)
+        chips = Group(*[chip(name, logo) for name, logo in TOOLS])
+        chips.arrange(DOWN, buff=0.2).to_edge(LEFT, buff=0.6).shift(0.35 * UP)
         cube = data_cube().scale(DATASET_SCALE).move_to(DATASET_CENTRE)
-        cap = show_caption(self, "Bring tracks from your favourite tool or format…", 0)
+        cap = show_caption(
+            self, "Bring tracks from all your favourite\ntools and file formats", 0
+        )
         play_recording(RUN_FPS, stop=stop_frame)
         self.play(
             FadeIn(chips),

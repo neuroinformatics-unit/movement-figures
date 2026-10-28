@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 from manim import (
     DOWN,
-    LEFT,
     RIGHT,
     UP,
     FadeIn,
@@ -43,6 +42,15 @@ SLAB_TONES = {
 }
 
 
+def screen_pixels(height):
+    """Pixel height, at the current render quality, of ``height`` scene units.
+
+    Raster plots rendered at exactly this size need no rescaling by manim,
+    which would otherwise alias fine lines and text.
+    """
+    return round(config.pixel_height * height / config.frame_height)
+
+
 def image(name, height):
     img = ImageMobject(str(ASSETS / name))
     img.height = height
@@ -63,6 +71,40 @@ def caption(text, size=44, colour=GREY):
     return lines.arrange(DOWN, buff=0.12).to_edge(DOWN, buff=0.45)
 
 
+def dataset_arrow(cube):
+    """The arrow leading from the small dataset to the analysis plots.
+
+    Shared by the analysis and quantification segments, so it stays put
+    across the cut while only its label changes.
+    """
+    from manim import Arrow
+
+    start = cube.get_right() + 0.2 * RIGHT
+    return Arrow(start, start + 2.0 * RIGHT, color=LIGHT_GREY, stroke_width=6, buff=0)
+
+
+def arrow_label(text, arrow):
+    """A label centred above ``arrow``."""
+    return Text(text, font=FONT, font_size=32, color=GREY).next_to(arrow, UP, 0.15)
+
+
+def right_of(mob, arrow, gap=0.1):
+    """Place ``mob`` so its left edge sits just past the arrow's tip."""
+    return mob.shift((arrow.get_right()[0] + gap - mob.get_left()[0]) * RIGHT)
+
+
+def split_caption(full, head, size=44, colour=GREY):
+    """A centred one-line caption, as (head, tail) glyph groups.
+
+    Showing the head first and the tail later completes the sentence in place,
+    without the head shifting to re-centre.
+    """
+    line = Text(full, font=FONT, font_size=size, color=colour)
+    line.to_edge(DOWN, buff=0.45)
+    n = len(head.replace(" ", ""))  # Text has no glyphs for spaces
+    return line[:n], line[n:]
+
+
 def show_caption(scene, text, hold, previous=None, **kwargs):
     """Fade in a caption (replacing any previous one) and hold it."""
     new = caption(text, **kwargs)
@@ -77,7 +119,7 @@ def show_caption(scene, text, hold, previous=None, **kwargs):
 
 def badge():
     """Persistent corner badge so any glance identifies the project."""
-    logo = image("movement_logo_on-transparent.png", 0.95)
+    logo = image("movement_logo_on-transparent.png", 0.84)
     url = Text(
         "movement.neuroinformatics.dev",
         font=FONT,
@@ -112,8 +154,8 @@ def file_glyph(colour=LIGHT_GREY, height=0.6):
     return glyph
 
 
-def chip(label, extensions="", width=3.6, height=0.8):
-    """A compact format card: file glyph, name, and extensions beneath."""
+def chip(label, logo, width=4.2, height=0.9):
+    """A tool card: its logo and name."""
     box = RoundedRectangle(
         width=width,
         height=height,
@@ -122,14 +164,14 @@ def chip(label, extensions="", width=3.6, height=0.8):
         fill_opacity=1,
         stroke_width=0,
     )
-    icon = file_glyph(height=height * 0.66)
-    icon.move_to(box.get_left() + RIGHT * (0.2 + height * 0.48))
-    text = VGroup(Text(label, font=FONT, font_size=26, color=GREY))
-    if extensions:
-        text.add(Text(extensions, font=MONO, font_size=16, color=LIGHT_GREY))
-    text.arrange(DOWN, aligned_edge=LEFT, buff=0.06)
-    text.next_to(icon, RIGHT, buff=0.22)
-    return Group(box, icon, text)
+    icon = image(logo, height * 0.68)
+    icon_slot = height * 1.0  # logos of any aspect share one column
+    if icon.width > icon_slot:
+        icon.width = icon_slot
+    icon.move_to(box.get_left() + RIGHT * (0.18 + icon_slot / 2))
+    name = Text(label, font=FONT, font_size=30, color=GREY)
+    name.next_to(box.get_left() + RIGHT * (0.18 + icon_slot), RIGHT, buff=0.25)
+    return Group(box, icon, name)
 
 
 def slab(tone, rows=4, cols=2, depth=6, cell=0.36):
@@ -167,6 +209,9 @@ def slab(tone, rows=4, cols=2, depth=6, cell=0.36):
 # Where the tidy dataset sits when segment 1 hands over to segment 2
 DATASET_SCALE = 0.8
 DATASET_CENTRE = np.array([4.1, -0.1, 0.0])
+# ...and where it waits, small, during the analysis segments
+SMALL_DATASET_SCALE = 0.4
+SMALL_DATASET_CENTRE = np.array([-5.7, 0.4, 0.0])
 
 
 def data_cube(gap=2.75, cell=0.36):

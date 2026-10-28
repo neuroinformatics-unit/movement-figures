@@ -11,7 +11,7 @@ from analysis_data import EPM, MAZE_CROP, OCCUPANCY_BIN, TRAJECTORY_SECONDS, _cl
 
 OUT = Path(__file__).resolve().parent.parent / "cache" / "visualise"
 N_STEPS = 60  # trajectory reveal frames
-FIGSIZE, DPI = (11, 6), 175
+FIGSIZE = (11, 6)  # inches; sets text size relative to the plots
 VIDEO_SOURCE = "DLC_single-mouse_EPM.predictions.h5"
 VIDEO_HEIGHT, VIDEO_WIDTH = 1028, 1300
 
@@ -71,11 +71,13 @@ def _video_frame(index):
     return np.frombuffer(raw, np.uint8).reshape(VIDEO_HEIGHT, VIDEO_WIDTH)
 
 
-def render(force=False):
-    """Write trajectory_XX.png reveal frames and occupancy.png to ``OUT``."""
-    final = OUT / "occupancy.png"
+def render(height_px, force=False):
+    """Write trajectory_XX.png reveal frames and occupancy.png, ``height_px`` tall."""
+    out = OUT / f"{height_px}px"
+    dpi = height_px / FIGSIZE[1]
+    final = out / "occupancy.png"
     if final.exists() and not force:
-        return sorted(OUT.glob("trajectory_*.png")), final
+        return sorted(out.glob("trajectory_*.png")), final
 
     import matplotlib
 
@@ -123,21 +125,21 @@ def render(force=False):
             ax.axis("off")  # pixel coordinates mean nothing to viewers
         return fig
 
-    OUT.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     paths = []
     for step in range(1, N_STEPS + 1):
         fig = draw(step * n // N_STEPS, show_occupancy=False)
-        path = OUT / f"trajectory_{step:02d}.png"
-        fig.savefig(path, dpi=DPI, transparent=True)
+        path = out / f"trajectory_{step:02d}.png"
+        fig.savefig(path, dpi=dpi, transparent=True)
         plt.close(fig)
         paths.append(path)
 
     fig = draw(n, show_occupancy=True)
-    fig.savefig(final, dpi=DPI, transparent=True)
+    fig.savefig(final, dpi=dpi, transparent=True)
     plt.close(fig)
     return paths, final
 
 
 if __name__ == "__main__":
-    paths, final = render(force=True)
+    paths, final = render(height_px=729, force=True)
     print(len(paths), final)
