@@ -1,0 +1,6 @@
+.venv/
+assets/
+cache/
+media/
+previews/
+__pycache__/
