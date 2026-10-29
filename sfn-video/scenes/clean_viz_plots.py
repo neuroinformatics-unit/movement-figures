@@ -1,6 +1,7 @@
 """Matplotlib figures made with movement's own plotting functions, and the
 matching EPM video clip."""
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -11,11 +12,10 @@ OUT = Path(__file__).resolve().parent.parent / "cache" / "clean_viz"
 FIGSIZE = (11, 6)  # inches; sets text size relative to the plots
 VIDEO_HEIGHT, VIDEO_WIDTH = 1028, 1300
 VIDEO_FPS = 30
-CLIP_STEP = 4  # recorded frames per thumbnail frame
-CLIP_HEIGHT = 400  # px
-# Narrower, as the constrained layout leaves no margin to the right
-CLEANING_FIGSIZE = (10, 6)
-CLEANED_KEYPOINT = "snout"  # clear outliers in the window, as on the poster
+# Recorded frames per clip frame; at 3x playback, the clip plays at 30 fps
+CLIP_STEP = 3
+# Its raw track is the noisiest, so cleaning shows best
+CLEANED_KEYPOINT, CLEANED_LABEL = "tail_end", "Tail tip"
 SKELETON = [
     ("snout", "left_ear"),
     ("snout", "right_ear"),
@@ -97,24 +97,24 @@ def _load():
     return ds, position, start, n
 
 
-def video_clip():
+def video_clip(height_px):
     """Every ``CLIP_STEP``-th frame of the trajectory window, cropped to the
-    maze, with the cleaned poses in video pixels ([time, keypoint, space]).
+    maze and ``height_px`` tall, with the raw poses in video pixels
+    ([time, keypoint, space]).
     """
-    path = OUT / "clip.npz"
+    path = OUT / f"clip_{height_px}px.npz"
     if not path.exists():
-        _, position, start, n = _load()
-        step = CLIP_STEP
+        ds, _, start, n = _load()
         x0, x1 = MAZE_CROP
-        width = round((x1 - x0) * CLIP_HEIGHT / VIDEO_HEIGHT / 2) * 2
+        width = round((x1 - x0) * height_px / VIDEO_HEIGHT / 2) * 2
         clip = _video_frames(
             f"select=between(n\\,{start}\\,{start + n - 1})"
-            f"*not(mod(n-{start}\\,{step})),"
-            f"crop={x1 - x0}:{VIDEO_HEIGHT}:{x0}:0,scale={width}:{CLIP_HEIGHT}",
-            CLIP_HEIGHT,
+            f"*not(mod(n-{start}\\,{CLIP_STEP})),"
+            f"crop={x1 - x0}:{VIDEO_HEIGHT}:{x0}:0,scale={width}:{height_px}",
+            height_px,
             width,
         )
-        poses = position.isel(time=slice(start, start + n, step))
+        poses = ds.position.isel(time=slice(start, start + n, CLIP_STEP))
         poses = poses.transpose("time", "keypoint", "space")
         OUT.mkdir(parents=True, exist_ok=True)
         np.savez(
@@ -128,13 +128,23 @@ def video_clip():
 
 
 def render(height_px, force=False):
-    """Write cleaning.png, trajectory.png and trajectory + occupancy.png,
-    ``height_px`` tall."""
+    """Write the cleaning plot's layers (axes, raw, cleaned), trajectory.png
+    and trajectory + occupancy.png, ``height_px`` tall, all laid out alike.
+
+    Returns their paths and, as figure fractions (left, bottom, width,
+    height), the two maze axes' boxes, so the clip can be laid over the
+    first, and the cleaning plot's axes, so its lines can be revealed in
+    time.
+    """
     out = OUT / f"{height_px}px"
     dpi = height_px / FIGSIZE[1]
-    paths = [out / "cleaning.png", out / "trajectory.png", out / "occupancy.png"]
-    if all(p.exists() for p in paths) and not force:
-        return paths
+    paths = [out / f"cleaning_{layer}.png" for layer in ("axes", "raw", "cleaned")] + [
+        out / "trajectory.png",
+        out / "occupancy.png",
+    ]
+    boxes_path = out / "boxes.json"
+    if all(p.exists() for p in paths + [boxes_path]) and not force:
+        return paths, json.loads(boxes_path.read_text())
 
     import matplotlib
 
@@ -176,34 +186,73 @@ def render(height_px, force=False):
 
     out.mkdir(parents=True, exist_ok=True)
 
-    # Raw vs cleaned position of one keypoint; raw on top, so its outliers
-    # stand out against the cleaned line
-    plt.rcParams.update({"font.size": 18})
-    fig, axes = plt.subplots(
-        2, 1, figsize=CLEANING_FIGSIZE, sharex=True, layout="constrained"
-    )
-    raw = ds.position.isel(time=slice(start, start + n)).sel(keypoint=CLEANED_KEYPOINT)
-    clean = window.sel(keypoint=CLEANED_KEYPOINT)
-    for ax, axis in zip(axes, ("x", "y")):
-        clean.sel(space=axis).plot.line(
-            x="time", ax=ax, color=GREEN, lw=4, label="clean"
-        )
-        raw.sel(space=axis).plot.line(
-            x="time", ax=ax, color=ORANGE, lw=1.2, label="raw"
-        )
-        ax.set(title="", xlabel="", ylabel=f"{axis} (px)")
-    axes[0].set_title(f"{CLEANED_KEYPOINT.replace('_', ' ').capitalize()} position")
-    handles, labels = axes[0].get_legend_handles_labels()
-    axes[0].legend(handles[::-1], labels[::-1], loc="upper right", ncols=2)
-    axes[1].set_xlabel("Time (s)")
-    fig.savefig(paths[0], dpi=dpi, transparent=True)
-    plt.close(fig)
-
-    for path, show_occupancy in zip(paths[1:], (False, True)):
+    for path, show_occupancy in zip(paths[3:], (False, True), strict=True):
         fig = draw(show_occupancy)
         fig.savefig(path, dpi=dpi, transparent=True)
+        # After drawing, so the boxes reflect the colourbar and aspect
+        boxes = [list(ax.get_position().bounds) for ax in fig.axes[:2]]
         plt.close(fig)
-    return paths
+
+    # Raw vs cleaned position of one keypoint, in the occupancy plot's slot
+    # (right of the clip, which plays in the trajectory plot's maze), as
+    # three layers: the axes, then each line with its legend entry. Raw goes
+    # on top, so its outliers stand out against the cleaned line
+    (left, _, w, _), (_, bottom, _, h) = boxes
+    left += w + 0.1  # room for the tick labels
+    bottom += 0.09  # room for the time axis
+    height = (h - 0.09 - 0.04) / 2
+    right = 0.9  # leaves room for the last tick label within the frame
+    series = {
+        "raw": ds.position.isel(time=slice(start, start + n)),
+        "cleaned": window,
+    }
+    series = {k: v.sel(keypoint=CLEANED_KEYPOINT) for k, v in series.items()}
+    styles = {"raw": dict(color=ORANGE, lw=1.2), "cleaned": dict(color=GREEN, lw=4)}
+    for path, layer in zip(paths[:3], ("axes", "raw", "cleaned"), strict=True):
+        fig = plt.figure(figsize=FIGSIZE)
+        lower = fig.add_axes([left, bottom, right - left, height])
+        upper = fig.add_axes([left, bottom + height + 0.04, right - left, height])
+        upper.sharex(lower)
+        handles = []
+        for ax, axis in zip((upper, lower), ("x", "y"), strict=True):
+            # Every layer plots both lines, so all share the same limits
+            for name in ("raw", "cleaned"):
+                (line,) = (
+                    series[name]
+                    .sel(space=axis)
+                    .plot.line(x="time", ax=ax, label=name, **styles[name])
+                )
+                line.set_visible(name == layer)
+                if ax is upper:
+                    handles.append(line)
+            ax.set(title="", xlabel="", ylabel=axis)
+        if layer == "axes":
+            upper.tick_params(labelbottom=False)
+            upper.set_title(CLEANED_LABEL, loc="left")
+            lower.set_xlabel("Time (s)")
+        else:
+            for ax in (upper, lower):
+                ax.axis("off")
+            # Both entries, so each keeps its place; only this layer's shows
+            legend = upper.legend(
+                handles=handles,
+                loc="lower right",
+                bbox_to_anchor=(1, 1),
+                ncols=2,
+                frameon=False,
+                borderaxespad=0,
+            )
+            for handle, text in zip(legend.legend_handles, legend.texts, strict=True):
+                visible = text.get_text() == layer
+                handle.set_visible(visible)
+                text.set_visible(visible)
+        lower.set_xlim(*WINDOW)
+        fig.savefig(path, dpi=dpi, transparent=True)
+        plt.close(fig)
+    boxes.append([left, bottom, right - left, 2 * height + 0.04])
+
+    boxes_path.write_text(json.dumps(boxes))
+    return paths, boxes
 
 
 if __name__ == "__main__":

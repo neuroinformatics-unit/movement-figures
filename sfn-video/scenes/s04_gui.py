@@ -68,7 +68,7 @@ class GUI(Scene):
         self.add(corner)
 
         # --- Python scripts, or the GUI --------------------------------------
-        python = image("python-logo-generic.png", 1.5).shift(0.3 * UP)
+        python = image("python-logo-generic.png", 1.5).move_to(0.3 * UP + 3.2 * LEFT)
         cap = show_caption(self, "You can call movement from Python scripts", 0)
         self.play(FadeIn(python), run_time=0.6)
         self.wait(1.5)
@@ -98,7 +98,6 @@ class GUI(Scene):
             stroke_width=0,
         ).set_z_index(-1)  # behind the header
 
-        self.play(python.animate.move_to(0.3 * UP + 3.2 * LEFT), run_time=0.8)
         cap = show_caption(self, "…or use our GUI", 0, previous=cap)
         self.add(clock)  # the recording plays on through captions and waits
         self.play(FadeIn(video), run_time=0.6)

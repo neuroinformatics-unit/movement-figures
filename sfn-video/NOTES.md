@@ -52,12 +52,13 @@ Not committed (see `.gitignore`):
 
 ## Code layout (`scenes/`)
 
-- `common.py`: brand constants, header badge, captions, tool chips, the
+- `common.py`: brand constants, header badge, captions, small-print credits, tool chips, the
   isometric data cube and its labels, the shared dataset arrow, and the
   dataset positions used for the hand-overs between segments.
 - `mouse.py`: DBTravelator skeletons and video frames (segment 1).
-- `clean_viz_data.py` + `clean_viz_plots.py`: cleaned DLC EPM data and the
-  trajectory/occupancy frames and the video thumbnail (segment 2).
+- `clean_viz_data.py` + `clean_viz_plots.py`: cleaned DLC EPM data, the
+  raw/cleaned trace layers, trajectory/occupancy figures and the video clip
+  (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
 - `community.py`: contributor names from movement's People page.
@@ -92,63 +93,73 @@ Not committed (see `.gitignore`):
 - Segments 1–2 were kept under 45 s combined.
 - End card should credit SWC / NIU and the contributor community, plus the
   Font Awesome icon (CC BY 4.0).
+- Every video shown carries a small-print data credit below it while it is
+  large (Holly Morley; Loukia Katsouri; Pereira et al., Nature Methods,
+  2022).
 
-## Status (2026-10-29): segments 1–5, ~115 s combined at 720p
+## Status (2026-10-29): segments 1–5, ~109 s combined at 720p
 
-Segment 1 (io), `scenes/s01_io.py` (~25 s):
+Segment 1 (io), `scenes/s01_io.py` (~23 s):
 
 1. Title card: header URL and big logo on frame 1; tagline "Python tools
    for analysing animal motion" fades in; the logo alone flies into the
    header's right corner.
-2. Real DBTravelator video (247 fps, ~18× slower) alone for ~2 s, then its
-   skeleton fades in, the video fades out, the bare skeleton walks on:
+2. Real DBTravelator video (247 fps, ~18× slower) alone for ~2 s, credited
+   "Data: Holly Morley" below it; then its skeleton fades in over the video
+   for ~2 s, the video fades out, the bare skeleton walks on briefly:
    "Do you track animals with / DeepLabCut, SLEAP or similar tools?"
 3. Tool rows appear on the left while three skeleton mice (one track
    replayed with different gait phases) run right and stop: "Bring tracks
    from all your favourite / tools and file formats".
 4. The cube and dimension labels appear beside them: "…into one tidy
-   dataset". Tools and mice fade, leaving the cube.
+   dataset" (held 3 s). Tools and mice fade, leaving the cube.
 
-Segment 2 (clean_viz), `scenes/s02_clean_viz.py` (~22 s). Uses the DLC EPM sample
-over 240–260 s, cleaned with the movement applications poster's pipeline
-(confidence ≥ 0.99, rolling median 9, linear gaps ≤ 5), so it matches the
-poster's panels A–C:
+Segment 2 (clean_viz), `scenes/s02_clean_viz.py` (~22 s). Uses the DLC EPM
+sample over 240–260 s, cleaned with the movement applications poster's
+pipeline (confidence ≥ 0.99, rolling median 9, linear gaps ≤ 5), so the
+trajectory matches the poster's panel:
 
-1. Cube shrinks left; the EPM video (cropped to the maze, 4×, ~5 s) plays
-   as a thumbnail below it with the cleaned 8-keypoint skeleton in green,
-   as in segment 3, and holds on its last frame. Caption: "Drop outliers,
-   smooth and interpolate tracks". Keypoints dropped by cleaning are not
-   drawn (snout missing in ~23% of the clip, others ≤ 13%).
-2. An unlabelled arrow (shared with segment 3) grows from the cube to a
-   raw (orange) vs clean (green) plot of the snout's x and y
-   (xarray `.plot.line`).
-3. The plot is replaced by the static `plot_centroid_trajectory` figure
-   (centroid of centre, tailbase and ears, as on the poster), titled
-   "Centroid trajectory": "Visualise trajectories"; then the
-   `plot_occupancy` subplot (whole recording, turbo colormap) appears and
-   the caption completes in place: "… and occupancy heatmaps".
+1. Cube shrinks left; an unlabelled arrow grows from it. The EPM video
+   (cropped to the maze, 3×, ~6.7 s, raw 8-keypoint skeleton in orange,
+   credited "Data: Loukia Katsouri") plays where the trajectory plot's maze
+   will be, while the tail tip's raw x/y trace unfolds in step beside it,
+   in the occupancy plot's slot: "Plot keypoint positions over time".
+2. When the clip ends, the cleaned trace (teal, drawn over the raw one so
+   only the outliers show orange) sweeps across in 1.5 s: "Drop outliers,
+   smooth and interpolate tracks". The trace plot is three matplotlib
+   layers (axes, raw, cleaned) revealed column by column.
+3. Clip and traces crossfade (1.2 s) into the static `plot_centroid_trajectory`
+   figure (centroid of centre, tailbase and ears), "Centroid trajectory":
+   "Visualise trajectories"; then the `plot_occupancy` subplot (whole
+   recording, turbo) appears: "… and occupancy heatmaps" (held 3 s).
 4. Everything but the header, cube and arrow fades.
 
-Segment 3 (quantify), `scenes/s03_quantify.py` (~19 s):
+Tried and dropped: raw vs clean videos side by side, snout trails over the
+video, raw/clean trails overlaid; at booth distance the cleaning didn't
+read. The tail tip shows it best (single-frame spikes, a 2 s jump).
 
-1. The bee clip (49–57 s of
-   `sleap_data/bees…`, 1.5× speed, green/orange skeletons) plays as a
-   thumbnail below the cube. Caption for the whole segment (wording still
-   open): "Quantify motion any way you like".
-2. Figure builds up panel by panel: speed, inter-bee distance, head-direction
-   polar histograms (antenna bases as left/right pair, 30° bins), all from
-   movement + xarray plotting. Fades to the header alone, which
-   segment 4 starts from.
+Segment 3 (quantify), `scenes/s03_quantify.py` (~15 s):
+
+1. The bee clip (49–57 s of `sleap_data/bees…`, 2× speed, green/orange
+   skeletons) plays large, roughly over where the speed and distance plots
+   will be, credited "Data: Pereira et al., Nature Methods, 2022". Caption
+   for the whole segment (wording still open): "Quantify motion any way
+   you like".
+2. The clip shrinks to a thumbnail below the cube as the speed (px/s) and
+   inter-bee distance (px) panels appear; then the head-direction polar
+   histograms (antenna bases as left/right pair, 30° bins), all from
+   movement + xarray plotting. Fades to the header alone, which segment 4
+   starts from.
 
 Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
 size (`screen_pixels`, `image`) to avoid aliasing; final renders need
 `-qh --fps 30`. No 1080p render has been made of the current version yet.
 
-Segment 4 (gui), `scenes/s04_gui.py` (~28 s):
+Segment 4 (gui), `scenes/s04_gui.py` (~27 s):
 
-1. From the header alone: Python logo, "You can call movement from Python
-   scripts"; it moves left and a playing thumbnail of the GUI screen
-   recording appears right: "…or use our GUI" (no napari logo; the
+1. From the header alone: Python logo on the left, "You can call movement
+   from Python scripts"; a playing thumbnail of the GUI screen recording
+   appears right: "…or use our GUI" (no napari logo; the
    recording itself is the GUI).
 2. The thumbnail grows to its place as the Python logo fades and the
    background fades to black (the header stays on top). The recording

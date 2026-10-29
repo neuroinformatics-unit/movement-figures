@@ -15,6 +15,7 @@ from common import (
     image,
     more_chip,
     show_caption,
+    small_print,
 )
 from manim import (
     DOWN,
@@ -84,21 +85,22 @@ class IO(Scene):
             self.add(herd.frame)  # updaters only run on mobjects in the scene
 
         play_recording(VIDEO_FPS)
+        data_credit = small_print("Data: Holly Morley").next_to(video, DOWN, buff=0.1)
         cap = show_caption(
             self,
             "Do you track animals with\nDeepLabCut, SLEAP or similar tools?",
             0,
         )
-        self.play(herd.video.animate.set_value(1), run_time=0.8)
+        self.play(herd.video.animate.set_value(1), FadeIn(data_credit), run_time=0.8)
         self.wait(1.5)  # the video alone, so it reads as footage
         self.play(
             herd.dots[0].animate.set_value(1),
             herd.edges[0].animate.set_value(1),
             run_time=1.0,
         )
-        self.wait(0.8)
-        self.play(herd.video.animate.set_value(0), run_time=1.2)
-        self.wait(2.5)  # the bare skeleton, to let the question sink in
+        self.wait(2.0)
+        self.play(herd.video.animate.set_value(0), FadeOut(data_credit), run_time=1.2)
+        self.wait(1.3)  # the bare skeleton, to let the question sink in
         self.play(
             herd.dots[0].animate.set_value(0),
             herd.edges[0].animate.set_value(0),
@@ -139,7 +141,7 @@ class IO(Scene):
         self.wait(1.4)
         cap = show_caption(self, "…into one tidy dataset", 0, previous=cap)
         self.play(FadeIn(cube, cube_labels(cube)), run_time=0.8)
-        self.wait(4.5)
+        self.wait(3.0)
 
         # End on the dataset alone; the clean_viz segment continues from it
         herd.frame.clear_updaters()

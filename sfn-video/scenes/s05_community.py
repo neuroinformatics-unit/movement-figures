@@ -7,12 +7,12 @@ loops seamlessly.
 from common import (
     FONT,
     GREY,
-    LIGHT_GREY,
     TITLE_LOGO_CENTRE,
     TITLE_LOGO_HEIGHT,
     badge,
     caption,
     image,
+    small_print,
     svg_icon,
 )
 from community import contributors
@@ -131,11 +131,8 @@ class Community(Scene):
         ).arrange(RIGHT, buff=1.5)
         supporters = Group(*[image(name, h) for name, h in SUPPORTERS])
         supporters.arrange(RIGHT, buff=1.0)
-        icons_credit = Text(
-            "Icons: Font Awesome (CC BY 4.0), Octicons (MIT)",
-            font=FONT,
-            font_size=16,
-            color=LIGHT_GREY,
+        icons_credit = small_print(
+            "Icons: Font Awesome (CC BY 4.0), Octicons (MIT)"
         ).to_corner(DOWN + RIGHT, buff=0.15)
         rows = [
             (open_source, "Free and open source", [icons_credit]),

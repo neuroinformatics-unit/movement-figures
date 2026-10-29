@@ -12,7 +12,7 @@ from common import BLUE
 
 OUT = Path(__file__).resolve().parent.parent / "cache" / "bees"
 FIGSIZE = (9.6, 5.6)  # inches; sets text size relative to the plots
-STAGES = 3  # speed; + distance; + head direction
+STAGES = 2  # speed and distance; + head direction
 
 
 def plot_polar_histogram(da, bin_width_deg=15, ax=None, **kwargs):
@@ -38,7 +38,8 @@ def plot_polar_histogram(da, bin_width_deg=15, ax=None, **kwargs):
 
 
 def render(height_px, force=False):
-    """Write stage_1.png … stage_3.png, ``height_px`` tall; return their paths."""
+    """Write stage_1.png and stage_2.png, ``height_px`` tall; return their
+    paths."""
     out = OUT / f"{height_px}px"
     dpi = height_px / FIGSIZE[1]
     paths = [out / f"stage_{i}.png" for i in range(1, STAGES + 1)]
@@ -73,11 +74,11 @@ def render(height_px, force=False):
 
         speed.plot.line(x="time", hue="individual", ax=ax_speed)
         ax_speed.set_title("Speed")
-        ax_speed.set_xlabel("")
+        ax_speed.set(xlabel="", ylabel="speed (px/s)")
 
         distance.plot(ax=ax_dist, color=BLUE)
         ax_dist.set_title("Distance between bees")
-        ax_dist.set_xlabel("time (s)")
+        ax_dist.set(xlabel="time (s)", ylabel="distance (px)")
 
         for i, (ax, name) in enumerate(zip(ax_polar, NAMES, strict=True)):
             plot_polar_histogram(
@@ -96,7 +97,7 @@ def render(height_px, force=False):
             fontsize=plt.rcParams["axes.titlesize"],
         )
 
-        hidden = [ax_dist] * (stage < 2) + [*ax_polar, heading_title] * (stage < 3)
+        hidden = [*ax_polar, heading_title] * (stage < 2)
         for ax in hidden:
             ax.set_visible(False)
         fig.savefig(path, dpi=dpi, transparent=True)

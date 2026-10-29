@@ -77,6 +77,11 @@ def image(name, height):
     return img
 
 
+def small_print(text):
+    """Small print crediting data or icons."""
+    return Text(text, font=FONT, font_size=16, color=LIGHT_GREY)
+
+
 def caption(text, size=44, colour=GREY):
     """Lower-third subtitle, the main carrier of narration.
 
@@ -100,7 +105,7 @@ def dataset_arrow(cube):
     from manim import Arrow
 
     start = cube.get_right() + 0.2 * RIGHT
-    return Arrow(start, start + 2.0 * RIGHT, color=LIGHT_GREY, stroke_width=6, buff=0)
+    return Arrow(start, start + 1.33 * RIGHT, color=LIGHT_GREY, stroke_width=6, buff=0)
 
 
 def right_of(mob, arrow, gap=0.1):
