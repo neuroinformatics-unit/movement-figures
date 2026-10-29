@@ -11,6 +11,7 @@ from common import (
     TITLE_LOGO_HEIGHT,
     badge,
     caption,
+    caption_change,
     image,
     small_print,
     svg_icon,
@@ -103,13 +104,11 @@ def credits_mask():
 
 
 class Community(Scene):
-    def say(self, text, previous=None):
-        """Caption ``text``, kept above the credits' masks."""
+    def say(self, text, previous=None, run_time=None):
+        """Caption ``text``, kept above the credits' masks, and its change
+        from ``previous``."""
         new = caption(text).set_z_index(ON_TOP)
-        anims = [FadeIn(new, shift=0.15 * UP)]
-        if previous is not None:
-            anims.append(FadeOut(previous))
-        return new, anims
+        return new, caption_change(previous, new, run_time)
 
     def construct(self):
         corner = badge().set_z_index(ON_TOP)
@@ -135,15 +134,15 @@ class Community(Scene):
             "Icons: Font Awesome (CC BY 4.0), Octicons (MIT)"
         ).to_corner(DOWN + RIGHT, buff=0.15)
         rows = [
-            (open_source, "Free and open source", [icons_credit]),
+            (open_source, "Free and open-source", [icons_credit]),
             (team, "Developed by a dedicated team of engineers", []),
             (supporters, "Supported by our host institutes and funders", []),
         ]
         cap = None
         for (row, text, extras), y in zip(rows, ROW_CENTRES):
             row.move_to(y * UP)
-            cap, anims = self.say(text, cap)
-            self.play(*anims, FadeIn(row), *[FadeIn(m) for m in extras], run_time=0.6)
+            cap, change = self.say(text, cap, run_time=0.8)
+            self.play(change, FadeIn(row), *[FadeIn(m) for m in extras], run_time=0.8)
             self.wait(3.0)
         slide = [row for row, _, _ in rows] + [icons_credit]
 
@@ -160,8 +159,10 @@ class Community(Scene):
         distance = credits.height + (CREDITS_TOP - CREDITS_BOTTOM) / 2
         mask = credits_mask()
         self.add(credits, mask)
-        cap, anims = self.say("…and a growing community of contributors", cap)
-        self.play(*anims, *[FadeOut(m) for m in slide], run_time=0.6)
+        cap, change = self.say(
+            "…and a growing community of contributors", cap, run_time=0.8
+        )
+        self.play(change, *[FadeOut(m) for m in slide], run_time=0.8)
         self.play(
             credits.animate.shift(distance * UP),
             run_time=distance / CREDITS_SPEED,
@@ -179,7 +180,7 @@ class Community(Scene):
         self.add(logo)
         self.play(
             FadeOut(credits),
-            FadeOut(cap),
+            caption_change(cap, run_time=1.2),
             logo.animate.scale(title.height / logo.height).move_to(title),
             run_time=1.2,
         )

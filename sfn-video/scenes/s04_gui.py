@@ -3,7 +3,14 @@
 import subprocess
 
 import numpy as np
-from common import ASSETS, badge, image, screen_pixels, show_caption
+from common import (
+    ASSETS,
+    badge,
+    caption_change,
+    image,
+    screen_pixels,
+    show_caption,
+)
 from manim import (
     LEFT,
     RIGHT,
@@ -98,14 +105,14 @@ class GUI(Scene):
             stroke_width=0,
         ).set_z_index(-1)  # behind the header
 
-        cap = show_caption(self, "…or use our GUI", 0, previous=cap)
+        cap = show_caption(self, "…and use our GUI", 0, previous=cap)
         self.add(clock)  # the recording plays on through captions and waits
         self.play(FadeIn(video), run_time=0.6)
         self.wait(1.0)
         self.play(
             grow.animate.set_value(1),
             FadeOut(python),
-            FadeOut(cap),
+            caption_change(cap, run_time=1.2),
             FadeIn(backdrop),
             run_time=1.2,
         )

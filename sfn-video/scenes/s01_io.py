@@ -9,6 +9,7 @@ from common import (
     TITLE_LOGO_CENTRE,
     TITLE_LOGO_HEIGHT,
     badge,
+    caption_change,
     chip,
     cube_labels,
     data_cube,
@@ -104,7 +105,7 @@ class IO(Scene):
         self.play(
             herd.dots[0].animate.set_value(0),
             herd.edges[0].animate.set_value(0),
-            FadeOut(cap),
+            caption_change(cap, run_time=0.6),
             run_time=0.6,
         )
         self.remove(video)

@@ -13,8 +13,10 @@ from manim import (
     ImageMobject,
     Polygon,
     Rectangle,
+    Succession,
     Text,
     VGroup,
+    Wait,
     config,
 )
 
@@ -146,13 +148,35 @@ def split_caption(full, head, size=44, colour=GREY):
     return line[:n], line[n:]
 
 
+# Every caption change: the old one fades out fully before the new one
+# fades in, rising slightly, so two captions never overlap
+CAPTION_OUT, CAPTION_IN, CAPTION_RISE = 0.3, 0.5, 0.15
+
+
+def caption_change(old=None, new=None, run_time=None):
+    """Animation replacing caption ``old`` with ``new`` (either may be None).
+
+    Given a longer ``run_time``, to share a ``play`` with longer animations,
+    the change still takes its usual time, at the start.
+    """
+    parts = []
+    if old is not None:
+        parts.append(FadeOut(old, run_time=CAPTION_OUT))
+    if new is not None:
+        parts.append(FadeIn(new, shift=CAPTION_RISE * UP, run_time=CAPTION_IN))
+    length = sum(part.run_time for part in parts)
+    if run_time is not None:
+        if run_time < length:
+            raise ValueError(f"a caption change takes {length} s, not {run_time} s")
+        if run_time > length:
+            parts.append(Wait(run_time - length))
+    return Succession(*parts)
+
+
 def show_caption(scene, text, hold, previous=None, **kwargs):
-    """Fade in a caption (replacing any previous one) and hold it."""
+    """Show a caption (replacing any previous one) and hold it."""
     new = caption(text, **kwargs)
-    anims = [FadeIn(new, shift=0.15 * UP)]
-    if previous is not None:
-        anims.append(FadeOut(previous))
-    scene.play(*anims, run_time=0.6)
+    scene.play(caption_change(previous, new))
     if hold > 0:
         scene.wait(hold)
     return new

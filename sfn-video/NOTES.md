@@ -74,9 +74,11 @@ Not committed (see `.gitignore`):
   (`#66c2a5`, `#8da0cb`, `#fc8d62`). Persistent header: URL centred in teal
   (regular weight), logo top right; the URL is on screen, unchanged, for
   the whole video.
-- Glanceable for passers-by: big, short captions; one thing to look at at a
-  time; restrained animation (things appear rather than fly in); the end
-  fades to the header alone so the loop restarts cleanly.
+- Glanceable for passers-by: big, short captions, all changed the same
+  way (`caption_change`: the old fades out before the new rises in); one
+  thing to look at at a time; restrained animation (things appear rather
+  than fly in); the end fades to the header alone so the loop restarts
+  cleanly.
 - Formats: shown as tool rows (logo + name, no boxes) for DeepLabCut, SLEAP,
   LightningPose and NWB, plus "and more…" with a generic file icon. Only
   tools the loaders support today; no "coming soon", no code on screen.
@@ -126,7 +128,7 @@ trajectory matches the poster's panel:
    in the occupancy plot's slot: "Plot keypoint positions over time".
 2. When the clip ends, the cleaned trace (teal, drawn over the raw one so
    only the outliers show orange) sweeps across in 1.5 s: "Drop outliers,
-   smooth and interpolate tracks". The trace plot is three matplotlib
+   smooth and interpolate". The trace plot is three matplotlib
    layers (axes, raw, cleaned) revealed column by column.
 3. Clip and traces crossfade (1.2 s) into the static `plot_centroid_trajectory`
    figure (centroid of centre, tailbase and ears), "Centroid trajectory":
@@ -142,11 +144,11 @@ Segment 3 (quantify), `scenes/s03_quantify.py` (~15 s):
 
 1. The bee clip (49–57 s of `sleap_data/bees…`, 2× speed, green/orange
    skeletons) plays large, roughly over where the speed and distance plots
-   will be, credited "Data: Pereira et al., Nature Methods, 2022". Caption
-   for the whole segment (wording still open): "Quantify motion any way
-   you like".
+   will be, credited "Data: Pereira et al., Nature Methods, 2022". Caption:
+   "Quantify motion any way you like".
 2. The clip shrinks to a thumbnail below the cube as the speed (px/s) and
-   inter-bee distance (px) panels appear; then the head-direction polar
+   inter-bee distance (px) panels appear: "Speeds, distances, orientations
+   and much more…"; then the head-direction polar
    histograms (antenna bases as left/right pair, 30° bins), all from
    movement + xarray plotting. Fades to the header alone, which segment 4
    starts from.
@@ -159,7 +161,7 @@ Segment 4 (gui), `scenes/s04_gui.py` (~27 s):
 
 1. From the header alone: Python logo on the left, "You can call movement
    from Python scripts"; a playing thumbnail of the GUI screen recording
-   appears right: "…or use our GUI" (no napari logo; the
+   appears right: "…and use our GUI" (no napari logo; the
    recording itself is the GUI).
 2. The thumbnail grows to its place as the Python logo fades and the
    background fades to black (the header stays on top). The recording
@@ -175,7 +177,7 @@ Segment 5 (community), `scenes/s05_community.py` (~22 s), the last:
 
 1. One slide built up row by row, the caption changing with each row:
    GitHub mark (Font Awesome) and Octicons scales labelled "GitHub" and
-   "BSD-3-Clause": "Free and open source"; NIU icon with "Neuroinformatics
+   "BSD-3-Clause": "Free and open-source"; NIU icon with "Neuroinformatics
    Unit" and the SWC logo: "Developed by a dedicated team of engineers";
    UCL, PDN, Wellcome, Gatsby (SWC is already above): "Supported by our
    host institutes and funders". Small Font Awesome credit bottom right.
@@ -188,7 +190,6 @@ Segment 5 (community), `scenes/s05_community.py` (~22 s), the last:
 
 ## Next
 
-- Settle the segment 3 caption wording.
 - Use the space freed by the header: enlarge content between header and
   caption.
 - Remove the netCDF icon if it stays unused.

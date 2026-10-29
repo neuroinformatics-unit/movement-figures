@@ -9,12 +9,14 @@ from common import (
     THUMB_CENTRE,
     THUMB_HEIGHT,
     badge,
+    caption_change,
     data_cube,
     dataset_arrow,
     right_of,
     screen_pixels,
     show_caption,
     small_print,
+    split_caption,
 )
 from manim import (
     DOWN,
@@ -42,6 +44,11 @@ VIDEO_HEIGHT = 5.2
 VIDEO_Y = 0.15
 VIDEO_OVER = 0.33  # across the figure: roughly over the speed and distance plots
 CAPTION = "Quantify motion any way you like"
+# Completed in place as the head-direction plots join speed and distance
+METRICS_CAPTION = (
+    "Speeds, distances, orientations and much more…",
+    "Speeds, distances,",
+)
 
 
 class Quantify(Scene):
@@ -129,8 +136,8 @@ class Quantify(Scene):
         data_credit.next_to(clip, DOWN, buff=0.1)
 
         # --- The source clip plays large ------------------------------------
-        # One caption for the whole segment, while the plots build up
-        show_caption(self, CAPTION, 0)
+        cap = show_caption(self, CAPTION, 0)
+        head, tail = split_caption(*METRICS_CAPTION)
         self.play(FadeIn(clip), FadeIn(overlay), FadeIn(data_credit), run_time=0.6)
         self.play(
             step.animate.set_value(len(frames) - 1),
@@ -141,6 +148,7 @@ class Quantify(Scene):
         # --- It shrinks below the dataset as the metrics appear -------------
         self.play(
             shrink.animate.set_value(1),
+            caption_change(cap, head, run_time=1.2),
             FadeOut(data_credit),
             FadeIn(stages[0]),
             run_time=1.2,
@@ -148,7 +156,9 @@ class Quantify(Scene):
         clip.clear_updaters()
         overlay.clear_updaters()
         self.wait(3.0)
-        self.play(FadeIn(stages[1]), run_time=0.6)
+        self.play(
+            caption_change(new=tail, run_time=0.6), FadeIn(stages[1]), run_time=0.6
+        )
         self.remove(stages[0])
         self.wait(4.0)
 

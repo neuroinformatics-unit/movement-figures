@@ -18,6 +18,7 @@ from common import (
     SMALL_DATASET_SCALE,
     badge,
     caption,
+    caption_change,
     cube_labels,
     data_cube,
     dataset_arrow,
@@ -29,7 +30,6 @@ from common import (
 from manim import (
     DL,
     DOWN,
-    UP,
     Dot,
     FadeIn,
     FadeOut,
@@ -63,7 +63,11 @@ class CleanViz(Scene):
             data_cube().scale(SMALL_DATASET_SCALE).move_to(SMALL_DATASET_CENTRE)
         )
         self.remove(labels)  # at once, so no afterimage trails the moving cube
-        self.play(FadeOut(cap), cube.animate.become(small_cube), run_time=1.0)
+        self.play(
+            caption_change(cap, run_time=1.0),
+            cube.animate.become(small_cube),
+            run_time=1.0,
+        )
 
         arrow = dataset_arrow(cube)
         paths, fractions = render(screen_pixels(PANEL_HEIGHT))
@@ -147,7 +151,7 @@ class CleanViz(Scene):
         cap = caption("Plot keypoint positions over time")
         self.play(
             GrowArrow(arrow),
-            FadeIn(cap, shift=0.15 * UP),
+            caption_change(new=cap, run_time=0.8),
             *[
                 FadeIn(m)
                 for m in (clip, overlay, series_axes, raw_unfolding, data_credit)
@@ -167,14 +171,13 @@ class CleanViz(Scene):
 
         # The cleaned line, over the raw one so that shows only where cleaning
         # moved it, sweeps across faster as the caption appears
-        new_cap = caption("Drop outliers, smooth and interpolate tracks")
+        new_cap = caption("Drop outliers, smooth and interpolate")
         sweep = ValueTracker(0)
         clean_lines.set_z_index(1)
         clean_unfolding = unfolding(clean_lines, sweep.get_value)
         self.add(clean_unfolding)
         self.play(
-            FadeOut(cap),
-            FadeIn(new_cap, shift=0.15 * UP),
+            caption_change(cap, new_cap, run_time=1.5),
             sweep.animate.set_value(1),
             run_time=1.5,
             rate_func=linear,
@@ -191,14 +194,15 @@ class CleanViz(Scene):
             "Visualise trajectories and occupancy heatmaps", "Visualise trajectories"
         )
         self.play(
-            FadeOut(cap),
-            FadeIn(head),
+            caption_change(cap, head, run_time=1.2),
             *[FadeOut(m) for m in shown],
             FadeIn(trajectory),
             run_time=1.2,
         )
         self.wait(2.0)
-        self.play(FadeIn(tail), FadeIn(occupancy), run_time=0.8)
+        self.play(
+            caption_change(new=tail, run_time=0.8), FadeIn(occupancy), run_time=0.8
+        )
         self.remove(trajectory)
         self.wait(3.0)
 
