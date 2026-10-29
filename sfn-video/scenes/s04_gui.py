@@ -64,7 +64,7 @@ def recording_frames(height_px):
 class GUI(Scene):
     def construct(self):
         corner = badge()
-        # Picks up where the quantification segment ends: the header alone
+        # Picks up where the quantify segment ends: the header alone
         self.add(corner)
 
         # --- Python scripts, or the GUI --------------------------------------

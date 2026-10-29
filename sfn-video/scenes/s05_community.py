@@ -114,7 +114,7 @@ class Community(Scene):
     def construct(self):
         corner = badge().set_z_index(ON_TOP)
         corner_logo, _ = corner
-        # Picks up where the GUI segment ends: the header alone
+        # Picks up where the gui segment ends: the header alone
         self.add(corner)
 
         # --- One slide, built up row by row ----------------------------------

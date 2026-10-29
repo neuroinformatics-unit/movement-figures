@@ -4,10 +4,10 @@ matching EPM video clip."""
 from pathlib import Path
 
 import numpy as np
-from analysis_data import EPM, MAZE_CROP, OCCUPANCY_BIN, WINDOW, clean_epm
+from clean_viz_data import EPM, MAZE_CROP, OCCUPANCY_BIN, WINDOW, clean_epm
 from common import GREEN, ORANGE
 
-OUT = Path(__file__).resolve().parent.parent / "cache" / "visualise"
+OUT = Path(__file__).resolve().parent.parent / "cache" / "clean_viz"
 FIGSIZE = (11, 6)  # inches; sets text size relative to the plots
 VIDEO_HEIGHT, VIDEO_WIDTH = 1028, 1300
 VIDEO_FPS = 30

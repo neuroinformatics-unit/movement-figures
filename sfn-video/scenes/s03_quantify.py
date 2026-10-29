@@ -28,7 +28,7 @@ from manim import (
     linear,
 )
 
-# The dataset and arrow stay where the analysis segment left them; the bee
+# The dataset and arrow stay where the clean_viz segment left them; the bee
 # clip plays as a thumbnail below the dataset, the plots fill the right
 FIGURE_CENTRE = np.array([2.0, -0.2, 0])
 FIGURE_HEIGHT = 5.6
@@ -39,7 +39,7 @@ CAPTION = "Quantify motion any way you like"
 class Quantify(Scene):
     def construct(self):
         corner = badge()
-        # Picks up exactly where the analysis segment ends
+        # Picks up exactly where the clean_viz segment ends
         cube = data_cube().scale(SMALL_DATASET_SCALE).move_to(SMALL_DATASET_CENTRE)
         arrow = dataset_arrow(cube)
         self.add(corner, cube, arrow)
@@ -125,5 +125,5 @@ class Quantify(Scene):
             self.wait(2.5)
         self.wait(2.0)
 
-        # Fade to the header alone; the GUI segment continues from it
+        # Fade to the header alone; the gui segment continues from it
         self.play(*[FadeOut(m) for m in self.mobjects if m is not corner])

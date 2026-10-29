@@ -92,9 +92,9 @@ def caption(text, size=44, colour=GREY):
 
 
 def dataset_arrow(cube):
-    """The arrow leading from the small dataset to the analysis plots.
+    """The arrow leading from the small dataset to the plots.
 
-    Shared by the analysis and quantification segments, so it stays put
+    Shared by the clean_viz and quantify segments, so it stays put
     across the cut.
     """
     from manim import Arrow
@@ -227,7 +227,7 @@ def slab(tone, rows=4, cols=2, depth=6, cell=0.36):
 # Where the tidy dataset sits when segment 1 hands over to segment 2
 DATASET_SCALE = 0.8
 DATASET_CENTRE = np.array([4.1, -0.1, 0.0])
-# ...and where it waits, small, during the analysis segments
+# ...and where it waits, small, during the clean_viz and quantify segments
 SMALL_DATASET_SCALE = 0.4
 SMALL_DATASET_CENTRE = np.array([-5.7, 0.4, 0.0])
 # The source clip plays as a thumbnail below the small dataset

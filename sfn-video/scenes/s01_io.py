@@ -41,7 +41,7 @@ TOOLS = [
 ]
 
 
-class Formats(Scene):
+class IO(Scene):
     def construct(self):
         # --- Title card: the header URL and the logo are there from frame 1
         corner = badge()
@@ -141,7 +141,7 @@ class Formats(Scene):
         self.play(FadeIn(cube, cube_labels(cube)), run_time=0.8)
         self.wait(4.5)
 
-        # End on the dataset alone; the analysis segment continues from it
+        # End on the dataset alone; the clean_viz segment continues from it
         herd.frame.clear_updaters()
         skeletons.clear_updaters()
         self.play(FadeOut(chips), FadeOut(skeletons))

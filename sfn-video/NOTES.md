@@ -17,8 +17,8 @@ uv pip install --python .venv -r requirements.txt   # manim 0.22.1, movement 0.1
 .venv/bin/python fetch_assets.py   # logos from the NIU Dropbox (MOVEMENT_RESOURCES)
 
 cd scenes
-../.venv/bin/manim -qm --media_dir ../media s01_formats.py Formats   # 720p draft
-../.venv/bin/manim -qm --media_dir ../media s02_analysis.py Analysis
+../.venv/bin/manim -qm --media_dir ../media s01_io.py IO   # 720p draft
+../.venv/bin/manim -qm --media_dir ../media s02_clean_viz.py CleanViz
 ../.venv/bin/manim -qm --media_dir ../media s03_quantify.py Quantify
 ../.venv/bin/manim -qm --media_dir ../media s04_gui.py GUI
 ../.venv/bin/manim -qm --media_dir ../media s05_community.py Community
@@ -56,12 +56,14 @@ Not committed (see `.gitignore`):
   isometric data cube and its labels, the shared dataset arrow, and the
   dataset positions used for the hand-overs between segments.
 - `mouse.py`: DBTravelator skeletons and video frames (segment 1).
-- `analysis_data.py` + `vis_plots.py`: cleaned DLC EPM data and the
+- `clean_viz_data.py` + `clean_viz_plots.py`: cleaned DLC EPM data and the
   trajectory/occupancy frames and the video thumbnail (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
 - `community.py`: contributor names from movement's People page.
-- `s01_formats.py` … `s05_community.py`: the scenes.
+- `s01_io.py`, `s02_clean_viz.py`, `s03_quantify.py`, `s04_gui.py`,
+  `s05_community.py`: the scenes (classes `IO`, `CleanViz`, `Quantify`,
+  `GUI`, `Community`).
 
 ## Decisions so far
 
@@ -93,7 +95,7 @@ Not committed (see `.gitignore`):
 
 ## Status (2026-10-29): segments 1–5, ~115 s combined at 720p
 
-Segment 1, `scenes/s01_formats.py` (~25 s):
+Segment 1 (io), `scenes/s01_io.py` (~25 s):
 
 1. Title card: header URL and big logo on frame 1; tagline "Python tools
    for analysing animal motion" fades in; the logo alone flies into the
@@ -107,7 +109,7 @@ Segment 1, `scenes/s01_formats.py` (~25 s):
 4. The cube and dimension labels appear beside them: "…into one tidy
    dataset". Tools and mice fade, leaving the cube.
 
-Segment 2, `scenes/s02_analysis.py` (~22 s). Uses the DLC EPM sample
+Segment 2 (clean_viz), `scenes/s02_clean_viz.py` (~22 s). Uses the DLC EPM sample
 over 240–260 s, cleaned with the movement applications poster's pipeline
 (confidence ≥ 0.99, rolling median 9, linear gaps ≤ 5), so it matches the
 poster's panels A–C:
@@ -127,7 +129,7 @@ poster's panels A–C:
    the caption completes in place: "… and occupancy heatmaps".
 4. Everything but the header, cube and arrow fades.
 
-Segment 3, `scenes/s03_quantify.py` (~19 s):
+Segment 3 (quantify), `scenes/s03_quantify.py` (~19 s):
 
 1. The bee clip (49–57 s of
    `sleap_data/bees…`, 1.5× speed, green/orange skeletons) plays as a
@@ -142,7 +144,7 @@ Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
 size (`screen_pixels`, `image`) to avoid aliasing; final renders need
 `-qh --fps 30`. No 1080p render has been made of the current version yet.
 
-Segment 4, `scenes/s04_gui.py` (~29 s):
+Segment 4 (gui), `scenes/s04_gui.py` (~28 s):
 
 1. From the header alone: Python logo, "You can call movement from Python
    scripts"; it moves left and a playing thumbnail of the GUI screen
@@ -158,7 +160,7 @@ Segment 4, `scenes/s04_gui.py` (~29 s):
    segment 5 starts from.
 
 
-Segment 5, `scenes/s05_community.py` (~22 s), the last:
+Segment 5 (community), `scenes/s05_community.py` (~22 s), the last:
 
 1. One slide built up row by row, the caption changing with each row:
    GitHub mark (Font Awesome) and Octicons scales labelled "GitHub" and

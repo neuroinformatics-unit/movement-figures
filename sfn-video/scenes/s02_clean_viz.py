@@ -1,6 +1,15 @@
-"""Downstream analysis on the tidy dataset, shown with movement's own plots."""
+"""Cleaning and visualising the tidy dataset, with movement's own plots."""
 
 import numpy as np
+from clean_viz_plots import (
+    CLIP_STEP,
+    MAZE_CROP,
+    SKELETON,
+    VIDEO_FPS,
+    VIDEO_HEIGHT,
+    render,
+    video_clip,
+)
 from common import (
     DATASET_CENTRE,
     DATASET_SCALE,
@@ -32,27 +41,18 @@ from manim import (
     always_redraw,
     linear,
 )
-from vis_plots import (
-    CLIP_STEP,
-    MAZE_CROP,
-    SKELETON,
-    VIDEO_FPS,
-    VIDEO_HEIGHT,
-    render,
-    video_clip,
-)
 
 PANEL_CENTRE = np.array([1.8, -0.1, 0])
 PANEL_HEIGHT = 5.4
 PLAYBACK = 4  # times real time
 
 
-class Analysis(Scene):
+class CleanViz(Scene):
     def construct(self):
         corner = badge()
         cube = data_cube().scale(DATASET_SCALE).move_to(DATASET_CENTRE)
         labels = cube_labels(cube)
-        # Picks up exactly where the formats segment ends
+        # Picks up exactly where the io segment ends
         cap = caption("…into one tidy dataset")
         self.add(corner, cube, labels, cap)
         self.wait(0.5)
@@ -139,6 +139,6 @@ class Analysis(Scene):
         self.remove(trajectory)
         self.wait(5.5)
 
-        # Keep the dataset and arrow; the quantification segment labels it
+        # Keep the dataset and arrow; the quantify segment reuses them
         keep = (corner, cube, arrow)
         self.play(*[FadeOut(m) for m in self.mobjects if m not in keep])

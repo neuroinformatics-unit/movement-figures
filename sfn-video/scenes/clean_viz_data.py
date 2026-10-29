@@ -1,4 +1,4 @@
-"""EPM data choices for the downstream-analysis segment."""
+"""EPM data choices for the clean_viz segment."""
 
 EPM = "DLC_single-mouse_EPM.predictions.h5"
 
