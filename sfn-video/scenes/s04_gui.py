@@ -78,7 +78,7 @@ class GUI(Scene):
         python = image("python-logo-generic.png", 1.5).move_to(0.3 * UP + 3.2 * LEFT)
         cap = show_caption(self, "You can call movement from Python scripts", 0)
         self.play(FadeIn(python), run_time=0.6)
-        self.wait(1.5)
+        self.wait(2.5)
 
         # The GUI is the recording itself: a playing thumbnail beside the
         # Python logo, which then grows to its place
@@ -108,7 +108,7 @@ class GUI(Scene):
         cap = show_caption(self, "…and use our GUI", 0, previous=cap)
         self.add(clock)  # the recording plays on through captions and waits
         self.play(FadeIn(video), run_time=0.6)
-        self.wait(1.0)
+        self.wait(2.0)
         self.play(
             grow.animate.set_value(1),
             FadeOut(python),

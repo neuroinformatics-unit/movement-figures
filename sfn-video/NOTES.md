@@ -16,21 +16,17 @@ uv venv --python 3.12 --python-preference only-managed .venv
 uv pip install --python .venv -r requirements.txt   # manim 0.22.1, movement 0.17.0
 .venv/bin/python fetch_assets.py   # logos from the NIU Dropbox (MOVEMENT_RESOURCES)
 
-cd scenes
-../.venv/bin/manim -qm --media_dir ../media s01_io.py IO   # 720p draft
-../.venv/bin/manim -qm --media_dir ../media s02_clean_viz.py CleanViz
-../.venv/bin/manim -qm --media_dir ../media s03_quantify.py Quantify
-../.venv/bin/manim -qm --media_dir ../media s04_gui.py GUI
-../.venv/bin/manim -qm --media_dir ../media s05_community.py Community
-../.venv/bin/manim -qh --fps 30 ...  # final 1080p30 (the -qh preset is 60 fps)
+./render.sh          # all segments at 720p30 → media/movement_SfN_2026_720p.mp4
+./render.sh 1080p    # final, 1080p30 → media/movement_SfN_2026_1080p.mp4
 
-cd ..
-ffmpeg -f concat -safe 0 -i media/concat.txt -c copy media/combined_720p.mp4
+# or one segment at a time, e.g. while working on it (720p draft):
+cd scenes && ../.venv/bin/manim -qm --media_dir ../media s02_clean_viz.py CleanViz
 ```
 
-Segments are rendered separately and joined with ffmpeg's concat demuxer
-(`media/concat.txt` lists the five segment files); each segment starts on
-the exact frame the previous one ends on.
+`render.sh` renders the five segments separately (scenes `IO`, `CleanViz`,
+`Quantify`, `GUI`, `Community`) and joins them with ffmpeg's concat demuxer,
+without re-encoding; each segment starts on the exact frame the previous
+one ends on.
 
 Not committed (see `.gitignore`):
 
@@ -99,7 +95,7 @@ Not committed (see `.gitignore`):
   large (Holly Morley; Loukia Katsouri; Pereira et al., Nature Methods,
   2022).
 
-## Status (2026-10-29): segments 1–5, ~109 s combined at 720p
+## Status (2026-10-29): segments 1–5, ~110 s combined at 720p
 
 Segment 1 (io), `scenes/s01_io.py` (~23 s):
 
