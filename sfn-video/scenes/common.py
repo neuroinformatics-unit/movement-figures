@@ -56,10 +56,20 @@ def image(name, height):
 
     The bitmap is resampled (Lanczos) to its exact on-screen size first;
     manim's own downscaling does not filter, so small logos would alias.
+    Opaque images (logos on white) get a transparent background and are
+    trimmed to their content, as transparent ones are by ``fetch_assets.py``.
     """
     from PIL import Image
 
     src = Image.open(ASSETS / name).convert("RGBA")
+    if src.getchannel("A").getextrema()[0] == 255:
+        # Shave the canvas edges, where some logos have a thin frame or stray
+        # pixels (as the UCL one does), then drop the near-white background:
+        # some logos sit on an off-white canvas
+        rgba = np.asarray(src)[3:-3, 3:-3].copy()
+        rgba[rgba[..., :3].min(axis=2) >= 240, 3] = 0
+        src = Image.fromarray(rgba)
+        src = src.crop(src.getchannel("A").getbbox())
     px = screen_pixels(height)
     src = src.resize((max(1, round(src.width * px / src.height)), px), Image.LANCZOS)
     img = ImageMobject(np.asarray(src))
@@ -123,6 +133,9 @@ def show_caption(scene, text, hold, previous=None, **kwargs):
 
 
 HEADER_HEIGHT = 0.75  # logo height; the header row spans this at the top
+# The title card's big logo, where the video starts and loops back to
+TITLE_LOGO_HEIGHT = 3.7
+TITLE_LOGO_CENTRE = 0.3 * UP
 
 
 def badge():
@@ -142,14 +155,19 @@ def badge():
     return Group(logo, url)
 
 
-def file_glyph(height=0.6, colour="#c4c4c4"):
-    """Generic document icon (Font Awesome Free "file", CC BY 4.0)."""
+def svg_icon(name, height, colour=GREY):
+    """A single-colour SVG icon from the assets, ``height`` scene units tall."""
     from manim import SVGMobject
 
-    glyph = SVGMobject(str(ASSETS / "file-solid-full.svg"))
+    glyph = SVGMobject(str(ASSETS / name))
     glyph.set_fill(colour, opacity=1).set_stroke(width=0)
     glyph.height = height
     return glyph
+
+
+def file_glyph(height=0.6, colour="#c4c4c4"):
+    """Generic document icon (Font Awesome Free "file", CC BY 4.0)."""
+    return svg_icon("file-solid-full.svg", height, colour)
 
 
 def chip(label, logo, height=0.9):

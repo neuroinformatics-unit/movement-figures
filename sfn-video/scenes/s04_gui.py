@@ -1,7 +1,4 @@
-"""Python scripts or the napari GUI, then a screen recording of the GUI.
-
-The last segment: it ends on the header alone, where the video loops.
-"""
+"""Python scripts or the napari GUI, then a screen recording of the GUI."""
 
 import subprocess
 
@@ -128,6 +125,6 @@ class GUI(Scene):
         video.clear_updaters()
         self.wait(0.5)
 
-        # Fade back to white, with the header alone, so the loop restarts cleanly
+        # Fade back to white, with the header alone; the community segment
+        # continues from it
         self.play(*[FadeOut(m) for m in self.mobjects if m is not corner])
-        self.wait(0.5)

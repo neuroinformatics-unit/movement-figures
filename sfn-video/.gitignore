@@ -6,3 +6,5 @@ previews/
 __pycache__/
 sleap_data/
 !assets/file-solid-full.svg
+!assets/github-brands.svg
+!assets/octicon-law-24.svg

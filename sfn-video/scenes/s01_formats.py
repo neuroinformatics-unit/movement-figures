@@ -6,6 +6,8 @@ from common import (
     DATASET_SCALE,
     FONT,
     GREY,
+    TITLE_LOGO_CENTRE,
+    TITLE_LOGO_HEIGHT,
     badge,
     chip,
     cube_labels,
@@ -44,7 +46,8 @@ class Formats(Scene):
         # --- Title card: the header URL and the logo are there from frame 1
         corner = badge()
         corner_logo, corner_url = corner
-        logo = image("movement_logo_on-transparent.png", 3.7).shift(0.3 * UP)
+        logo = image("movement_logo_on-transparent.png", TITLE_LOGO_HEIGHT)
+        logo.move_to(TITLE_LOGO_CENTRE)
         tagline = Text(
             "Python tools for analysing animal motion",
             font=FONT,

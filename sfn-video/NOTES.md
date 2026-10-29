@@ -21,6 +21,7 @@ cd scenes
 ../.venv/bin/manim -qm --media_dir ../media s02_analysis.py Analysis
 ../.venv/bin/manim -qm --media_dir ../media s03_quantify.py Quantify
 ../.venv/bin/manim -qm --media_dir ../media s04_gui.py GUI
+../.venv/bin/manim -qm --media_dir ../media s05_community.py Community
 ../.venv/bin/manim -qh --fps 30 ...  # final 1080p30 (the -qh preset is 60 fps)
 
 cd ..
@@ -28,7 +29,7 @@ ffmpeg -f concat -safe 0 -i media/concat.txt -c copy media/combined_720p.mp4
 ```
 
 Segments are rendered separately and joined with ffmpeg's concat demuxer
-(`media/concat.txt` lists the four segment files); each segment starts on
+(`media/concat.txt` lists the five segment files); each segment starts on
 the exact frame the previous one ends on.
 
 Not committed (see `.gitignore`):
@@ -36,10 +37,16 @@ Not committed (see `.gitignore`):
 - `assets/`: logos copied by `fetch_assets.py` (some third-party; the Python
   SVG is rasterised with Inkscape) and Niko's napari screen recording
   `movement_napari_bees_workflow_2026-10-29.mp4` (35.7 s, 1080p30), needed
-  for segment 4; only the Font Awesome `file-solid-full.svg` is tracked.
+  for segment 4. Copied by hand (not in the Dropbox resources): the
+  recording, `NIU_logo_transparent.png` and `UCL-logo-white-simple.png`
+  (`qr-code.svg` is no longer used). Only the
+  icons are tracked: Font Awesome `file-solid-full.svg` and
+  `github-brands.svg` (CC BY 4.0, credited in segment 5) and GitHub's
+  Octicons `octicon-law-24.svg` (MIT, also credited in segment 5).
 - `sleap_data/`: SLEAP-tracked bees and flies clips (`.slp` + `.mp4`), not
   public sample data; needed for segment 3. The flies are unused so far.
-- `cache/`: data derived on first render (cleaned tracks, video frames,
+- `cache/`: data derived on first render, and `contributors.txt` (the
+  People page's contributor names, fetched once; delete to refresh), (cleaned tracks, video frames,
   matplotlib plot frames at the render's pixel size); delete to rebuild.
 - `media/`, `previews/` (ad-hoc frame grabs for review).
 
@@ -53,8 +60,8 @@ Not committed (see `.gitignore`):
   trajectory/occupancy frames and the video thumbnail (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
-- `s01_formats.py`, `s02_analysis.py`, `s03_quantify.py`, `s04_gui.py`:
-  the scenes.
+- `community.py`: contributor names from movement's People page.
+- `s01_formats.py` … `s05_community.py`: the scenes.
 
 ## Decisions so far
 
@@ -84,7 +91,7 @@ Not committed (see `.gitignore`):
 - End card should credit SWC / NIU and the contributor community, plus the
   Font Awesome icon (CC BY 4.0).
 
-## Status (2026-10-29): segments 1–4, ~94 s combined at 720p
+## Status (2026-10-29): segments 1–5, ~115 s combined at 720p
 
 Segment 1, `scenes/s01_formats.py` (~25 s):
 
@@ -147,18 +154,30 @@ Segment 4, `scenes/s04_gui.py` (~29 s):
    with light grey (`#dddddd`) captions at recording times 0 s
    "Interactively explore motion tracks", 10 s (zoom-in) "Identify and
    fix tracking errors", 24 s (ROI panel opens) "Define regions of
-   interest". Fades back to white with the header alone, where the
-   video loops.
+   interest". Fades back to white with the header alone, which
+   segment 5 starts from.
 
+
+Segment 5, `scenes/s05_community.py` (~22 s), the last:
+
+1. One slide built up row by row, the caption changing with each row:
+   GitHub mark (Font Awesome) and Octicons scales labelled "GitHub" and
+   "BSD-3-Clause": "Free and open source"; NIU icon with "Neuroinformatics
+   Unit" and the SWC logo: "Developed by a dedicated team of engineers";
+   UCL, PDN, Wellcome, Gatsby (SWC is already above): "Supported by our
+   host institutes and funders". Small Font Awesome credit bottom right.
+2. Rolling credits: "…and a growing community of contributors"; all
+   names from the People page (GitHub handles where no name is listed),
+   alphabetical, three columns, between soft white masks; no count.
+3. As the credits fade, the logo returns from the corner to the title
+   card's size and place (the header URL stays): the last frame is the
+   first frame, so the video loops seamlessly.
 
 ## Next
 
 - Settle the segment 3 caption wording.
 - Use the space freed by the header: enlarge content between header and
   caption.
-- Optional seamless loop: corner logo grows back to centre at the very end.
-- End card: SWC / NIU credit, contributor count, URL, QR code, Font Awesome
-  credit.
 - Remove the netCDF icon if it stays unused.
 - Final 1080p30 render of all segments.
 

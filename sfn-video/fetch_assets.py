@@ -23,6 +23,10 @@ SOURCES = [
     "figures/movement/LightningPose_logo.png",
     "figures/movement/NWB_logo.png",
     "figures/movement/netcdf_icon.png",
+    "logos/affiliate_logos/SWC/SWC_Logo_4C_Blue.png",
+    "logos/affiliate_logos/Cambridge-PDN/PDN_logo_white_0.png",
+    "logos/affiliate_logos/Wellcome/wellcome-logo-black.png",
+    "logos/affiliate_logos/Gatsby/GATSBY_Logo_CO-BRANDING_(WCB)_RGB.JPG",
 ]
 # Vector logos, rasterised with Inkscape
 SVG_SOURCES = ["figures/scipy_ecosystem/logos/python-logo-generic.svg"]
