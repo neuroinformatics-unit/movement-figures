@@ -125,6 +125,5 @@ class Quantify(Scene):
             self.wait(2.5)
         self.wait(2.0)
 
-        # Fade to the badge alone, so the loop restarts cleanly
+        # Fade to the header alone; the GUI segment continues from it
         self.play(*[FadeOut(m) for m in self.mobjects if m is not corner])
-        self.wait(0.5)

@@ -20,6 +20,7 @@ cd scenes
 ../.venv/bin/manim -qm --media_dir ../media s01_formats.py Formats   # 720p draft
 ../.venv/bin/manim -qm --media_dir ../media s02_analysis.py Analysis
 ../.venv/bin/manim -qm --media_dir ../media s03_quantify.py Quantify
+../.venv/bin/manim -qm --media_dir ../media s04_gui.py GUI
 ../.venv/bin/manim -qh --fps 30 ...  # final 1080p30 (the -qh preset is 60 fps)
 
 cd ..
@@ -27,13 +28,15 @@ ffmpeg -f concat -safe 0 -i media/concat.txt -c copy media/combined_720p.mp4
 ```
 
 Segments are rendered separately and joined with ffmpeg's concat demuxer
-(`media/concat.txt` lists the three segment files); each segment starts on
+(`media/concat.txt` lists the four segment files); each segment starts on
 the exact frame the previous one ends on.
 
 Not committed (see `.gitignore`):
 
-- `assets/`: logos copied by `fetch_assets.py` (some third-party); only the
-  Font Awesome `file-solid-full.svg` is tracked.
+- `assets/`: logos copied by `fetch_assets.py` (some third-party; the Python
+  SVG is rasterised with Inkscape) and Niko's napari screen recording
+  `movement_napari_bees_workflow_2026-10-29.mp4` (35.7 s, 1080p30), needed
+  for segment 4; only the Font Awesome `file-solid-full.svg` is tracked.
 - `sleap_data/`: SLEAP-tracked bees and flies clips (`.slp` + `.mp4`), not
   public sample data; needed for segment 3. The flies are unused so far.
 - `cache/`: data derived on first render (cleaned tracks, video frames,
@@ -50,7 +53,8 @@ Not committed (see `.gitignore`):
   trajectory/occupancy frames and the video thumbnail (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
-- `s01_formats.py`, `s02_analysis.py`, `s03_quantify.py`: the scenes.
+- `s01_formats.py`, `s02_analysis.py`, `s03_quantify.py`, `s04_gui.py`:
+  the scenes.
 
 ## Decisions so far
 
@@ -80,7 +84,7 @@ Not committed (see `.gitignore`):
 - End card should credit SWC / NIU and the contributor community, plus the
   Font Awesome icon (CC BY 4.0).
 
-## Status (2026-10-28): segments 1–3, ~66 s combined at 720p
+## Status (2026-10-29): segments 1–4, ~94 s combined at 720p
 
 Segment 1, `scenes/s01_formats.py` (~25 s):
 
@@ -124,11 +128,28 @@ Segment 3, `scenes/s03_quantify.py` (~19 s):
    open): "Quantify motion any way you like".
 2. Figure builds up panel by panel: speed, inter-bee distance, head-direction
    polar histograms (antenna bases as left/right pair, 30° bins), all from
-   movement + xarray plotting. Fades to the header alone.
+   movement + xarray plotting. Fades to the header alone, which
+   segment 4 starts from.
 
 Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
 size (`screen_pixels`, `image`) to avoid aliasing; final renders need
 `-qh --fps 30`. No 1080p render has been made of the current version yet.
+
+Segment 4, `scenes/s04_gui.py` (~29 s):
+
+1. From the header alone: Python logo, "You can call movement from Python
+   scripts"; it moves left and a playing thumbnail of the GUI screen
+   recording appears right: "…or use our GUI" (no napari logo; the
+   recording itself is the GUI).
+2. The thumbnail grows to its place as the Python logo fades and the
+   background fades to black (the header stays on top). The recording
+   plays at 1.6× (no audio), as large as fits between header and caption,
+   with light grey (`#dddddd`) captions at recording times 0 s
+   "Interactively explore motion tracks", 10 s (zoom-in) "Identify and
+   fix tracking errors", 24 s (ROI panel opens) "Define regions of
+   interest". Fades back to white with the header alone, where the
+   video loops.
+
 
 ## Next
 
@@ -136,7 +157,6 @@ size (`screen_pixels`, `image`) to avoid aliasing; final renders need
 - Use the space freed by the header: enlarge content between header and
   caption.
 - Optional seamless loop: corner logo grows back to centre at the very end.
-- napari ROI clip (Niko's screen recording).
 - End card: SWC / NIU credit, contributor count, URL, QR code, Font Awesome
   credit.
 - Remove the netCDF icon if it stays unused.
