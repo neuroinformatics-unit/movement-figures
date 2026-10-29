@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 from bees import COLOURS, NAMES, WINDOW, load_clean, metrics
-from common import BLUE
+from common import BLUE, use_brand_font_in_plots
 
 OUT = Path(__file__).resolve().parent.parent / "cache" / "bees"
 FIGSIZE = (9.6, 5.6)  # inches; sets text size relative to the plots
@@ -51,6 +51,8 @@ def render(height_px, force=False):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
+    use_brand_font_in_plots()
+
     speed, distance, heading = metrics(load_clean())
     # Time from the start of the clip shown in the video
     speed, distance, heading = (
@@ -65,7 +67,7 @@ def render(height_px, force=False):
     for stage, path in enumerate(paths, start=1):
         fig = plt.figure(figsize=FIGSIZE)
         grid = fig.add_gridspec(
-            2, 2, width_ratios=[1.6, 1], left=0.1, right=0.97, bottom=0.1,
+            2, 2, width_ratios=[1.6, 1], left=0.1, right=0.97, bottom=0.12,
             top=0.84, wspace=0.35, hspace=0.45,
         )  # fmt: skip
         ax_speed = fig.add_subplot(grid[0, 0])

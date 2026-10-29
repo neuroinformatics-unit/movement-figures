@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 from clean_viz_data import EPM, MAZE_CROP, OCCUPANCY_BIN, WINDOW, clean_epm
-from common import GREEN, ORANGE
+from common import GREEN, ORANGE, use_brand_font_in_plots
 
 OUT = Path(__file__).resolve().parent.parent / "cache" / "clean_viz"
 FIGSIZE = (11, 6)  # inches; sets text size relative to the plots
@@ -151,6 +151,8 @@ def render(height_px, force=False):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from movement.plots import plot_centroid_trajectory, plot_occupancy
+
+    use_brand_font_in_plots()
 
     ds, position, start, n = _load()
     window = position.isel(time=slice(start, start + n))

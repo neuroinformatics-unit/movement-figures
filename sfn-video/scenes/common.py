@@ -42,6 +42,27 @@ SLAB_TONES = {
 }
 
 
+def use_brand_font_in_plots():
+    """Make Barlow matplotlib's default font, so plots match the captions.
+
+    matplotlib doesn't pick up user-installed fonts on its own, so the file
+    fontconfig resolves is registered with it.
+    """
+    import subprocess
+
+    import matplotlib.pyplot as plt
+    from matplotlib import font_manager
+
+    path = subprocess.run(
+        ["fc-match", "--format=%{file}", f"{FONT}:style=Regular"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    font_manager.fontManager.addfont(path)
+    plt.rcParams["font.family"] = FONT
+
+
 def screen_pixels(height):
     """Pixel height, at the current render quality, of ``height`` scene units.
 
