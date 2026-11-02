@@ -4,7 +4,8 @@ import subprocess
 
 import numpy as np
 from common import (
-    ASSETS,
+    INPUTS,
+    ROOT,
     badge,
     caption_change,
     image,
@@ -25,13 +26,13 @@ from manim import (
     config,
 )
 
-RECORDING = ASSETS / "movement_napari_bees_workflow_2026-10-29.mp4"
+RECORDING = INPUTS / "movement_napari_bees_workflow_2026-10-29.mp4"
 RECORDING_FPS = 30
 PLAYBACK = 1.6  # times real time
 # The recording plays on black, so its dark UI blends in; captions go light
 BACKDROP = "#000000"
 CAPTION_ON_BACKDROP = "#dddddd"
-CACHE = ASSETS.parent / "cache" / "gui"
+CACHE = ROOT / "cache" / "gui"
 # Between the header URL (bottom at y=3.2; the logo sits clear to the right)
 # and a one-line caption (top at y=-2.99), with a small margin to each
 VIDEO_HEIGHT = 5.9

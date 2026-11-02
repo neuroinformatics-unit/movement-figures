@@ -85,6 +85,26 @@ Figures may draw on two data sources:
 - End with `save_figure(fig, "<name>")`
 - Run `uv run quarto render` and inspect the new files in `outputs/` or the whole gallery in `_site/index.html`.
 
+## Videos
+
+Animated videos about movement live under `videos/`, one folder per video,
+and are made with [manim](https://www.manim.community/) (which needs ffmpeg
+and pango/cairo on the system). Each folder has a `video.yml` listing its
+segments, the sample data it uses, and a manifest of the input files that
+can't be committed (third-party logos, large recordings), with where to get
+each one and its sha256 hash. Shared building blocks (brand, captions,
+credits, header) live in `movement_figures.video`.
+
+```bash
+uv sync --group video                          # adds manim
+uv run movement-video check videos/showcase    # are all inputs in place?
+uv run movement-video render videos/showcase --resolution 1080p
+```
+
+Renders go to the video's `media/` folder (not committed). Finished versions
+are tagged (e.g. `showcase-2026-11-02`) and attached to a GitHub Release.
+See `videos/showcase/README.md` for the movement showcase video.
+
 ## Fonts
 
 The fonts used by the figures—Liberation Sans (all media) and Barlow

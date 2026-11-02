@@ -139,7 +139,7 @@ class Community(Scene):
             (supporters, "Supported by our host institutes and funders", []),
         ]
         cap = None
-        for (row, text, extras), y in zip(rows, ROW_CENTRES):
+        for (row, text, extras), y in zip(rows, ROW_CENTRES, strict=True):
             row.move_to(y * UP)
             cap, change = self.say(text, cap, run_time=0.8)
             self.play(change, FadeIn(row), *[FadeIn(m) for m in extras], run_time=0.8)

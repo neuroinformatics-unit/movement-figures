@@ -35,7 +35,7 @@ for name, (knee, ankle, toe) in LIMBS.items():
 INDIVIDUALS = [(GREEN, 0, 0), (BLUE, 22, -40), (ORANGE, 44, 10)]
 MAX_OFFSET = max(offset for _, offset, _ in INDIVIDUALS)
 
-VIDEO = Path.home() / ".movement/data/videos/single-mouse_DBTravelator_video.avi"
+DATASET = "DLC_single-mouse_DBTravelator_2D.predictions.h5"
 VIDEO_CACHE = CACHE.with_name("dbtravelator_frames.npy")
 VIDEO_HEIGHT, VIDEO_WIDTH = 230, 1920
 
@@ -57,9 +57,7 @@ def load():
             rolling_filter,
         )
 
-        ds = sample_data.fetch_dataset(
-            "DLC_single-mouse_DBTravelator_2D.predictions.h5"
-        )
+        ds = sample_data.fetch_dataset(DATASET)
         # Same cleaning as the movement "scale" example
         position = filter_by_confidence(ds.position, ds.confidence, threshold=0.9)
         position = interpolate_over_time(position, max_gap=40)
@@ -86,13 +84,17 @@ def load_video():
     if not VIDEO_CACHE.exists():
         import subprocess
 
+        from movement import sample_data
+
+        video = sample_data.fetch_dataset(DATASET, with_video=True).attrs["video_path"]
+
         raw = subprocess.run(
             [
                 "ffmpeg",
                 "-loglevel",
                 "error",
                 "-i",
-                str(VIDEO),
+                str(video),
                 "-vf",
                 f"select=between(n\\,{FIRST}\\,{LAST})",
                 "-vsync",

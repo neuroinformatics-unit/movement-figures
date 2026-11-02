@@ -1,0 +1,86 @@
+# movement showcase: a silent, looping promo video (first shown at SfN 2026).
+# Render with `uv run --group video movement-video render videos/showcase`.
+
+name: movement_showcase  # output: media/movement_showcase_<YYYY-MM-DD>_<res>.mp4
+
+# Rendered separately, in order, then joined without re-encoding
+segments:
+  - module: s01_io
+    scene: IO
+  - module: s02_clean_viz
+    scene: CleanViz
+  - module: s03_quantify
+    scene: Quantify
+  - module: s04_gui
+    scene: GUI
+  - module: s05_community
+    scene: Community
+
+# Fetched through movement.sample_data
+sample_data:
+  - filename: DLC_single-mouse_DBTravelator_2D.predictions.h5
+    with_video: true
+  - filename: DLC_single-mouse_EPM.predictions.h5
+    with_video: true
+
+# Files in inputs/, not committed (third-party, or too large). Put each one
+# there by hand; `movement-video check` compares them with these hashes, and
+# `movement-video update-hashes` records new ones. Keep `file` first in each
+# entry. "NIU Dropbox" paths are relative to the NIU resources folder; logos
+# from there were converted to RGBA and some trimmed to their visible content
+# when copied, so the hash identifies the exact file used.
+inputs:
+  - file: DLC_logo.png
+    source: "NIU Dropbox: figures/movement/DLC_logo.png"
+    credit: DeepLabCut
+    sha256: "08d482e632c5f002352e4af9de4fa7520976865b1bfe19f10371eb6fe3cb4a1b"
+  - file: SLEAP_logo.png
+    source: "NIU Dropbox: figures/movement/SLEAP_logo.png"
+    credit: SLEAP
+    sha256: "b9d4cee14bb5dccbaf216120750e351186bddcc485f434bfb503853be4becf33"
+  - file: LightningPose_logo.png
+    source: "NIU Dropbox: figures/movement/LightningPose_logo.png"
+    credit: Lightning Pose
+    sha256: "5961e2ec647aaac30b0acb54e6c2ca179f177c33e4446cfdc498fc6bfd59472e"
+  - file: NWB_logo.png
+    source: "NIU Dropbox: figures/movement/NWB_logo.png"
+    credit: Neurodata Without Borders
+    sha256: "6faf4ca659eec412622e8d10f4a3709c027e49a8d56e30c09175812274e63646"
+  - file: python-logo-generic.png
+    source: >-
+      NIU Dropbox: figures/scipy_ecosystem/logos/python-logo-generic.svg,
+      rasterised with Inkscape (--export-height=600) and trimmed
+    credit: Python Software Foundation
+    sha256: "d40845e97e605e3dd070b9463e94fa38385ebfb9f710e964ca23ddb024bec1eb"
+  - file: SWC_Logo_4C_Blue.png
+    source: "NIU Dropbox: logos/affiliate_logos/SWC/SWC_Logo_4C_Blue.png"
+    credit: Sainsbury Wellcome Centre
+    sha256: "87c2f3ee6a032d05d76949756e1c814b84baf63f57d96893971c6ff054b03de8"
+  - file: UCL-logo-white-simple.png
+    source: "TODO: where to get it"
+    credit: UCL
+    sha256: "e5349ccb21be5dca68ca050af9a6c90083d0f47d9723e051a6c1e398a6ef29d0"
+  - file: PDN_logo_white_0.png
+    source: "NIU Dropbox: logos/affiliate_logos/Cambridge-PDN/PDN_logo_white_0.png"
+    credit: Cambridge PDN
+    sha256: "18aba7429264b1bebcc3a6574271ed742a087af8c4ef43dd7b79794ee57c2c46"
+  - file: wellcome-logo-black.png
+    source: "NIU Dropbox: logos/affiliate_logos/Wellcome/wellcome-logo-black.png"
+    credit: Wellcome
+    sha256: "d3e8d38a25956774e31847b4d0bb681137fb9088d1ab42a88054ee50bfe4ef5d"
+  - file: GATSBY_Logo_CO-BRANDING_(WCB)_RGB.JPG
+    source: "NIU Dropbox: logos/affiliate_logos/Gatsby/GATSBY_Logo_CO-BRANDING_(WCB)_RGB.JPG"
+    credit: Gatsby Charitable Foundation
+    sha256: "cf7b3e97b242d1f8859429783a65f9f6372fe1da2cc690d4b4745c52c933e06a"
+  - file: movement_napari_bees_workflow_2026-10-29.mp4
+    source: "TODO: where to get it"
+    credit: Screen recording of movement's napari GUI by Niko Sirmpilatze
+    sha256: "bb1186f8ceffee20f82a896806d213948323e64d57951cc8e2b5f9cd80bfc384"
+  - file: bees@21000-23000.slp
+    source: "TODO: where to get it"
+    credit: Pereira et al., Nature Methods, 2022
+    sha256: "63d96e13b4a7d9a37584175b6e0e996d3d28766760820a94830e8a881b436c58"
+  - file: bees@21000-23000.mp4
+    source: "TODO: where to get it"
+    credit: Pereira et al., Nature Methods, 2022
+    sha256: "91b4f78116ba0f1e081c684f6d23f52183b92c9907a29a73850268f1bd8b0443"

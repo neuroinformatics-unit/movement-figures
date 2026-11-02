@@ -1,16 +1,13 @@
 """Two interacting bees: tracks, video frames and movement-computed metrics.
 
-Source: a SLEAP-tracked recording (``sleap_data/``, not committed).
+Source: a SLEAP-tracked recording (in ``inputs/``, not committed).
 """
 
-from pathlib import Path
-
 import numpy as np
-from common import GREEN, ORANGE
+from common import GREEN, INPUTS, ORANGE, ROOT
 
-ROOT = Path(__file__).resolve().parent.parent
-SLP = ROOT / "sleap_data" / "bees@21000-23000.slp"
-VIDEO = ROOT / "sleap_data" / "bees@21000-23000.mp4"
+SLP = INPUTS / "bees@21000-23000.slp"
+VIDEO = INPUTS / "bees@21000-23000.mp4"
 CACHE = ROOT / "cache" / "bees"
 
 FPS = 25

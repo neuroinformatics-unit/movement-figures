@@ -1,39 +1,46 @@
-"""Shared style, helpers and building blocks for the SfN booth video."""
+"""Shared style, helpers and building blocks for the showcase video."""
 
 from pathlib import Path
 
 import numpy as np
 from manim import (
-    DOWN,
     RIGHT,
     UP,
-    FadeIn,
-    FadeOut,
     Group,
-    ImageMobject,
     Polygon,
     Rectangle,
-    Succession,
     Text,
     VGroup,
-    Wait,
-    config,
 )
 
-ASSETS = Path(__file__).resolve().parent.parent / "assets"
+from movement_figures.video import elements
+from movement_figures.video.brand import (  # noqa: F401
+    BG,
+    FONT,
+    GREY,
+    LIGHT_GREY,
+    use_brand_font_in_plots,
+)
+from movement_figures.video.brand import ORANGE as ORANGE
+from movement_figures.video.brand import PURPLE as BLUE
+from movement_figures.video.brand import TEAL as GREEN
+from movement_figures.video.elements import (  # noqa: F401
+    HEADER_HEIGHT,
+    caption,
+    caption_change,
+    screen_pixels,
+    show_caption,
+    small_print,
+    split_caption,
+)
 
-# Brand: Barlow typeface, ColorBrewer Set2 colours
-FONT = "Barlow"
+ROOT = Path(__file__).resolve().parent.parent
+ASSETS = ROOT / "assets"  # committed
+INPUTS = ROOT / "inputs"  # not committed; listed in video.yml
+
 MONO = "DejaVu Sans Mono"
-GREEN = "#66c2a5"
-BLUE = "#8da0cb"
-ORANGE = "#fc8d62"
-GREY = "#555555"
-LIGHT_GREY = "#999999"
 PANEL = "#f1f1f1"
-BG = "#ffffff"
-
-config.background_color = BG
+LOGO = ASSETS / "movement_logo_on-transparent.png"
 
 # Front / top / side face tones for the three slabs of the data cube,
 # matching the cube in the movement overview figures.
@@ -44,79 +51,10 @@ SLAB_TONES = {
 }
 
 
-def use_brand_font_in_plots():
-    """Make Barlow matplotlib's default font, so plots match the captions.
-
-    matplotlib doesn't pick up user-installed fonts on its own, so the file
-    fontconfig resolves is registered with it.
-    """
-    import subprocess
-
-    import matplotlib.pyplot as plt
-    from matplotlib import font_manager
-
-    path = subprocess.run(
-        ["fc-match", "--format=%{file}", f"{FONT}:style=Regular"],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout
-    font_manager.fontManager.addfont(path)
-    plt.rcParams["font.family"] = FONT
-
-
-def screen_pixels(height):
-    """Pixel height, at the current render quality, of ``height`` scene units.
-
-    Raster plots rendered at exactly this size need no rescaling by manim,
-    which would otherwise alias fine lines and text.
-    """
-    return round(config.pixel_height * height / config.frame_height)
-
-
 def image(name, height):
-    """An asset image, ``height`` scene units tall.
-
-    The bitmap is resampled (Lanczos) to its exact on-screen size first;
-    manim's own downscaling does not filter, so small logos would alias.
-    Opaque images (logos on white) get a transparent background and are
-    trimmed to their content, as transparent ones are by ``fetch_assets.py``.
-    """
-    from PIL import Image
-
-    src = Image.open(ASSETS / name).convert("RGBA")
-    if src.getchannel("A").getextrema()[0] == 255:
-        # Shave the canvas edges, where some logos have a thin frame or stray
-        # pixels (as the UCL one does), then drop the near-white background:
-        # some logos sit on an off-white canvas
-        rgba = np.asarray(src)[3:-3, 3:-3].copy()
-        rgba[rgba[..., :3].min(axis=2) >= 240, 3] = 0
-        src = Image.fromarray(rgba)
-        src = src.crop(src.getchannel("A").getbbox())
-    px = screen_pixels(height)
-    src = src.resize((max(1, round(src.width * px / src.height)), px), Image.LANCZOS)
-    img = ImageMobject(np.asarray(src))
-    img.height = height
-    return img
-
-
-def small_print(text):
-    """Small print crediting data or icons."""
-    return Text(text, font=FONT, font_size=16, color=LIGHT_GREY)
-
-
-def caption(text, size=44, colour=GREY):
-    """Lower-third subtitle, the main carrier of narration.
-
-    Multi-line captions (separated by newlines) are centred line by line.
-    """
-    lines = VGroup(
-        *[
-            Text(line, font=FONT, font_size=size, color=colour)
-            for line in text.split("\n")
-        ]
-    )
-    return lines.arrange(DOWN, buff=0.12).to_edge(DOWN, buff=0.45)
+    """An image from ``assets/`` or ``inputs/``, ``height`` scene units tall."""
+    path = ASSETS / name
+    return elements.image(path if path.exists() else INPUTS / name, height)
 
 
 def dataset_arrow(cube):
@@ -136,73 +74,14 @@ def right_of(mob, arrow, gap=0.1):
     return mob.shift((arrow.get_right()[0] + gap - mob.get_left()[0]) * RIGHT)
 
 
-def split_caption(full, head, size=44, colour=GREY):
-    """A centred one-line caption, as (head, tail) glyph groups.
-
-    Showing the head first and the tail later completes the sentence in place,
-    without the head shifting to re-centre.
-    """
-    line = Text(full, font=FONT, font_size=size, color=colour)
-    line.to_edge(DOWN, buff=0.45)
-    n = len(head.replace(" ", ""))  # Text has no glyphs for spaces
-    return line[:n], line[n:]
-
-
-# Every caption change: the old one fades out fully before the new one
-# fades in, rising slightly, so two captions never overlap
-CAPTION_OUT, CAPTION_IN, CAPTION_RISE = 0.3, 0.5, 0.15
-
-
-def caption_change(old=None, new=None, run_time=None):
-    """Animation replacing caption ``old`` with ``new`` (either may be None).
-
-    Given a longer ``run_time``, to share a ``play`` with longer animations,
-    the change still takes its usual time, at the start.
-    """
-    parts = []
-    if old is not None:
-        parts.append(FadeOut(old, run_time=CAPTION_OUT))
-    if new is not None:
-        parts.append(FadeIn(new, shift=CAPTION_RISE * UP, run_time=CAPTION_IN))
-    length = sum(part.run_time for part in parts)
-    if run_time is not None:
-        if run_time < length:
-            raise ValueError(f"a caption change takes {length} s, not {run_time} s")
-        if run_time > length:
-            parts.append(Wait(run_time - length))
-    return Succession(*parts)
-
-
-def show_caption(scene, text, hold, previous=None, **kwargs):
-    """Show a caption (replacing any previous one) and hold it."""
-    new = caption(text, **kwargs)
-    scene.play(caption_change(previous, new))
-    if hold > 0:
-        scene.wait(hold)
-    return new
-
-
-HEADER_HEIGHT = 0.75  # logo height; the header row spans this at the top
 # The title card's big logo, where the video starts and loops back to
 TITLE_LOGO_HEIGHT = 3.7
 TITLE_LOGO_CENTRE = 0.3 * UP
 
 
 def badge():
-    """Persistent header: the URL centred, the logo at the right.
-
-    Returns ``Group(logo, url)``, so any glance identifies the project.
-    """
-    logo = image("movement_logo_on-transparent.png", HEADER_HEIGHT)
-    logo.to_corner(UP + RIGHT, buff=0.25)
-    url = Text(
-        "movement.neuroinformatics.dev",
-        font=FONT,
-        font_size=34,
-        color=GREEN,
-    )
-    url.move_to([0, logo.get_y(), 0])
-    return Group(logo, url)
+    """Persistent header: the URL centred, the logo at the right."""
+    return elements.badge(LOGO)
 
 
 def svg_icon(name, height, colour=GREY):

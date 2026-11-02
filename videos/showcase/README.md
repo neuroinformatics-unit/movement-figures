@@ -1,55 +1,78 @@
-# SfN 2026 booth video
+# movement showcase video
 
-A silent (~2 min) looping video advertising movement, for the shared NWB/DANDI
-booth at SfN, Washington DC, 15–18 Nov 2026. The NWB organisers asked for a
-2–5 min video that works without audio; on-screen captions carry the
-narration. This is independent of the reproducible figures in the rest of
-this repo.
+A silent (~2 min) looping video advertising movement, first made for the
+shared NWB/DANDI booth at SfN, Washington DC, 15–18 Nov 2026 (the NWB
+organisers asked for a 2–5 min video that works without audio); on-screen
+captions carry the narration. It is built with manim from real tracking
+data, using the general video tools in `movement_figures.video`.
 
 ## Setup
 
+System packages: ffmpeg, plus pango/cairo (for manim's text rendering), e.g.
+`sudo apt install ffmpeg libpango1.0-dev libcairo2-dev pkg-config`. The cube
+labels use DejaVu Sans Mono, which most Linux systems have; Barlow comes
+with `movement_figures`.
+
+From the repo root:
+
 ```bash
-# needs system ffmpeg, plus pango/cairo headers to build manimpango:
-#   sudo apt install ffmpeg libpango1.0-dev libcairo2-dev pkg-config
-# a uv-managed Python is needed (it ships Python.h)
-uv venv --python 3.12 --python-preference only-managed .venv
-uv pip install --python .venv -r requirements.txt   # manim 0.22.1, movement 0.17.0
-.venv/bin/python fetch_assets.py   # logos from the NIU Dropbox (MOVEMENT_RESOURCES)
-
-./render.sh          # all segments at 720p30 → media/movement_showcase_<date>_720p.mp4
-./render.sh 1080p    # final, 1080p30 → media/movement_showcase_<date>_1080p.mp4
-
-# or one segment at a time, e.g. while working on it (720p draft):
-cd scenes && ../.venv/bin/manim -qm --media_dir ../media s02_clean_viz.py CleanViz
+uv sync --group video   # manim, on top of the figures' environment
 ```
 
-`render.sh` renders the five segments separately (scenes `IO`, `CleanViz`,
-`Quantify`, `GUI`, `Community`) and joins them with ffmpeg's concat demuxer,
-without re-encoding; each segment starts on the exact frame the previous
-one ends on.
+Then populate `inputs/` (not committed) with the files listed in
+`video.yml`, each entry saying where to get it, and check them:
 
-Not committed (see `.gitignore`):
+```bash
+uv run movement-video check videos/showcase
+```
 
-- `assets/`: logos copied by `fetch_assets.py` (some third-party; the Python
-  SVG is rasterised with Inkscape) and Niko's napari screen recording
-  `movement_napari_bees_workflow_2026-10-29.mp4` (35.7 s, 1080p30), needed
-  for segment 4. Copied by hand (not in the Dropbox resources): the
-  recording, `NIU_logo_transparent.png` and `UCL-logo-white-simple.png`
-  (`qr-code.svg` is no longer used). Only the
-  icons are tracked: Font Awesome `file-solid-full.svg` and
-  `github-brands.svg` (CC BY 4.0, credited in segment 5) and GitHub's
-  Octicons `octicon-law-24.svg` (MIT, also credited in segment 5).
-- `sleap_data/`: SLEAP-tracked bees and flies clips (`.slp` + `.mp4`), not
-  public sample data; needed for segment 3. The flies are unused so far.
-- `cache/`: data derived on first render, and `contributors.txt` (the
-  People page's contributor names, fetched once; delete to refresh), (cleaned tracks, video frames,
+## Render
+
+```bash
+uv run movement-video render videos/showcase                     # 720p30 draft
+uv run movement-video render videos/showcase --resolution 1080p  # final
+# one segment, e.g. while working on it (not joined):
+uv run movement-video render videos/showcase --segment s02_clean_viz
+```
+
+`render` checks the inputs, fetches the sample data, renders the five
+segments separately (scenes `IO`, `CleanViz`, `Quantify`, `GUI`,
+`Community`) and joins them with ffmpeg's concat demuxer, without
+re-encoding, into `media/movement_showcase_<YYYY-MM-DD>_<res>.mp4`. Each
+segment starts on the exact frame the previous one ends on.
+
+## Minting a new version
+
+1. Edit the scenes; replace inputs on purpose and run
+   `uv run movement-video update-hashes videos/showcase` to record them.
+2. Refresh the credits: `uv run python videos/showcase/scenes/community.py`
+   (the diff of `contributors.txt` shows who joined).
+3. Render at 1080p, then commit, tag (`showcase-<YYYY-MM-DD>`) and attach the
+   mp4 to a GitHub Release for that tag. The tag pins the code, `uv.lock`,
+   the inputs' hashes and the credits.
+
+## Files
+
+- `video.yml`: output name, segments, sample data (DBTravelator, EPM), and the
+  manifest of `inputs/`.
+- `assets/` (committed): the movement and NIU logos; Font Awesome
+  `file-solid-full.svg` and `github-brands.svg` (CC BY 4.0) and GitHub's
+  Octicons `octicon-law-24.svg` (MIT), credited in segment 5.
+- `inputs/` (not committed): third-party logos, the SLEAP bees clip
+  (`.slp` + `.mp4`, Pereira et al. 2022) and Niko's napari screen recording
+  (35.7 s, 1080p30). Logos are used as they are, except that opaque ones are
+  made transparent and trimmed (see `movement_figures.video.elements.image`);
+  trim transparent ones before adding them.
+- `contributors.txt` (committed): names from movement's People page.
+- `cache/`: data derived on first render (cleaned tracks, video frames,
   matplotlib plot frames at the render's pixel size); delete to rebuild.
 - `media/`, `previews/` (ad-hoc frame grabs for review).
 
 ## Code layout (`scenes/`)
 
-- `common.py`: brand constants, header badge, captions, small-print credits, tool chips, the
-  isometric data cube and its labels, the shared dataset arrow, and the
+- `common.py`: the showcase's paths and colours, re-exporting the brand,
+  captions, credits and header from `movement_figures.video`; tool chips,
+  the isometric data cube and its labels, the shared dataset arrow, and the
   dataset positions used for the hand-overs between segments.
 - `mouse.py`: DBTravelator skeletons and video frames (segment 1).
 - `clean_viz_data.py` + `clean_viz_plots.py`: cleaned DLC EPM data, the
@@ -57,7 +80,7 @@ Not committed (see `.gitignore`):
   (segment 2).
 - `bees.py` + `bee_plots.py`: bee tracks, video frames, metrics and the
   staged figure (segment 3).
-- `community.py`: contributor names from movement's People page.
+- `community.py`: reads `contributors.txt`; run it to refresh the list.
 - `s01_io.py`, `s02_clean_viz.py`, `s03_quantify.py`, `s04_gui.py`,
   `s05_community.py`: the scenes (classes `IO`, `CleanViz`, `Quantify`,
   `GUI`, `Community`).
@@ -86,8 +109,7 @@ Not committed (see `.gitignore`):
   functions in matplotlib, default look (only font size enlarged, axes off,
   brand colours where colour is a free choice), so it is truthful to what
   users get.
-- Saving/export (NWB, netCDF) dropped for now in favour of analysis
-  (`netcdf_icon.png` is still fetched but unused).
+- Saving/export (NWB, netCDF) dropped for now in favour of analysis.
 - Segments 1–2 were kept under 45 s combined.
 - End card should credit SWC / NIU and the contributor community, plus the
   Font Awesome icon (CC BY 4.0).
@@ -138,7 +160,7 @@ read. The tail tip shows it best (single-frame spikes, a 2 s jump).
 
 Segment 3 (quantify), `scenes/s03_quantify.py` (~15 s):
 
-1. The bee clip (49–57 s of `sleap_data/bees…`, 2× speed, green/orange
+1. The bee clip (49–57 s of `inputs/bees…`, 2× speed, green/orange
    skeletons) plays large, roughly over where the speed and distance plots
    will be, credited "Data: Pereira et al., Nature Methods, 2022". Caption:
    "Quantify motion any way you like".
@@ -151,7 +173,7 @@ Segment 3 (quantify), `scenes/s03_quantify.py` (~15 s):
 
 Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
 size (`screen_pixels`, `image`) to avoid aliasing; final renders need
-`-qh --fps 30` (`render.sh 1080p`); first full 1080p render 2026-11-02.
+`-qh --fps 30` (`--resolution 1080p`); first full 1080p render 2026-11-02.
 
 Segment 4 (gui), `scenes/s04_gui.py` (~27 s):
 
@@ -188,7 +210,6 @@ Segment 5 (community), `scenes/s05_community.py` (~22 s), the last:
 
 - Use the space freed by the header: enlarge content between header and
   caption.
-- Remove the netCDF icon if it stays unused.
 
 ## Notes
 
