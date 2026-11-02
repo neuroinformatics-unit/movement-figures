@@ -38,7 +38,6 @@ ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"  # committed
 INPUTS = ROOT / "inputs"  # not committed; listed in video.yml
 
-MONO = "DejaVu Sans Mono"
 PANEL = "#f1f1f1"
 LOGO = ASSETS / "movement_logo_on-transparent.png"
 
@@ -204,13 +203,13 @@ def cube_labels(cube):
     """Dimension labels around the data cube, as in the overview figure."""
     back, _, front = cube
     bc, fc = slab_corners(back), slab_corners(front)
-    style = {"font": MONO, "font_size": 24, "color": LIGHT_GREY}
+    style = {"font": FONT, "font_size": 24, "color": LIGHT_GREY}
     time = _along(Text("time", **style), bc["front_bl"], bc["front_tl"], 0.25)
     space = _along(Text("space", **style), bc["front_bl"], fc["front_br"], -0.3)
     keypoints = _along(
         Text("keypoints", **style), fc["front_br"], fc["far_bottom"], -0.28
     )
-    individuals = Text("individuals", font=MONO, font_size=24)
+    individuals = Text("individuals", font=FONT, font_size=24)
     individuals.set_color_by_gradient(GREEN, BLUE, ORANGE)
     _along(individuals, bc["far_top"], fc["far_top"], 0.3)
     return VGroup(time, space, keypoints, individuals)
