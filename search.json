@@ -64,49 +64,42 @@
     "href": "readme.html",
     "title": "README",
     "section": "",
-    "text": "movement-figures: reproducible figures for research outputs related to the movement Python package.\nEach figure is generated via a Quarto document under figures/, sharing a single plotting style from the movement_figures package.\nThe rendered gallery is published at neuroinformatics.dev/movement-figures."
+    "text": "movement-figures makes reproducible figures and videos about the movement Python package, for papers, posters, talks, and social mediea. It produces two kinds of output:\nBoth build on the movement_figures Python package under src/, which holds the shared visual style (colours, fonts, plotting configurations) and reusable helpers, so all outputs look consistent."
   },
   {
     "objectID": "readme.html#setup",
     "href": "readme.html#setup",
     "title": "README",
     "section": "Setup",
-    "text": "Setup\nRequires uv and the Quarto CLI.\nClone the repo and navigate into it:\ngit clone https://github.com/neuroinformatics-unit/movement-figures\ncd movement-figures\nInstall dependencies and set up the environment with:\nuv sync"
+    "text": "Setup\nRequires uv. Clone the repo and install the environment:\ngit clone https://github.com/neuroinformatics-unit/movement-figures\ncd movement-figures\nuv sync                # if working on figures only\nuv sync --extra video  # if working on videos too\nFigures also need the Quarto CLI. Videos need a few more things, described under Videos."
   },
   {
     "objectID": "readme.html#figures",
     "href": "readme.html#figures",
     "title": "README",
     "section": "Figures",
-    "text": "Figures\nEach figure is a self-contained Quarto document under figures/—one .qmd per figure—and they all share execution settings from figures/_metadata.yml.\nThe reusable plotting style and helpers live in the movement_figures package under src/, so every figure looks consistent.\nThe index.qmd and _quarto.yml at the repo root assemble the rendered figures into the published gallery.\nTo render the gallery locally, run:\nuv run quarto preview                  # live-reload while authoring one figure\nuv run quarto render                   # build all figures + the gallery\nThe rendered gallery is written to _site/ and can be opened in a browser by double-clicking _site/index.html.\nVector exports (pdf + svg) are written to outputs/ and committed; the rendered figure gallery website (_site/) and caches are not."
+    "text": "Figures\nEach figure is a self-contained Quarto document (.qmd) under figures/. All figures share execution settings from figures/_metadata.yml, and are assembled into a gallery via index.qmd and _quarto.yml.\nTo render the gallery locally, run:\nuv run quarto preview                  # live-reload while authoring one figure\nuv run quarto render                   # build all figures + the gallery\nThe gallery is written to _site/; open _site/index.html in a browser to view it. Vector exports (pdf + svg) are written to outputs/ and committed; the gallery (_site/) and caches are not.\n\nData sources\nFigures may draw on two data sources:\n\nmovement sample data: the primary source for most inputs, and the only option for large files (tracks, videos). Figures fetch these via movement.sample_data in their code cells, and each .qmd declares its datasets in Quarto frontmatter:\nsample_data:\n  - filename: DLC_single-mouse_EPM.predictions.h5\n    with_video: true\nThe prefetch-sample-data helper reads these declarations and downloads everything up front, so a render finds the data already cached:\nuv run prefetch-sample-data\nThe data/ folder in this repo: for small files only (&lt; 500 KB), such as the ROI coordinates. This folder is git-tracked, so anything large would bloat the repo. Access it from a figure via movement_figures.data_dir().\n\n\n\nAdding a figure\n\nCopy an existing .qmd file in figures/.\nPick a target medium for apply_style: manuscript, poster, or presentation.\nAdapt the .qmd frontmatter and code to fetch and process the data it needs and build the figure.\nEnd with save_figure(fig, \"&lt;name&gt;\").\nRun uv run quarto render and inspect the new files in outputs/, or the whole gallery in _site/index.html."
   },
   {
-    "objectID": "readme.html#figure-data-sources",
-    "href": "readme.html#figure-data-sources",
+    "objectID": "readme.html#videos",
+    "href": "readme.html#videos",
     "title": "README",
-    "section": "Figure data sources",
-    "text": "Figure data sources\nFigures may draw on two data sources:\n\nmovement sample data: the primary source for most inputs, and the only option for large files (tracks, videos). Figures fetch these via movement.sample_data in their code cells, and each .qmd declares its datasets in Quarto frontmatter:\nsample_data:\n  - filename: DLC_single-mouse_EPM.predictions.h5\n    with_video: true\nThe prefetch-sample-data helper reads these declarations and downloads everything up front, so a render finds the data already cached:\nuv run prefetch-sample-data\nThe data/ folder in this repo: for small files only (&lt; 500 KB), such as the ROI coordinates. This folder is git-tracked, so anything large would bloat the repo. Access it from a figure via movement_figures.data_dir()."
-  },
-  {
-    "objectID": "readme.html#adding-a-figure",
-    "href": "readme.html#adding-a-figure",
-    "title": "README",
-    "section": "Adding a figure",
-    "text": "Adding a figure\n\nCopy an existing .qmd file in figures/;\nPick a target medium: manuscript, poster, or presentation for apply_style;\nAdapt the .qmd frontmatter and source to fetch/process necessary data and build the figure;\nEnd with save_figure(fig, \"&lt;name&gt;\")\nRun uv run quarto render and inspect the new files in outputs/ or the whole gallery in _site/index.html."
+    "section": "Videos",
+    "text": "Videos\nEach video lives in its own folder under videos/, with its manim scenes and a video.yml describing how to build it. Building blocks shared between videos are in movement_figures.video.\n\n\n\nVideo\nDescription\n\n\n\n\nvideos/showcase\nA silent ~2 min looping promo\n\n\n\nVideos need manim, installed as the optional video extra, plus ffmpeg and pango/cairo on the system (e.g., on Ubuntu 24.04: sudo apt install ffmpeg libpango1.0-dev libcairo2-dev pkg-config):\nuv sync --extra video\nEach video needs files from its own assets/ folder (videos/&lt;video&gt;/assets), which is committed. Some inputs, such as third-party logos and large files, can’t be committed. You can put those in videos/&lt;video&gt;/inputs/ before rendering and declare them in the video’s video.yml manifest alongside any files you need to fetch from movement’s sample data.\nThe movement-video command checks the inputs and renders the video. For example, to render the showcase video:\nuv run movement-video check videos/showcase    # are all inputs in place?\nuv run movement-video render videos/showcase   # 720p draft\nuv run movement-video render videos/showcase --resolution 1080p  # 1080p final\nRenders are written to the video’s media/ folder, which isn’t committed. Finished versions are tagged and published as GitHub Releases. Each video’s own README explains its content, inputs and how to make a new version. For an example, see videos/showcase/README.md."
   },
   {
     "objectID": "readme.html#fonts",
     "href": "readme.html#fonts",
     "title": "README",
     "section": "Fonts",
-    "text": "Fonts\nThe fonts used by the figures—Liberation Sans (all media) and Barlow (posters)—are bundled under src/movement_figures/fonts/ and registered with matplotlib by apply_style. Nothing needs to be installed system-wide, and figures render identically on every machine and on CI. Both are licensed under the SIL Open Font License; see the LICENSE-* files alongside them."
+    "text": "Fonts\nThe fonts—Liberation Sans and Barlow are bundled under src/movement_figures/fonts/ and registered with matplotlib and manim automatically. Both are licensed under the SIL Open Font License; see the LICENSE-* files alongside them. The gallery and videos use them for all text, so figures and videos look consistent no matter what fonts are installed on your system."
   },
   {
     "objectID": "readme.html#development",
     "href": "readme.html#development",
     "title": "README",
     "section": "Development",
-    "text": "Development\nCode quality is enforced with ruff (linting and formatting), codespell, and a set of pre-commit hooks (uv sync installs all of these into the environment).\nInstall the git hook once, so the checks run automatically on every commit:\nuv run pre-commit install\nAfter that, committing runs the hooks against your staged files. To run every hook across the whole repo on demand:\nuv run pre-commit run --all-files\nGenerated figures under outputs/ are excluded from the hooks so their committed vector files stay byte-stable across re-renders.\nNOTE: ruff only lints .py files—the Python inside figures/*.qmd code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into src/movement_figures/ where it is linted.\nEvery pull request re-renders the site as a CI check that all figures still build, and every merge to main redeploys the gallery to GitHub Pages (see .github/workflows/render_and_deploy.yml)."
+    "text": "Development\nCode quality is enforced with ruff (linting and formatting), codespell (spelling), and a set of pre-commit hooks.\nInstall the git hook once, so the checks run automatically on every commit:\nuv run pre-commit install\nAfter that, committing runs the hooks against your staged files. To run every hook across the whole repo on demand:\nuv run pre-commit run --all-files\nGenerated figures under outputs/ are deliberatley excluded from the hooks so their committed vector files stay byte-stable across re-renders.\n\n[!note] ruff only lints .py files—the Python inside figures/*.qmd code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into src/movement_figures/ where it is linted.\n\nTests live in tests/ and run with uv run pytest; tests that need manim are skipped unless the video extra is installed.\nEvery pull request re-renders the site as a CI check that all figures still build, and every merge to main redeploys the gallery to GitHub Pages (see .github/workflows/render_and_deploy.yml). Videos are not rendered on CI, since their inputs aren’t all in the repo."
   },
   {
     "objectID": "index.html",
