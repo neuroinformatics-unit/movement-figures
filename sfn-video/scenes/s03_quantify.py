@@ -46,7 +46,7 @@ VIDEO_OVER = 0.33  # across the figure: roughly over the speed and distance plot
 CAPTION = "Quantify motion any way you like"
 # Completed in place as the head-direction plots join speed and distance
 METRICS_CAPTION = (
-    "Speeds, distances, orientations and much more…",
+    "Speeds, distances, orientations, and more…",
     "Speeds, distances,",
 )
 

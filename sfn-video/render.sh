@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Render every segment and join them into media/movement_SfN_2026_<res>.mp4.
+# Render every segment and join them into
+# media/movement_showcase_<YYYY-MM-DD>_<res>.mp4, dated by the render day.
 # Usage: ./render.sh [720p|1080p]   (720p draft by default)
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -29,6 +30,6 @@ done
 
 # Each segment starts on the frame the previous one ends on, so the joins
 # need no re-encoding
-ffmpeg -loglevel error -y -f concat -safe 0 -i "$list" -c copy \
-  "media/movement_SfN_2026_$res.mp4"
-echo "Wrote media/movement_SfN_2026_$res.mp4"
+out="media/movement_showcase_$(date +%F)_$res.mp4"
+ffmpeg -loglevel error -y -f concat -safe 0 -i "$list" -c copy "$out"
+echo "Wrote $out"

@@ -39,7 +39,7 @@ VIDEO_CENTRE = np.array([0, 0.1, 0])
 THUMB_HEIGHT = 2.4  # beside the Python logo, before it grows
 # Recording time (s) at which each caption takes over
 CHAPTERS = [
-    (0.0, "Interactively explore motion tracks"),
+    (0.0, "Explore motion tracks interactively"),
     (10.0, "Identify and fix tracking errors"),
     (24.0, "Define regions of interest"),
 ]

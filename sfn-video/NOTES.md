@@ -16,8 +16,8 @@ uv venv --python 3.12 --python-preference only-managed .venv
 uv pip install --python .venv -r requirements.txt   # manim 0.22.1, movement 0.17.0
 .venv/bin/python fetch_assets.py   # logos from the NIU Dropbox (MOVEMENT_RESOURCES)
 
-./render.sh          # all segments at 720p30 → media/movement_SfN_2026_720p.mp4
-./render.sh 1080p    # final, 1080p30 → media/movement_SfN_2026_1080p.mp4
+./render.sh          # all segments at 720p30 → media/movement_showcase_<date>_720p.mp4
+./render.sh 1080p    # final, 1080p30 → media/movement_showcase_<date>_1080p.mp4
 
 # or one segment at a time, e.g. while working on it (720p draft):
 cd scenes && ../.venv/bin/manim -qm --media_dir ../media s02_clean_viz.py CleanViz
@@ -97,20 +97,20 @@ Not committed (see `.gitignore`):
 
 ## Status (2026-10-29): segments 1–5, ~110 s combined at 720p
 
-Segment 1 (io), `scenes/s01_io.py` (~23 s):
+Segment 1 (io), `scenes/s01_io.py` (~21 s):
 
 1. Title card: header URL and big logo on frame 1; tagline "Python tools
    for analysing animal motion" fades in; the logo alone flies into the
    header's right corner.
-2. Real DBTravelator video (247 fps, ~18× slower) alone for ~2 s, credited
+2. Real DBTravelator video (247 fps, ~14× slower) alone for ~1 s, credited
    "Data: Holly Morley" below it; then its skeleton fades in over the video
-   for ~2 s, the video fades out, the bare skeleton walks on briefly:
+   for ~2 s, the video fades out, the bare skeleton walks on for ~2.5 s:
    "Do you track animals with / DeepLabCut, SLEAP or similar tools?"
 3. Tool rows appear on the left while three skeleton mice (one track
    replayed with different gait phases) run right and stop: "Bring tracks
    from all your favourite / tools and file formats".
 4. The cube and dimension labels appear beside them: "…into one tidy
-   dataset" (held 3 s). Tools and mice fade, leaving the cube.
+   dataset" (held 2 s). Tools and mice fade, leaving the cube.
 
 Segment 2 (clean_viz), `scenes/s02_clean_viz.py` (~22 s). Uses the DLC EPM
 sample over 240–260 s, cleaned with the movement applications poster's
@@ -143,15 +143,15 @@ Segment 3 (quantify), `scenes/s03_quantify.py` (~15 s):
    will be, credited "Data: Pereira et al., Nature Methods, 2022". Caption:
    "Quantify motion any way you like".
 2. The clip shrinks to a thumbnail below the cube as the speed (px/s) and
-   inter-bee distance (px) panels appear: "Speeds, distances, orientations
-   and much more…"; then the head-direction polar
+   inter-bee distance (px) panels appear: "Speeds, distances, orientations,
+   and more…"; then the head-direction polar
    histograms (antenna bases as left/right pair, 30° bins), all from
    movement + xarray plotting. Fades to the header alone, which segment 4
    starts from.
 
 Plots and logo bitmaps are rendered/resampled to their exact on-screen pixel
 size (`screen_pixels`, `image`) to avoid aliasing; final renders need
-`-qh --fps 30`. No 1080p render has been made of the current version yet.
+`-qh --fps 30` (`render.sh 1080p`); first full 1080p render 2026-11-02.
 
 Segment 4 (gui), `scenes/s04_gui.py` (~27 s):
 
@@ -163,7 +163,7 @@ Segment 4 (gui), `scenes/s04_gui.py` (~27 s):
    background fades to black (the header stays on top). The recording
    plays at 1.6× (no audio), as large as fits between header and caption,
    with light grey (`#dddddd`) captions at recording times 0 s
-   "Interactively explore motion tracks", 10 s (zoom-in) "Identify and
+   "Explore motion tracks interactively", 10 s (zoom-in) "Identify and
    fix tracking errors", 24 s (ROI panel opens) "Define regions of
    interest". Fades back to white with the header alone, which
    segment 5 starts from.
@@ -189,7 +189,6 @@ Segment 5 (community), `scenes/s05_community.py` (~22 s), the last:
 - Use the space freed by the header: enlarge content between header and
   caption.
 - Remove the netCDF icon if it stays unused.
-- Final 1080p30 render of all segments.
 
 ## Notes
 
