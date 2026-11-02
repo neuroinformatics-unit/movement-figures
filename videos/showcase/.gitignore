@@ -1,0 +1,5 @@
+# Inputs are listed in video.yml; cache/ is derived on first render
+inputs/
+cache/
+media/
+previews/

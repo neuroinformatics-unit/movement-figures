@@ -15,8 +15,14 @@ dependencies = [
     "nbclient",
 ]
 
+[project.optional-dependencies]
+video = [
+    "manim>=0.22.1",
+]
+
 [project.scripts]
 prefetch-sample-data = "movement_figures.sample_data:main"
+movement-video = "movement_figures.video.cli:main"
 
 [build-system]
 requires = ["setuptools>=64"]
@@ -52,5 +58,5 @@ select = ["E", "F", "I", "UP", "B"]
 "tests/conftest.py" = ["E402"]
 
 [tool.codespell]
-skip = '.git,*.svg,*.pdf,uv.lock,data/'
+skip = '.git,*.svg,*.pdf,uv.lock,data/,*/contributors.txt'
 check-hidden = true
