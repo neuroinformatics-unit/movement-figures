@@ -98,7 +98,11 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     args = parser.parse_args(argv)
-    video = Video.load(args.video)
+    try:
+        video = Video.load(args.video)
+    except (OSError, ValueError) as error:
+        print(error, file=sys.stderr)
+        return 1
     if args.command == "check":
         return check(video)
     if args.command == "update-hashes":

@@ -67,24 +67,20 @@ class Video:
         """Read ``<root>/video.yml``."""
         root = Path(root).resolve()
         spec = yaml.safe_load((root / "video.yml").read_text(encoding="utf-8"))
-        inputs = []
-        for entry in spec.get("inputs") or []:
-            # update_hashes edits existing sha256 lines; it never adds them
-            if "sha256" not in entry:
-                raise ValueError(
-                    f"input {entry['file']!r} has no sha256 key; "
-                    "add an empty one (`sha256:`) for update-hashes to fill"
-                )
-            inputs.append(Input(**entry))
+        if not isinstance(spec, dict) or "name" not in spec:
+            raise ValueError("video.yml: expected a mapping with a `name` key")
+        segments = _entries(spec, "segments", {"module", "scene"}, set())
+        sample_data = _entries(spec, "sample_data", {"filename"}, {"with_video"})
+        # update_hashes edits existing sha256 lines; it never adds them
+        inputs = _entries(spec, "inputs", {"file", "source", "sha256"}, {"credit"})
         return cls(
             root=root,
             name=spec["name"],
-            segments=tuple(Segment(**s) for s in spec["segments"]),
+            segments=tuple(Segment(**s) for s in segments),
             sample_data=tuple(
-                (s["filename"], bool(s.get("with_video", False)))
-                for s in spec.get("sample_data") or []
+                (s["filename"], bool(s.get("with_video", False))) for s in sample_data
             ),
-            inputs=tuple(inputs),
+            inputs=tuple(Input(**entry) for entry in inputs),
         )
 
     @property
@@ -129,6 +125,23 @@ class Video:
         """``media/<name>_<YYYY-MM-DD>_<resolution>.mp4``, dated by render day."""
         day = day or date.today()
         return self.media_dir / f"{self.name}_{day.isoformat()}_{resolution}.mp4"
+
+
+def _entries(spec: dict, key: str, required: set, optional: set) -> list[dict]:
+    """The list under ``key``, with each entry's keys checked."""
+    entries = spec.get(key) or []
+    if not isinstance(entries, list):
+        raise ValueError(f"video.yml: `{key}` should be a list")
+    for n, entry in enumerate(entries, 1):
+        keys = set(entry) if isinstance(entry, dict) else set()
+        problems = [f"missing {k!r}" for k in sorted(required - keys)]
+        problems += [f"unexpected {k!r}" for k in sorted(keys - required - optional)]
+        if problems:
+            hint = " (add an empty `sha256:`)" if "missing 'sha256'" in problems else ""
+            raise ValueError(
+                f"video.yml: {key} entry {n} ({entry}): {', '.join(problems)}{hint}"
+            )
+    return entries
 
 
 def sha256(path: str | Path) -> str:

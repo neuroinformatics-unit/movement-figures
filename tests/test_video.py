@@ -57,8 +57,18 @@ def test_load_reads_video_yml(project):
 def test_load_requires_a_sha256_key(project):
     yml = project / "video.yml"
     yml.write_text(VIDEO_YML.replace("    credit: Someone\n    sha256:\n", ""))
-    with pytest.raises(ValueError, match="clip.mp4"):
+    with pytest.raises(ValueError, match="missing 'sha256'"):
         Video.load(project)
+
+
+def test_load_reports_malformed_entries(project, capsys):
+    yml = project / "video.yml"
+    # Without the `inputs:` key, the inputs would read as sample data
+    yml.write_text(VIDEO_YML.replace("inputs:\n", ""))
+    with pytest.raises(ValueError, match="sample_data entry 2.*missing 'filename'"):
+        Video.load(project)
+    assert cli.main(["check", str(project)]) == 1
+    assert "missing 'filename'" in capsys.readouterr().err
 
 
 def test_update_hashes_records_hashes_and_keeps_comments(project):
