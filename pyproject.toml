@@ -15,6 +15,11 @@ dependencies = [
     "nbclient",
 ]
 
+[project.optional-dependencies]
+video = [
+    "manim>=0.22.1",
+]
+
 [project.scripts]
 prefetch-sample-data = "movement_figures.sample_data:main"
 movement-video = "movement_figures.video.cli:main"
@@ -35,9 +40,6 @@ dev = [
     "pre-commit",
     "ruff",
     "codespell",
-]
-video = [
-    "manim==0.22.1",
 ]
 
 [tool.pytest.ini_options]

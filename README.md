@@ -22,7 +22,7 @@ environment:
 git clone https://github.com/neuroinformatics-unit/movement-figures
 cd movement-figures
 uv sync                # if working on figures only
-uv sync --group video  # if working on videos too
+uv sync --extra video  # if working on videos too
 ```
 
 Figures also need the [Quarto CLI](https://quarto.org/docs/get-started/).
@@ -92,12 +92,12 @@ videos are in `movement_figures.video`.
 |---|---|
 | [`videos/showcase`](https://github.com/neuroinformatics-unit/movement-figures/tree/main/videos/showcase) | A silent ~2 min looping promo |
 
-Videos need manim, installed as an optional dependency group, plus ffmpeg and
+Videos need manim, installed as the optional `video` extra, plus ffmpeg and
 pango/cairo on the system (e.g., on Ubuntu 24.04:
 `sudo apt install ffmpeg libpango1.0-dev libcairo2-dev pkg-config`):
 
 ```bash
-uv sync --group video
+uv sync --extra video
 ```
 Each video needs files from its own `assets/` folder (`videos/<video>/assets`),
 which is committed. Some inputs, such as third-party logos and large files,
@@ -157,7 +157,7 @@ so their committed vector files stay byte-stable across re-renders.
 > into `src/movement_figures/` where it is linted.
 
 Tests live in `tests/` and run with `uv run pytest`; tests that need manim
-are skipped unless the `video` group is installed.
+are skipped unless the `video` extra is installed.
 
 Every pull request re-renders the site as a CI check that all figures still
 build, and every merge to `main` redeploys the gallery to GitHub Pages (see

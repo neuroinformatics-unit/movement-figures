@@ -1,5 +1,5 @@
 # movement showcase: a silent, looping promo video.
-# Render with `uv run --group video movement-video render videos/showcase`.
+# Render with `uv run --extra video movement-video render videos/showcase`.
 
 name: movement_showcase  # output: media/movement_showcase_<YYYY-MM-DD>_<res>.mp4
 

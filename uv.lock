@@ -2659,6 +2659,11 @@ dependencies = [
     { name = "seaborn" },
 ]
 
+[package.optional-dependencies]
+video = [
+    { name = "manim" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "codespell" },
@@ -2666,13 +2671,11 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
-video = [
-    { name = "manim" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "jupyter" },
+    { name = "manim", marker = "extra == 'video'", specifier = ">=0.22.1" },
     { name = "matplotlib" },
     { name = "movement", extras = ["napari"], specifier = ">=0.17" },
     { name = "nbclient" },
@@ -2681,6 +2684,7 @@ requires-dist = [
     { name = "pyyaml" },
     { name = "seaborn" },
 ]
+provides-extras = ["video"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -2689,7 +2693,6 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
-video = [{ name = "manim", specifier = "==0.22.1" }]
 
 [[package]]
 name = "msgpack"
