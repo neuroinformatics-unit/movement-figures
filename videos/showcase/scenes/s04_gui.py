@@ -76,7 +76,7 @@ class GUI(Scene):
         self.add(corner)
 
         # --- Python scripts, or the GUI --------------------------------------
-        python = image("python-logo-generic.png", 1.5).move_to(0.3 * UP + 3.2 * LEFT)
+        python = image("Python_logo.png", 1.5).move_to(0.3 * UP + 3.2 * LEFT)
         cap = show_caption(self, "You can call movement from Python scripts", 0)
         self.play(FadeIn(python), run_time=0.6)
         self.wait(2.5)

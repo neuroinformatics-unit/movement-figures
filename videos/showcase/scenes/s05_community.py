@@ -42,10 +42,10 @@ CREDITS_SPEED = 1.6  # scene units per second
 # Host institutes, then funders, left to right; heights balance their weight.
 # SWC, the other host, is credited with the team in the row above.
 SUPPORTERS = [
-    ("UCL-logo-white-simple.png", 0.6),
-    ("PDN_logo_white_0.png", 1.3),
-    ("wellcome-logo-black.png", 1.0),
-    ("GATSBY_Logo_CO-BRANDING_(WCB)_RGB.JPG", 0.95),
+    ("UCL_logo.png", 0.6),
+    ("PDN_logo.png", 1.3),
+    ("Wellcome_logo.png", 1.0),
+    ("Gatsby_logo.jpg", 0.95),
 ]
 # The logo slide's rows, top to bottom
 ROW_CENTRES = [1.85, 0.0, -1.8]
@@ -126,7 +126,7 @@ class Community(Scene):
             labelled(
                 image("NIU_logo_transparent.png", ROW_ICON), "Neuroinformatics Unit"
             ),
-            image("SWC_Logo_4C_Blue.png", 1.1),
+            image("SWC_logo.png", 1.1),
         ).arrange(RIGHT, buff=1.5)
         supporters = Group(*[image(name, h) for name, h in SUPPORTERS])
         supporters.arrange(RIGHT, buff=1.0)
