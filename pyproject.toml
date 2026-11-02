@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 prefetch-sample-data = "movement_figures.sample_data:main"
+movement-video = "movement_figures.video.cli:main"
 
 [build-system]
 requires = ["setuptools>=64"]
@@ -35,6 +36,9 @@ dev = [
     "ruff",
     "codespell",
 ]
+video = [
+    "manim==0.22.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -52,5 +56,5 @@ select = ["E", "F", "I", "UP", "B"]
 "tests/conftest.py" = ["E402"]
 
 [tool.codespell]
-skip = '.git,*.svg,*.pdf,uv.lock,data/'
+skip = '.git,*.svg,*.pdf,uv.lock,data/,*/contributors.txt'
 check-hidden = true
