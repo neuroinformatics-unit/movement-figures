@@ -135,7 +135,7 @@ Code quality is enforced with [ruff](https://docs.astral.sh/ruff/) (linting and
 formatting), [codespell](https://github.com/codespell-project/codespell)
 (spelling), and a set of [pre-commit](https://pre-commit.com/) hooks.
 
-Install the git hook once, so the checks run automatically on every commit:
+Install the git hooks once, so the checks run automatically on every commit:
 
 ```bash
 uv run pre-commit install
@@ -148,13 +148,12 @@ hook across the whole repo on demand:
 uv run pre-commit run --all-files
 ```
 
+Note that `ruff` only lints `.py` files—the Python inside `figures/*.qmd` code cells
+is not checked for now. Keep figure code tidy by hand, or factor reusable logic
+into `src/movement_figures/` where it is linted.
+
 Generated figures under `outputs/` are deliberatley excluded from the hooks
 so their committed vector files stay byte-stable across re-renders.
-
-> [!note]
-> `ruff` only lints `.py` files—the Python inside `figures/*.qmd` code cells is
-> not checked for now. Keep figure code tidy by hand, or factor reusable logic
-> into `src/movement_figures/` where it is linted.
 
 Tests live in `tests/` and run with `uv run pytest`; tests that need manim
 are skipped unless the `video` extra is installed.
