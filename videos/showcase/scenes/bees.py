@@ -13,7 +13,7 @@ CACHE = ROOT / "cache" / "bees"
 # Recording rate, per SLEAP's datasets page; the clip's mp4 header says 25 fps
 FPS = 100
 WINDOW = (12.25, 14.25)  # s; one bee walks over, they meet and stay side by side
-PX_PER_MM = 14  # image scale, per SLEAP's datasets page
+PX_PER_CM = 140  # image scale (14 px/mm), per SLEAP's datasets page
 ARENA = (240, 0, 1536)  # x0, y0, size (px): a square around the arena
 CROP_SIZE = 720  # px; cropped frames are resized to this square
 NAMES = ["bee 1", "bee 2"]
@@ -49,15 +49,16 @@ def load_clean():
 
 
 def metrics(position):
-    """Speed (mm/s), inter-bee distance (mm) and head direction, all from
+    """Speed (cm/s), inter-bee distance (cm) and head direction, all from
     movement."""
     from movement.kinematics import (
         compute_forward_vector_angle,
         compute_pairwise_distances,
         compute_speed,
     )
+    from movement.transforms import scale
 
-    thorax = position.sel(keypoint="thor") / PX_PER_MM
+    thorax = scale(position.sel(keypoint="thor"), 1 / PX_PER_CM, space_unit="cm")
     speed = compute_speed(thorax)
     distance = compute_pairwise_distances(
         thorax, dim="individual", pairs={NAMES[0]: NAMES[1]}
