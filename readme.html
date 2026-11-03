@@ -324,14 +324,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="development" class="level2">
 <h2 class="anchored" data-anchor-id="development">Development</h2>
 <p>Code quality is enforced with <a href="https://docs.astral.sh/ruff/">ruff</a> (linting and formatting), <a href="https://github.com/codespell-project/codespell">codespell</a> (spelling), and a set of <a href="https://pre-commit.com/">pre-commit</a> hooks.</p>
-<p>Install the git hook once, so the checks run automatically on every commit:</p>
+<p>Install the git hooks once, so the checks run automatically on every commit:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pre-commit install</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>After that, committing runs the hooks against your staged files. To run every hook across the whole repo on demand:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pre-commit run <span class="at">--all-files</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Note that <code>ruff</code> only lints <code>.py</code> files—the Python inside <code>figures/*.qmd</code> code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into <code>src/movement_figures/</code> where it is linted.</p>
 <p>Generated figures under <code>outputs/</code> are deliberatley excluded from the hooks so their committed vector files stay byte-stable across re-renders.</p>
-<blockquote class="blockquote">
-<p>[!note] <code>ruff</code> only lints <code>.py</code> files—the Python inside <code>figures/*.qmd</code> code cells is not checked for now. Keep figure code tidy by hand, or factor reusable logic into <code>src/movement_figures/</code> where it is linted.</p>
-</blockquote>
 <p>Tests live in <code>tests/</code> and run with <code>uv run pytest</code>; tests that need manim are skipped unless the <code>video</code> extra is installed.</p>
 <p>Every pull request re-renders the site as a CI check that all figures still build, and every merge to <code>main</code> redeploys the gallery to GitHub Pages (see <code>.github/workflows/render_and_deploy.yml</code>). Videos are not rendered on CI, since their inputs aren’t all in the repo.</p>
 
