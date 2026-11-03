@@ -82,7 +82,7 @@ epm_napari = napari_canvas_screenshot(
     epm_frame_index,
     tail_length=int(EPM_TAIL_SEC * epm.fps),
     zoom=True,
-    display_text=True,
+    display_text=False,
 )
 ```
 
