@@ -93,7 +93,7 @@ as the background for the occupancy heatmap.
 epm_frame = epm_video[epm_frame_index].mean(axis=2)  # grayscale
 ```
 
-## Application 2: relative head direction of two bees
+## Application 2: relative head angle of two bees
 
 Two female worker bumblebees (*Bombus impatiens*) interacting in a petri dish
 with a hexagonal beeswax floor, filmed at 100 fps and tracked with
@@ -241,7 +241,7 @@ ax_heat.set_title("Occupancy heatmap")
 ax_heat.axis("off")
 
 # ------------------------------------------------------------------ #
-# Row 2: bees relative head direction                                 #
+# Row 2: bees relative head angle                                 #
 # ------------------------------------------------------------------ #
 ax_bees_napari = fig.add_subplot(grid[1, 0])
 ax_bees_napari.imshow(bees_napari)
@@ -250,7 +250,7 @@ ax_bees_napari.axis("off")
 
 ax_polar = fig.add_subplot(grid[1, 1], projection="polar")
 plot_polar_histogram(relative_angle_interacting, ax=ax_polar)
-ax_polar.set_title("Relative head direction\nduring interactions")
+ax_polar.set_title("Relative head angle")
 ```
 
 ## Save the figure
