@@ -40,7 +40,7 @@ def load_clean():
 
     ds = load_poses.from_sleap_file(SLP, fps=FPS)
     ds = ds.assign_coords(individual=NAMES).sel(time=slice(*WINDOW))
-    # Proofread tracks carry no confidence scores, so no confidence filter
+    # Tracks carry no confidence scores, so no confidence filter
     position = rolling_filter(ds.position, window=7, statistic="median", min_periods=2)
     # Bridges the ~0.2 s occlusion when the bees overlap
     position = interpolate_over_time(position, max_gap=25)
