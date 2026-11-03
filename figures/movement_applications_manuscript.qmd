@@ -245,7 +245,7 @@ ax_heat.axis("off")
 # ------------------------------------------------------------------ #
 ax_bees_napari = fig.add_subplot(grid[1, 0])
 ax_bees_napari.imshow(bees_napari)
-ax_bees_napari.set_title("Two interacting bees")
+ax_bees_napari.set_title("Two interacting bumblebees")
 ax_bees_napari.axis("off")
 
 ax_polar = fig.add_subplot(grid[1, 1], projection="polar")
