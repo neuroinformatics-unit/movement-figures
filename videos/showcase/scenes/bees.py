@@ -10,8 +10,10 @@ SLP = INPUTS / "bees@21000-23000.slp"
 VIDEO = INPUTS / "bees@21000-23000.mp4"
 CACHE = ROOT / "cache" / "bees"
 
-FPS = 25
-WINDOW = (49, 57)  # s; one bee walks over, they meet and stay side by side
+# Recording rate, per SLEAP's datasets page; the clip's mp4 header says 25 fps
+FPS = 100
+WINDOW = (12.25, 14.25)  # s; one bee walks over, they meet and stay side by side
+PX_PER_CM = 140  # image scale (14 px/mm), per SLEAP's datasets page
 ARENA = (240, 0, 1536)  # x0, y0, size (px): a square around the arena
 CROP_SIZE = 720  # px; cropped frames are resized to this square
 NAMES = ["bee 1", "bee 2"]
@@ -38,23 +40,25 @@ def load_clean():
 
     ds = load_poses.from_sleap_file(SLP, fps=FPS)
     ds = ds.assign_coords(individual=NAMES).sel(time=slice(*WINDOW))
-    # Proofread tracks carry no confidence scores, so no confidence filter
+    # Tracks carry no confidence scores, so no confidence filter
     position = rolling_filter(ds.position, window=7, statistic="median", min_periods=2)
-    # Bridges the ~0.85 s occlusion when the bees overlap
+    # Bridges the ~0.2 s occlusion when the bees overlap
     position = interpolate_over_time(position, max_gap=25)
     # SciPy >= 1.17 rejects NaNs in edge windows with the default mode
     return savgol_filter(position, window=15, polyorder=2, mode="nearest")
 
 
 def metrics(position):
-    """Speed, inter-bee distance and head direction, all from movement."""
+    """Speed (cm/s), inter-bee distance (cm) and head direction, all from
+    movement."""
     from movement.kinematics import (
         compute_forward_vector_angle,
         compute_pairwise_distances,
         compute_speed,
     )
+    from movement.transforms import scale
 
-    thorax = position.sel(keypoint="thor")
+    thorax = scale(position.sel(keypoint="thor"), 1 / PX_PER_CM, space_unit="cm")
     speed = compute_speed(thorax)
     distance = compute_pairwise_distances(
         thorax, dim="individual", pairs={NAMES[0]: NAMES[1]}

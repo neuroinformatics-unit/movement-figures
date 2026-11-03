@@ -37,7 +37,7 @@ from manim import (
 # right
 FIGURE_CENTRE = np.array([2.0, 0.2, 0])
 FIGURE_HEIGHT = 5.6
-PLAYBACK = 2.0  # times real time
+PLAYBACK = 0.5  # times real time (slow motion)
 # The clip at first: as tall as the plots, a little higher to leave room for
 # its credit above the caption
 VIDEO_HEIGHT = 5.2
