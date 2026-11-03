@@ -76,11 +76,11 @@ def render(height_px, force=False):
 
         speed.plot.line(x="time", hue="individual", ax=ax_speed)
         ax_speed.set_title("Speed")
-        ax_speed.set(xlabel="", ylabel="speed (px/s)")
+        ax_speed.set(xlabel="", ylabel="speed (mm/s)")
 
         distance.plot(ax=ax_dist, color=BLUE)
         ax_dist.set_title("Distance between bees")
-        ax_dist.set(xlabel="time (s)", ylabel="distance (px)")
+        ax_dist.set(xlabel="time (s)", ylabel="distance (mm)")
 
         for i, (ax, name) in enumerate(zip(ax_polar, NAMES, strict=True)):
             plot_polar_histogram(
