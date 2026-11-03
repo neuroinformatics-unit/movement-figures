@@ -42,6 +42,7 @@ from movement_figures import (
     data_dir,
     figure_size,
     get_color,
+    plot_polar_histogram,
     save_figure,
 )
 
@@ -249,26 +250,7 @@ ax_roi.set_anchor("W")  # left-align with panel A
 # ------------------------------------------------------------------ #
 # Panel E: head direction polar histogram                             #
 # ------------------------------------------------------------------ #
-BIN_WIDTH_DEG = 15
-n_bins = int(360 / BIN_WIDTH_DEG)
-
-head_angle.sel(time=slice(150, 300)).plot.hist(
-    bins=np.linspace(-np.pi, np.pi, n_bins + 1),
-    ax=ax_polar,
-    density=True,
-    color=get_color("teal", "Set2"),
-    edgecolor="white",
-    linewidth=1.0,
-)
-ax_polar.set_theta_direction(-1)   # clockwise
-ax_polar.set_theta_offset(0)       # 0 deg at the right
-ax_polar.set_xlabel("")
-ax_polar.set_yticklabels([])
-
-tick_angles = np.linspace(0, 2 * np.pi, 9)[:-1]
-tick_labels_deg = list(range(0, 181, 45)) + list(range(0, -180, -45))[-1:0:-1]
-ax_polar.set_xticks(tick_angles)
-ax_polar.set_xticklabels([f"{t}\N{DEGREE SIGN}" for t in tick_labels_deg])
+plot_polar_histogram(head_angle.sel(time=slice(150, 300)), ax=ax_polar)
 ax_polar.set_title("Head direction", pad=45)
 
 # ------------------------------------------------------------------ #
