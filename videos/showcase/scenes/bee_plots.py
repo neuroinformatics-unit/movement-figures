@@ -6,35 +6,14 @@ not shift as panels appear.
 
 from pathlib import Path
 
-import numpy as np
 from bees import COLOURS, NAMES, WINDOW, load_clean, metrics
 from common import BLUE, use_brand_font_in_plots
+
+from movement_figures import plot_polar_histogram
 
 OUT = Path(__file__).resolve().parent.parent / "cache" / "bees"
 FIGSIZE = (9.6, 5.6)  # inches; sets text size relative to the plots
 STAGES = 2  # speed and distance; + head direction
-
-
-def plot_polar_histogram(da, bin_width_deg=15, ax=None, **kwargs):
-    """Polar histogram of angles, from movement's head-direction example."""
-    import matplotlib.pyplot as plt
-
-    n_bins = int(360 / bin_width_deg)
-    if ax is None:
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5), subplot_kw={"projection": "polar"})
-    else:
-        fig = ax.figure
-    da.plot.hist(
-        bins=np.linspace(-np.pi, np.pi, n_bins + 1), ax=ax, density=True, **kwargs
-    )
-    ax.set_theta_direction(-1)  # theta increases in clockwise direction
-    ax.set_theta_offset(0)  # set zero at the right
-    ax.set_xlabel("")  # remove default x-label from xarray's plot.hist()
-    n_xtick_edges = 9
-    ax.set_xticks(np.linspace(0, 2 * np.pi, n_xtick_edges)[:-1])
-    xticks_in_deg = list(range(0, 180 + 45, 45)) + list(range(0, -180, -45))[-1:0:-1]
-    ax.set_xticklabels([str(t) + "\N{DEGREE SIGN}" for t in xticks_in_deg])
-    return fig, ax
 
 
 def render(height_px, force=False):
@@ -84,12 +63,12 @@ def render(height_px, force=False):
 
         for i, (ax, name) in enumerate(zip(ax_polar, NAMES, strict=True)):
             plot_polar_histogram(
-                heading.sel(individual=name), bin_width_deg=30, ax=ax, color=COLOURS[i]
+                heading.sel(individual=name),
+                ax=ax,
+                bin_width_deg=30,
+                color=COLOURS[i],
+                edgecolor="none",
             )
-            # Bars share the speed legend's colours, so no per-bee title
-            # (clears xarray's automatic "individual = …" title)
-            ax.set_title("")
-            ax.set_yticklabels([])
             ax.tick_params(labelsize=13)
         heading_title = fig.text(
             0.83,
