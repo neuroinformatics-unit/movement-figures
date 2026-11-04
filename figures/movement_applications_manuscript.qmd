@@ -1,0 +1,262 @@
+---
+title: "movement applications (manuscript)"
+sample_data:
+    - filename: DLC_single-mouse_EPM.predictions.h5
+      with_video: true
+---
+
+A multi-row figure showcasing `movement` applications. Each row is one
+application: the left column shows a napari snapshot of a video frame
+overlaid with keypoints and short trailing tracks, as the
+[`movement` GUI](https://movement.neuroinformatics.dev/latest/user_guide/gui.html)
+would show it; the right column shows a metric computed with `movement`.
+
+1. A mouse on an elevated plus maze (EPM), with the occupancy heatmap
+of its centroid across the whole session.
+2. Two interacting bees, with the relative angle between their head
+vectors during interactions.
+
+## Imports and style
+
+```{python}
+import sleap_io as sio
+import matplotlib.pyplot as plt
+import numpy as np
+
+from movement import sample_data
+from movement.filtering import (
+    filter_by_confidence, rolling_filter, interpolate_over_time
+)
+from movement.io import load_poses
+from movement.kinematics import compute_pairwise_distances
+from movement.plots import plot_occupancy
+from movement.transforms import scale
+from movement.utils.vector import compute_norm, compute_signed_angle_2d
+
+from movement_figures import (
+    add_inset_colorbar,
+    apply_style,
+    data_dir,
+    figure_size,
+    napari_canvas_screenshot,
+    plot_polar_histogram,
+    save_figure,
+)
+
+apply_style("manuscript")
+```
+
+## Application 1: EPM occupancy
+
+We fetch the EPM sample dataset and apply a two-step cleaning pipeline:
+a confidence filter followed by a rolling median filter.
+We also (lazily) load the corresponding video.
+
+```{python}
+epm = sample_data.fetch_dataset(
+    "DLC_single-mouse_EPM.predictions.h5", with_video=True
+)
+epm_video = sio.load_video(epm.video_path)
+_, epm_height, epm_width, _ = epm_video.shape
+
+position_conf = filter_by_confidence(
+    epm.position, epm.confidence, threshold=0.95
+)
+epm["position"] = rolling_filter(
+    position_conf, window=5, statistic="median", min_periods=2
+)
+```
+
+We grab a napari canvas screenshot of a single frame, with the tracked
+points and a short trailing track "tail". The video is loaded via the
+`napari-video` plugin, and the dataset's points and tracks layers are added
+via the `movement` napari plugin.
+
+```{python}
+EPM_FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
+EPM_TAIL_SEC = 1     # number of seconds to show in the trailing track tail
+epm_frame_index = int(EPM_FRAME_SEC * epm.fps)
+
+epm_napari = napari_canvas_screenshot(
+    epm, epm.video_path,
+    epm_frame_index,
+    tail_length=int(EPM_TAIL_SEC * epm.fps),
+    zoom=True,
+    display_text=False,
+)
+```
+
+We also load a grayscale version of the same frame, which will be used
+as the background for the occupancy heatmap.
+
+```{python}
+epm_frame = epm_video[epm_frame_index].mean(axis=2)  # grayscale
+```
+
+## Application 2: relative head angle of two bees
+
+Two female worker bumblebees (*Bombus impatiens*) interacting in a petri dish
+with a hexagonal beeswax floor, filmed at 100 fps and tracked with
+SLEAP ([Pereira et al., 2022](https://doi.org/10.1038/s41592-022-01426-1)).
+We use the 20 s example clip (frames 21000--23000) from SLEAP's
+[datasets page](https://docs.sleap.ai/v1.6.5/reference/datasets/#bees).
+The tracks carry no confidence scores, so we skip the confidence
+filter. We smooth with a rolling median, then interpolate over short gaps
+(e.g. when the bees briefly occlude each other).
+
+```{python}
+# TODO: fetch via movement.sample_data once the bees dataset is mirrored.
+# Until then, place the files in the (untracked) showcase video inputs.
+BEES_DIR = data_dir().parent / "videos" / "showcase" / "inputs"
+BEES_VIDEO = BEES_DIR / "bees@21000-23000.mp4"
+
+bees = load_poses.from_sleap_file(
+    BEES_DIR / "bees@21000-23000.slp",
+    fps=100,  # recording rate. The mp4 clip is encoded at 25 fps for playback
+)
+bees = bees.assign_coords(individual=["bee-1", "bee-2"]) # Rename individuals
+position_smooth = rolling_filter(
+    bees.position, window=7, statistic="median", min_periods=2
+)
+bees["position"] = interpolate_over_time(position_smooth, max_gap=25)
+```
+
+We convert positions from pixels to mm, using the dataset's 14 px/mm scale.
+The pixel positions are kept for the napari snapshot below.
+
+```{python}
+PX_PER_MM = 14  # from SLEAP's datasets page
+position_mm = scale(bees.position, factor=1 / PX_PER_MM, space_unit="mm")
+```
+
+We take each bee's head vector to point from its thorax to its head,
+analogous to the head-to-snout vector in `movement`'s
+[head direction example](https://movement.neuroinformatics.dev/latest/examples/compute_head_direction.html).
+We prefer it over the forward vector computed from two left-right keypoints,
+because one of the bees spends a portion of the clip lying upside down and
+the forward vector approach assumes a stable view (either top-down or bottom-up).
+
+The relative head angle is the signed angle from bee 1's head vector to bee 2's:
+0° when both face the same way, ±180° when they face opposite ways.
+
+```{python}
+thorax = position_mm.sel(keypoint="thor", drop=True)
+head = position_mm.sel(keypoint="head", drop=True)
+head_vector = head - thorax
+
+relative_angle = compute_signed_angle_2d(
+    head_vector.sel(individual="bee-1", drop=True),
+    head_vector.sel(individual="bee-2", drop=True),
+)
+```
+
+We only quantify the relative angle during interactions, defined as
+frames in which the two thoraxes are within 1.5 body lengths of each other.
+This threshold is generous enough to catch bees touching with
+antennae and legs while their thoraxes stay apart.
+We take body length as the median head-to-abdomen distance, pooled across
+both bees and the whole clip.
+
+```{python}
+INTERACTION_BODY_LENGTHS = 1.5
+
+abdomen = position_mm.sel(keypoint="abdo", drop=True)
+head_to_abdomen = abdomen - head
+body_length = compute_norm(head_to_abdomen).median().item()
+print(f"Body length (median head-to-abdomen distance): {body_length:.1f} mm")
+
+thorax_distance = compute_pairwise_distances(
+    thorax, dim="individual", pairs={"bee-1": "bee-2"}
+)
+interacting = thorax_distance < INTERACTION_BODY_LENGTHS * body_length
+relative_angle_interacting = relative_angle.where(interacting, drop=True)
+
+n_interacting = int(interacting.sum())
+print(
+    f"Interacting in {n_interacting} of {interacting.size} frames "
+    f"({n_interacting / bees.fps:.2f} s, {interacting.mean().item():.0%})."
+)
+```
+
+We take the snapshot from within an interaction, with both bees upright and
+touching with their antennae and legs, and zoom in on the two bees.
+
+```{python}
+BEES_FRAME_SEC = 2.5  # time (s) of the snapshot, within an interaction
+BEES_TAIL_SEC = 0.1
+bees_frame_index = round(BEES_FRAME_SEC * bees.fps)
+assert interacting.isel(time=bees_frame_index), "snapshot not in interaction"
+
+bees_napari = napari_canvas_screenshot(
+    bees, BEES_VIDEO,
+    bees_frame_index,
+    tail_length=round(BEES_TAIL_SEC * bees.fps),
+    zoom=True,
+    display_text=False,
+    point_size=20,  # px; the plugin's default of 10 is hard to see when zoomed out
+)
+```
+
+## Build the figure
+
+Each application is a row. Row heights follow the aspect ratio of the
+napari snapshots, so the images fill the left column without padding.
+
+```{python}
+row_aspects = [
+    img.shape[0] / img.shape[1] for img in (epm_napari, bees_napari)
+]
+fig_width, _ = figure_size("double")
+fig_height = fig_width / 2 * sum(row_aspects) + 0.6
+fig = plt.figure(figsize=(fig_width, fig_height))
+grid = fig.add_gridspec(2, 2, height_ratios=row_aspects)
+
+# ------------------------------------------------------------------ #
+# Row 1: EPM occupancy                                                #
+# ------------------------------------------------------------------ #
+ax_epm_napari = fig.add_subplot(grid[0, 0])
+ax_epm_napari.imshow(epm_napari)
+ax_epm_napari.set_title("Mouse on an elevated plus maze")
+ax_epm_napari.axis("off")
+
+ax_heat = fig.add_subplot(grid[0, 1])
+ax_heat.imshow(epm_frame, cmap="gray")
+BIN_PIX = 30  # bins of 30x30 pixels, covering the whole frame
+bins = [
+    np.arange(0, epm_width + BIN_PIX, BIN_PIX),
+    np.arange(0, epm_height + BIN_PIX, BIN_PIX),
+]
+plot_occupancy(
+    da=epm.position,
+    ax=ax_heat,
+    bins=bins,
+    alpha=0.8,
+    cmin=10,  # hide bins with fewer than 10 frames
+    norm="log",
+)
+add_inset_colorbar(ax_heat, "# frames")
+ax_heat.set_xlim(0, epm_width)
+ax_heat.set_ylim(epm_height, 0)
+ax_heat.set_title("Occupancy heatmap")
+ax_heat.axis("off")
+
+# ------------------------------------------------------------------ #
+# Row 2: bees relative head angle                                 #
+# ------------------------------------------------------------------ #
+ax_bees_napari = fig.add_subplot(grid[1, 0])
+ax_bees_napari.imshow(bees_napari)
+ax_bees_napari.set_title("Two interacting bumblebees")
+ax_bees_napari.axis("off")
+
+ax_polar = fig.add_subplot(grid[1, 1], projection="polar")
+plot_polar_histogram(relative_angle_interacting, ax=ax_polar)
+ax_polar.set_title("Relative head angle")
+```
+
+## Save the figure
+
+```{python}
+fig_name = "movement_applications_manuscript"
+save_paths = save_figure(fig, fig_name, formats=("pdf", "svg"))
+print(f"Saved '{fig_name}' figure to {save_paths[0].parent}.")
+```
