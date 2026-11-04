@@ -66,8 +66,8 @@ def render(height_px, force=False):
                 heading.sel(individual=name),
                 ax=ax,
                 bin_width_deg=30,
+                tick_step_deg=90,
                 color=COLOURS[i],
-                edgecolor="none",
             )
             ax.tick_params(labelsize=13)
         heading_title = fig.text(

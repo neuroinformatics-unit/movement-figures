@@ -13,6 +13,7 @@ def plot_polar_histogram(
     da: xr.DataArray,
     ax: PolarAxes,
     bin_width_deg: float = 15,
+    tick_step_deg: float = 45,
     **hist_kwargs: Any,
 ) -> PolarAxes:
     """Plot a polar histogram of angles in the shared movement-figures style.
@@ -20,7 +21,7 @@ def plot_polar_histogram(
     Angles increase clockwise from 0° at the right, matching image
     coordinates (y points down), as in ``movement``'s
     `head direction example <https://movement.neuroinformatics.dev/latest/examples/compute_head_direction.html>`_.
-    Ticks are every 45° and labelled in (-180°, 180°].
+    Angular ticks are labelled in (-180°, 180°].
 
     Parameters
     ----------
@@ -30,6 +31,9 @@ def plot_polar_histogram(
         Axes created with ``projection="polar"``.
     bin_width_deg : float
         Width of each bin in degrees. Must divide 360.
+    tick_step_deg : float
+        Spacing of the angular ticks in degrees, starting at 0°.
+        Must divide 360.
     **hist_kwargs
         Forwarded to :meth:`xarray.DataArray.plot.hist`, overriding the
         defaults (density, teal fill, white bin edges).
@@ -42,10 +46,14 @@ def plot_polar_histogram(
     Raises
     ------
     ValueError
-        If ``bin_width_deg`` does not divide 360.
+        If ``bin_width_deg`` or ``tick_step_deg`` does not divide 360.
     """
-    if 360 % bin_width_deg:
-        raise ValueError(f"bin_width_deg must divide 360, got {bin_width_deg}.")
+    for name, step in [
+        ("bin_width_deg", bin_width_deg),
+        ("tick_step_deg", tick_step_deg),
+    ]:
+        if 360 % step:
+            raise ValueError(f"{name} must divide 360, got {step}.")
     n_bins = int(360 / bin_width_deg)
     kwargs = {
         "density": True,
@@ -62,7 +70,7 @@ def plot_polar_histogram(
     ax.set_yticklabels([])
     ax.set_title("")  # xarray titles the plot after scalar coords
 
-    ticks_deg = np.arange(0, 360, 45)
+    ticks_deg = np.arange(0, 360, tick_step_deg)
     ax.set_xticks(np.linspace(0, 2 * np.pi, len(ticks_deg), endpoint=False))
     ax.set_xticklabels(
         [f"{t if t <= 180 else t - 360}\N{DEGREE SIGN}" for t in ticks_deg]
