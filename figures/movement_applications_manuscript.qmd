@@ -13,8 +13,8 @@ would show it; the right column shows a metric computed with `movement`.
 
 1. A mouse on an elevated plus maze (EPM), with the occupancy heatmap
 of its centroid across the whole session.
-2. Two interacting bees, with the relative angle between their head
-vectors during interactions.
+2. Two interacting bees, with the distance between their thoraxes over
+time and periods of interaction highlighted.
 
 ## Imports and style
 
@@ -31,7 +31,6 @@ from movement.io import load_poses
 from movement.kinematics import compute_pairwise_distances
 from movement.plots import plot_occupancy
 from movement.transforms import scale
-from movement.utils.vector import compute_norm, compute_signed_angle_2d
 
 from movement_figures import (
     add_inset_colorbar,
@@ -39,7 +38,6 @@ from movement_figures import (
     data_dir,
     figure_size,
     napari_canvas_screenshot,
-    plot_polar_histogram,
     save_figure,
 )
 
@@ -93,7 +91,7 @@ as the background for the occupancy heatmap.
 epm_frame = epm_video[epm_frame_index].mean(axis=2)  # grayscale
 ```
 
-## Application 2: relative head angle of two bees
+## Application 2: distance between two bees
 
 Two female worker bumblebees (*Bombus impatiens*) interacting in a petri dish
 with a hexagonal beeswax floor, filmed at 100 fps and tracked with
@@ -129,52 +127,35 @@ PX_PER_MM = 14  # from SLEAP's datasets page
 position_mm = scale(bees.position, factor=1 / PX_PER_MM, space_unit="mm")
 ```
 
-We take each bee's head vector to point from its thorax to its head,
-analogous to the head-to-snout vector in `movement`'s
-[head direction example](https://movement.neuroinformatics.dev/latest/examples/compute_head_direction.html).
-We prefer it over the forward vector computed from two left-right keypoints,
-because one of the bees spends a portion of the clip lying upside down and
-the forward vector approach assumes a stable view (either top-down or bottom-up).
-
-The relative head angle is the signed angle from bee 1's head vector to bee 2's:
-0° when both face the same way, ±180° when they face opposite ways.
+We compute the distance between the two bees' thoraxes over time.
+We define interactions as frames in which the thoraxes are closer than 25 mm
+(~1.5 body lengths). This threshold is generous enough to catch bees
+touching with antennae and legs while their thoraxes stay apart.
 
 ```{python}
+INTERACTION_THRESHOLD_MM = 25
+
 thorax = position_mm.sel(keypoint="thor", drop=True)
-head = position_mm.sel(keypoint="head", drop=True)
-head_vector = head - thorax
-
-relative_angle = compute_signed_angle_2d(
-    head_vector.sel(individual="bee-1", drop=True),
-    head_vector.sel(individual="bee-2", drop=True),
-)
-```
-
-We only quantify the relative angle during interactions, defined as
-frames in which the two thoraxes are within 1.5 body lengths of each other.
-This threshold is generous enough to catch bees touching with
-antennae and legs while their thoraxes stay apart.
-We take body length as the median head-to-abdomen distance, pooled across
-both bees and the whole clip.
-
-```{python}
-INTERACTION_BODY_LENGTHS = 1.5
-
-abdomen = position_mm.sel(keypoint="abdo", drop=True)
-head_to_abdomen = abdomen - head
-body_length = compute_norm(head_to_abdomen).median().item()
-print(f"Body length (median head-to-abdomen distance): {body_length:.1f} mm")
-
 thorax_distance = compute_pairwise_distances(
     thorax, dim="individual", pairs={"bee-1": "bee-2"}
 )
-interacting = thorax_distance < INTERACTION_BODY_LENGTHS * body_length
-relative_angle_interacting = relative_angle.where(interacting, drop=True)
+interacting = thorax_distance < INTERACTION_THRESHOLD_MM
+
+# Start and end times of each contiguous interaction period
+is_on = np.concatenate([[False], interacting.values, [False]])
+edges = np.flatnonzero(np.diff(is_on.astype(int)))
+time = thorax_distance.time.values
+dt = 1 / bees.fps
+interaction_periods = [
+    (time[start], time[stop - 1] + dt)
+    for start, stop in zip(edges[::2], edges[1::2])
+]
 
 n_interacting = int(interacting.sum())
 print(
     f"Interacting in {n_interacting} of {interacting.size} frames "
-    f"({n_interacting / bees.fps:.2f} s, {interacting.mean().item():.0%})."
+    f"({n_interacting / bees.fps:.2f} s, {interacting.mean().item():.0%}), "
+    f"across {len(interaction_periods)} periods."
 )
 ```
 
@@ -241,16 +222,23 @@ ax_heat.set_title("Occupancy heatmap")
 ax_heat.axis("off")
 
 # ------------------------------------------------------------------ #
-# Row 2: bees relative head angle                                 #
+# Row 2: bees inter-thorax distance                                   #
 # ------------------------------------------------------------------ #
 ax_bees_napari = fig.add_subplot(grid[1, 0])
 ax_bees_napari.imshow(bees_napari)
 ax_bees_napari.set_title("Two interacting bumblebees")
 ax_bees_napari.axis("off")
 
-ax_polar = fig.add_subplot(grid[1, 1], projection="polar")
-plot_polar_histogram(relative_angle_interacting, ax=ax_polar)
-ax_polar.set_title("Relative head angle")
+ax_dist = fig.add_subplot(grid[1, 1])
+for t_start, t_stop in interaction_periods:
+    ax_dist.axvspan(t_start, t_stop, color="C1", alpha=0.3, lw=0)
+ax_dist.plot(thorax_distance.time, thorax_distance, color="k", lw=0.8)
+ax_dist.axhline(INTERACTION_THRESHOLD_MM, color="C1", ls="--", lw=0.8)
+ax_dist.set_xlim(time[0], time[-1] + dt)
+ax_dist.set_ylim(bottom=0)
+ax_dist.set_xlabel("Time (s)")
+ax_dist.set_ylabel("Thorax distance (mm)")
+ax_dist.set_title("Inter-bee distance")
 ```
 
 ## Save the figure
