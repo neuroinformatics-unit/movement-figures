@@ -13,7 +13,7 @@ would show it; the right column shows a metric computed with `movement`.
 
 1. A mouse on an elevated plus maze (EPM), with the occupancy heatmap
 of its centroid across the whole session.
-2. Two interacting bees, with the distance between their thoraxes over
+2. Two interacting bumblebees, with the distance between their thoraxes over
 time and periods of interaction highlighted.
 
 ## Imports and style
@@ -37,6 +37,7 @@ from movement_figures import (
     apply_style,
     data_dir,
     figure_size,
+    get_color,
     napari_canvas_screenshot,
     save_figure,
 )
@@ -112,7 +113,7 @@ bees = load_poses.from_sleap_file(
     BEES_DIR / "bees@21000-23000.slp",
     fps=100,  # recording rate. The mp4 clip is encoded at 25 fps for playback
 )
-bees = bees.assign_coords(individual=["bee-1", "bee-2"]) # Rename individuals
+bees = bees.assign_coords(individual=["bee-1", "bee-2"])  # Rename individuals
 position_smooth = rolling_filter(
     bees.position, window=7, statistic="median", min_periods=2
 )
@@ -128,12 +129,12 @@ position_mm = scale(bees.position, factor=1 / PX_PER_MM, space_unit="mm")
 ```
 
 We compute the distance between the two bees' thoraxes over time.
-We define interactions as frames in which the thoraxes are closer than 25 mm
-(~1.5 body lengths). This threshold is generous enough to catch bees
+We define interactions as frames in which the thoraxes are closer than 34 mm
+(~2 body lengths). This threshold is generous enough to catch bees
 touching with antennae and legs while their thoraxes stay apart.
 
 ```{python}
-INTERACTION_THRESHOLD_MM = 25
+INTERACTION_THRESHOLD_MM = 34
 
 thorax = position_mm.sel(keypoint="thor", drop=True)
 thorax_distance = compute_pairwise_distances(
@@ -230,15 +231,45 @@ ax_bees_napari.set_title("Two interacting bumblebees")
 ax_bees_napari.axis("off")
 
 ax_dist = fig.add_subplot(grid[1, 1])
+label_color = get_color("gray", "Dark2")
 for t_start, t_stop in interaction_periods:
-    ax_dist.axvspan(t_start, t_stop, color="C1", alpha=0.3, lw=0)
-ax_dist.plot(thorax_distance.time, thorax_distance, color="k", lw=0.8)
-ax_dist.axhline(INTERACTION_THRESHOLD_MM, color="C1", ls="--", lw=0.8)
+    ax_dist.axvspan(
+        t_start, t_stop, color=get_color("gray", "Set2"), alpha=0.3, lw=0
+    )
+ax_dist.plot(
+    thorax_distance.time, thorax_distance, color=get_color("teal", "Dark2")
+)
+ax_dist.axhline(INTERACTION_THRESHOLD_MM, color=label_color, ls="--", lw=0.8)
 ax_dist.set_xlim(time[0], time[-1] + dt)
 ax_dist.set_ylim(bottom=0)
 ax_dist.set_xlabel("Time (s)")
-ax_dist.set_ylabel("Thorax distance (mm)")
-ax_dist.set_title("Inter-bee distance")
+ax_dist.set_title("Thorax-to-thorax distance (mm)")
+
+# Direct labels in place of a legend, which would overlap the bands
+ax_dist.annotate(
+    f"{INTERACTION_THRESHOLD_MM} mm",
+    xy=(1, INTERACTION_THRESHOLD_MM), xycoords=("axes fraction", "data"),
+    xytext=(-2, -2), textcoords="offset points",
+    ha="right", va="top", color=label_color, fontsize="medium",
+)
+first_start, first_stop = interaction_periods[0]
+ax_dist.annotate(
+    "interaction",
+    xy=((first_start + first_stop) / 2, 0.1),
+    xycoords=("data", "axes fraction"),
+    xytext=(0, 2), textcoords="offset points",
+    ha="center", va="bottom", color=label_color, fontsize="medium",
+)
+
+# The equal-aspect image fills its axes' width but not its height, so it sits
+# vertically centred. Freeze the constrained layout and match the distance
+# axes to the image's height.
+fig.canvas.draw()
+fig.set_layout_engine("none")
+img_box, dist_box = ax_bees_napari.get_position(), ax_dist.get_position()
+ax_dist.set_position(
+    [dist_box.x0, img_box.y0, dist_box.width, img_box.height]
+)
 ```
 
 ## Save the figure
