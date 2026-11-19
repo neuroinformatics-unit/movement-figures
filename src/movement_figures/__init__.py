@@ -1,8 +1,13 @@
 """Shared style and helpers for movement research figures."""
 
 from movement_figures.io import data_dir, save_figure
-from movement_figures.layout import add_inset_colorbar
+from movement_figures.layout import (
+    add_inset_colorbar,
+    align_y_labels,
+    freeze_layout,
+)
 from movement_figures.napari_utils import napari_canvas_screenshot
+from movement_figures.plots import plot_polar_histogram
 from movement_figures.style import (
     AVAILABLE_MEDIA,
     GOLDEN_RATIO,
@@ -21,10 +26,13 @@ __all__ = [
     "Palette",
     "WIDTHS",
     "add_inset_colorbar",
+    "align_y_labels",
     "apply_style",
     "data_dir",
     "figure_size",
+    "freeze_layout",
     "get_color",
     "napari_canvas_screenshot",
+    "plot_polar_histogram",
     "save_figure",
 ]

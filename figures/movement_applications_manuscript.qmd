@@ -1,0 +1,279 @@
+---
+title: "movement applications (manuscript)"
+sample_data:
+    - filename: DLC_single-mouse_EPM.predictions.h5
+      with_video: true
+    - filename: SLEAP_two-bees.predictions.slp
+      with_video: true
+---
+
+A multi-row figure showcasing `movement` applications. Each row is one
+application: the left column shows a napari snapshot of a video frame
+overlaid with keypoints and short trailing tracks, as the
+[`movement` GUI](https://movement.neuroinformatics.dev/latest/user_guide/gui.html)
+would show it; the right column shows a metric computed with `movement`.
+
+1. A mouse on an elevated plus maze (EPM), with the occupancy heatmap
+of its centroid across the whole session.
+2. Two interacting bumblebees, with the distance between their thoraxes over
+time and periods of interaction highlighted.
+
+## Imports and style
+
+```{python}
+import sleap_io as sio
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.ticker import MultipleLocator
+from matplotlib.transforms import Bbox
+
+from movement import sample_data
+from movement.filtering import (
+    filter_by_confidence, rolling_filter, interpolate_over_time
+)
+from movement.kinematics import compute_pairwise_distances
+from movement.plots import plot_occupancy
+from movement.transforms import scale
+
+from movement_figures import (
+    add_inset_colorbar,
+    align_y_labels,
+    apply_style,
+    figure_size,
+    freeze_layout,
+    get_color,
+    napari_canvas_screenshot,
+    save_figure,
+)
+
+apply_style("manuscript")
+```
+
+## Application 1: EPM occupancy
+
+We fetch the EPM sample dataset and apply a two-step cleaning pipeline:
+a confidence filter followed by a rolling median filter.
+We also (lazily) load the corresponding video.
+
+```{python}
+epm = sample_data.fetch_dataset(
+    "DLC_single-mouse_EPM.predictions.h5", with_video=True
+)
+epm_video = sio.load_video(epm.video_path)
+_, epm_height, epm_width, _ = epm_video.shape
+
+position_conf = filter_by_confidence(
+    epm.position, epm.confidence, threshold=0.95
+)
+epm["position"] = rolling_filter(
+    position_conf, window=5, statistic="median", min_periods=2
+)
+```
+
+We grab a napari canvas screenshot of a single frame, with the tracked
+points and a short trailing track "tail". The video is loaded via the
+`napari-video` plugin, and the dataset's points and tracks layers are added
+via the `movement` napari plugin.
+
+```{python}
+EPM_FRAME_SEC = 285  # time (s) of the snapshot; mouse is in an open arm here
+EPM_TAIL_SEC = 1     # number of seconds to show in the trailing track tail
+epm_frame_index = int(EPM_FRAME_SEC * epm.fps)
+
+epm_napari = napari_canvas_screenshot(
+    epm, epm.video_path,
+    epm_frame_index,
+    tail_length=int(EPM_TAIL_SEC * epm.fps),
+    zoom=True,
+    display_text=False,
+)
+```
+
+We also load a grayscale version of the same frame, which will be used
+as the background for the occupancy heatmap.
+
+```{python}
+epm_frame = epm_video[epm_frame_index].mean(axis=2)  # grayscale
+```
+
+## Application 2: distance between two bees
+
+Two female worker bumblebees (*Bombus impatiens*) interacting in a petri dish
+with a hexagonal beeswax floor, filmed at 100 fps and tracked with
+SLEAP ([Pereira et al., 2022](https://doi.org/10.1038/s41592-022-01426-1)).
+We use the 20 s example clip (frames 21000--23000) from SLEAP's
+[datasets page](https://docs.sleap.ai/v1.6.5/reference/datasets/#bees),
+available as a `movement` sample dataset with its video.
+The tracks carry no confidence scores, so we skip the confidence
+filter. We smooth with a rolling median, then interpolate over short gaps
+(e.g. when the bees briefly occlude each other).
+
+```{python}
+bees = sample_data.fetch_dataset(
+    "SLEAP_two-bees.predictions.slp", with_video=True
+)
+bees = bees.assign_coords(individual=["bee-1", "bee-2"])  # Rename individuals
+position_smooth = rolling_filter(
+    bees.position, window=7, statistic="median", min_periods=2
+)
+bees["position"] = interpolate_over_time(position_smooth, max_gap=25)
+```
+
+We convert positions from pixels to cm, using the dataset's reported scale.
+The pixel positions are kept for the napari snapshot below.
+
+```{python}
+PX_PER_CM = 140  # 14 px/mm, from SLEAP's datasets page
+position_cm = scale(bees.position, factor=1 / PX_PER_CM, space_unit="cm")
+```
+
+We compute the distance between the two bees' thoraxes over time.
+We define interactions as frames in which the thoraxes are closer than 3.4 cm
+(~2 body lengths). This threshold is generous enough to catch bees
+touching with antennae and legs while their thoraxes stay apart.
+
+```{python}
+INTERACTION_THRESHOLD_CM = 3.4
+
+thorax = position_cm.sel(keypoint="thor", drop=True)
+thorax_distance = compute_pairwise_distances(
+    thorax, dim="individual", pairs={"bee-1": "bee-2"}
+)
+interacting = thorax_distance < INTERACTION_THRESHOLD_CM
+
+# Start and end times of each contiguous interaction period
+is_on = np.concatenate([[False], interacting.values, [False]])
+edges = np.flatnonzero(np.diff(is_on.astype(int)))
+time = thorax_distance.time.values
+dt = 1 / bees.fps
+interaction_periods = [
+    (time[start], time[stop - 1] + dt)
+    for start, stop in zip(edges[::2], edges[1::2])
+]
+
+n_interacting = int(interacting.sum())
+print(
+    f"Interacting in {n_interacting} of {interacting.size} frames "
+    f"({n_interacting / bees.fps:.2f} s, {interacting.mean().item():.0%}), "
+    f"across {len(interaction_periods)} periods."
+)
+```
+
+We take the snapshot from within an interaction and zoom in on the two bees.
+
+```{python}
+BEES_FRAME_SEC = 2.5  # time (s) of the snapshot, within an interaction
+BEES_TAIL_SEC = 0.1
+bees_frame_index = round(BEES_FRAME_SEC * bees.fps)
+assert interacting.isel(time=bees_frame_index), "snapshot not in interaction"
+
+bees_napari = napari_canvas_screenshot(
+    bees, bees.video_path,
+    bees_frame_index,
+    tail_length=round(BEES_TAIL_SEC * bees.fps),
+    zoom=True,
+    display_text=False,
+    point_size=20,
+)
+```
+
+## Build the figure
+
+Each application is a row. Row heights follow the aspect ratio of the
+napari snapshots, so the images fill the left column without padding.
+
+```{python}
+row_aspects = [
+    img.shape[0] / img.shape[1] for img in (epm_napari, bees_napari)
+]
+fig_width, _ = figure_size("double")
+fig_height = fig_width / 2 * sum(row_aspects)
+fig = plt.figure(figsize=(fig_width, fig_height))
+# Wider gap between columns, to fit the distance plot's y-axis label
+fig.get_layout_engine().set(wspace=0.08)
+grid = fig.add_gridspec(2, 2, height_ratios=row_aspects)
+
+# ------------------------------------------------------------------ #
+# Row 1: EPM occupancy                                                #
+# ------------------------------------------------------------------ #
+ax_epm_napari = fig.add_subplot(grid[0, 0])
+ax_epm_napari.imshow(epm_napari)
+ax_epm_napari.axis("off")
+
+ax_heat = fig.add_subplot(grid[0, 1])
+ax_heat.imshow(epm_frame, cmap="gray")
+BIN_PIX = 30  # bins of 30x30 pixels, covering the whole frame
+bins = [
+    np.arange(0, epm_width + BIN_PIX, BIN_PIX),
+    np.arange(0, epm_height + BIN_PIX, BIN_PIX),
+]
+plot_occupancy(
+    da=epm.position,
+    ax=ax_heat,
+    bins=bins,
+    alpha=0.8,
+    cmin=10,  # hide bins with fewer than 10 frames
+    norm="log",
+)
+cbar_ax = add_inset_colorbar(ax_heat, "Occupancy (# frames)", side="left")
+ax_heat.set_xlim(0, epm_width)
+ax_heat.set_ylim(epm_height, 0)
+ax_heat.axis("off")
+
+# ------------------------------------------------------------------ #
+# Row 2: bees inter-thorax distance                                   #
+# ------------------------------------------------------------------ #
+ax_bees_napari = fig.add_subplot(grid[1, 0])
+ax_bees_napari.imshow(bees_napari)
+ax_bees_napari.axis("off")
+
+ax_dist = fig.add_subplot(grid[1, 1])
+label_color = get_color("gray", "Dark2")
+for t_start, t_stop in interaction_periods:
+    ax_dist.axvspan(
+        t_start, t_stop, color=get_color("gray", "Set2"), alpha=0.3, lw=0
+    )
+ax_dist.plot(
+    thorax_distance.time, thorax_distance, color=get_color("teal", "Dark2")
+)
+ax_dist.axhline(INTERACTION_THRESHOLD_CM, color=label_color, ls="--", lw=0.8)
+ax_dist.set_xlim(time[0], time[-1] + dt)
+ax_dist.xaxis.set_major_locator(MultipleLocator(5))
+ax_dist.set_ylim(bottom=0)
+ax_dist.set_xlabel("Time (s)")
+ax_dist.set_ylabel("Thorax-to-thorax distance (cm)")
+
+# Add annotation for the interaction threshold and the first interaction period
+ax_dist.annotate(
+    f"{INTERACTION_THRESHOLD_CM} cm",
+    xy=(1, INTERACTION_THRESHOLD_CM), xycoords=("axes fraction", "data"),
+    xytext=(-2, -2), textcoords="offset points",
+    ha="right", va="top", color=label_color, fontsize="medium",
+)
+first_start, first_stop = interaction_periods[0]
+ax_dist.annotate(
+    "interaction",
+    xy=((first_start + first_stop) / 2, 0.1),
+    xycoords=("data", "axes fraction"),
+    xytext=(0, 2), textcoords="offset points",
+    ha="center", va="bottom", color=label_color, fontsize="medium",
+)
+
+# Once constrained layout has placed everything, fine-tune the distance plot
+# by hand, to fix alignment issues with the colorbar and y-axis label.
+freeze_layout(fig)
+img_box = ax_bees_napari.get_position()
+ax_dist.set_position(Bbox.from_extents(
+    cbar_ax.get_position().x0, img_box.y0,  # left, bottom
+    ax_dist.get_position().x1, img_box.y1,  # right, top
+))
+align_y_labels(cbar_ax, ax_dist)
+```
+
+## Save the figure
+
+```{python}
+fig_name = "movement_applications_manuscript"
+save_paths = save_figure(fig, fig_name, formats=("pdf", "svg"))
+print(f"Saved '{fig_name}' figure to {save_paths[0].parent}.")
+```

@@ -1,17 +1,15 @@
 """Two interacting bees: tracks, video frames and movement-computed metrics.
 
-Source: a SLEAP-tracked recording (in ``inputs/``, not committed).
+Source: a SLEAP-tracked recording, fetched as a movement sample dataset.
 """
 
 import numpy as np
-from common import GREEN, INPUTS, ORANGE, ROOT
+from common import GREEN, ORANGE, ROOT
 
-SLP = INPUTS / "bees@21000-23000.slp"
-VIDEO = INPUTS / "bees@21000-23000.mp4"
+DATASET = "SLEAP_two-bees.predictions.slp"
 CACHE = ROOT / "cache" / "bees"
 
-# Recording rate, per SLEAP's datasets page; the clip's mp4 header says 25 fps
-FPS = 100
+FPS = 100  # recording rate, shared by the tracks and the video
 WINDOW = (12.25, 14.25)  # s; one bee walks over, they meet and stay side by side
 PX_PER_CM = 140  # image scale (14 px/mm), per SLEAP's datasets page
 ARENA = (240, 0, 1536)  # x0, y0, size (px): a square around the arena
@@ -22,10 +20,16 @@ LEFT, RIGHT = "Lant1", "Rant1"  # antenna bases: a left/right pair on the head
 VIDEO_HEIGHT, VIDEO_WIDTH = 1536, 2048
 
 
+def fetch(with_video=False):
+    from movement import sample_data
+
+    return sample_data.fetch_dataset(DATASET, with_video=with_video)
+
+
 def skeleton_edges():
     import sleap_io as sio
 
-    skeleton = sio.load_slp(str(SLP)).skeletons[0]
+    skeleton = sio.load_slp(fetch().attrs["source_file"]).skeletons[0]
     return [(e.source.name, e.destination.name) for e in skeleton.edges]
 
 
@@ -36,9 +40,9 @@ def load_clean():
         rolling_filter,
         savgol_filter,
     )
-    from movement.io import load_poses
 
-    ds = load_poses.from_sleap_file(SLP, fps=FPS)
+    ds = fetch()
+    assert ds.fps == FPS, ds.fps
     ds = ds.assign_coords(individual=NAMES).sel(time=slice(*WINDOW))
     # Tracks carry no confidence scores, so no confidence filter
     position = rolling_filter(ds.position, window=7, statistic="median", min_periods=2)
@@ -83,7 +87,7 @@ def video_frames(box=ARENA):
                 "-loglevel",
                 "error",
                 "-i",
-                str(VIDEO),
+                str(fetch(with_video=True).attrs["video_path"]),
                 "-vf",
                 f"select=between(n\\,{first}\\,{last}),"
                 f"crop={size}:{size}:{x0}:{y0},scale={CROP_SIZE}:{CROP_SIZE}",

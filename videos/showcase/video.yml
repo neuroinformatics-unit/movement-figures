@@ -24,6 +24,8 @@ sample_data:
     with_video: true
   - filename: DLC_single-mouse_EPM.predictions.h5
     with_video: true
+  - filename: SLEAP_two-bees.predictions.slp
+    with_video: true
 
 # Files in inputs/, not committed. Put them there before rendering.
 # Keep `file` first in each entry. Logos were converted to RGBA and some were
@@ -77,11 +79,3 @@ inputs:
     source: "Made with OBS Studio"
     credit: Screen recording of movement's napari GUI by Niko Sirmpilatze
     sha256: "bb1186f8ceffee20f82a896806d213948323e64d57951cc8e2b5f9cd80bfc384"
-  - file: bees@21000-23000.slp
-    source: "https://docs.sleap.ai/v1.6.5/reference/datasets/"
-    credit: Pereira et al., Nature Methods, 2022
-    sha256: "63d96e13b4a7d9a37584175b6e0e996d3d28766760820a94830e8a881b436c58"
-  - file: bees@21000-23000.mp4
-    source: "https://docs.sleap.ai/v1.6.5/reference/datasets/"
-    credit: Pereira et al., Nature Methods, 2022
-    sha256: "91b4f78116ba0f1e081c684f6d23f52183b92c9907a29a73850268f1bd8b0443"

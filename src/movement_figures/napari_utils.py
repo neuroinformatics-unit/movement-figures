@@ -21,6 +21,7 @@ def napari_canvas_screenshot(
     tail_length: int = 10,
     zoom: bool = False,
     display_text: bool = True,
+    point_size: float | None = None,
 ) -> np.ndarray:
     """Screenshot a single frame of a dataset as shown in the napari GUI.
 
@@ -48,6 +49,9 @@ def napari_canvas_screenshot(
         instead of fitting the whole video frame in view. Default is ``False``.
     display_text
         If ``True``, show the keypoint point labels
+    point_size
+        Size of the keypoint markers, in video pixels. If ``None`` (default),
+        keep the size set by the ``movement`` napari plugin.
 
     Returns
     -------
@@ -81,10 +85,12 @@ def napari_canvas_screenshot(
             loader.load_button.click()
 
         # Configure points layer
+        points_layer = _get_layer_by_type(viewer, napari.layers.Points)
         if display_text:
-            points_layer = _get_layer_by_type(viewer, napari.layers.Points)
             points_layer.text.visible = True
             points_layer.text.size = 16
+        if point_size is not None:
+            points_layer.size = point_size
 
         # Configure tracks layer
         tracks_layer = _get_layer_by_type(viewer, napari.layers.Tracks)
