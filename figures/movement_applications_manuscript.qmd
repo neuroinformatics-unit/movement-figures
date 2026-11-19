@@ -24,6 +24,8 @@ time and periods of interaction highlighted.
 import sleap_io as sio
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MultipleLocator
+from matplotlib.transforms import Bbox
 
 from movement import sample_data
 from movement.filtering import (
@@ -35,8 +37,10 @@ from movement.transforms import scale
 
 from movement_figures import (
     add_inset_colorbar,
+    align_y_labels,
     apply_style,
     figure_size,
+    freeze_layout,
     get_color,
     napari_canvas_screenshot,
     save_figure,
@@ -115,27 +119,27 @@ position_smooth = rolling_filter(
 bees["position"] = interpolate_over_time(position_smooth, max_gap=25)
 ```
 
-We convert positions from pixels to mm, using the dataset's 14 px/mm scale.
+We convert positions from pixels to cm, using the dataset's reported scale.
 The pixel positions are kept for the napari snapshot below.
 
 ```{python}
-PX_PER_MM = 14  # from SLEAP's datasets page
-position_mm = scale(bees.position, factor=1 / PX_PER_MM, space_unit="mm")
+PX_PER_CM = 140  # 14 px/mm, from SLEAP's datasets page
+position_cm = scale(bees.position, factor=1 / PX_PER_CM, space_unit="cm")
 ```
 
 We compute the distance between the two bees' thoraxes over time.
-We define interactions as frames in which the thoraxes are closer than 34 mm
+We define interactions as frames in which the thoraxes are closer than 3.4 cm
 (~2 body lengths). This threshold is generous enough to catch bees
 touching with antennae and legs while their thoraxes stay apart.
 
 ```{python}
-INTERACTION_THRESHOLD_MM = 34
+INTERACTION_THRESHOLD_CM = 3.4
 
-thorax = position_mm.sel(keypoint="thor", drop=True)
+thorax = position_cm.sel(keypoint="thor", drop=True)
 thorax_distance = compute_pairwise_distances(
     thorax, dim="individual", pairs={"bee-1": "bee-2"}
 )
-interacting = thorax_distance < INTERACTION_THRESHOLD_MM
+interacting = thorax_distance < INTERACTION_THRESHOLD_CM
 
 # Start and end times of each contiguous interaction period
 is_on = np.concatenate([[False], interacting.values, [False]])
@@ -155,8 +159,7 @@ print(
 )
 ```
 
-We take the snapshot from within an interaction, with both bees upright and
-touching with their antennae and legs, and zoom in on the two bees.
+We take the snapshot from within an interaction and zoom in on the two bees.
 
 ```{python}
 BEES_FRAME_SEC = 2.5  # time (s) of the snapshot, within an interaction
@@ -170,7 +173,7 @@ bees_napari = napari_canvas_screenshot(
     tail_length=round(BEES_TAIL_SEC * bees.fps),
     zoom=True,
     display_text=False,
-    point_size=20,  # px; the plugin's default of 10 is hard to see when zoomed out
+    point_size=20,
 )
 ```
 
@@ -184,8 +187,10 @@ row_aspects = [
     img.shape[0] / img.shape[1] for img in (epm_napari, bees_napari)
 ]
 fig_width, _ = figure_size("double")
-fig_height = fig_width / 2 * sum(row_aspects) + 0.6
+fig_height = fig_width / 2 * sum(row_aspects)
 fig = plt.figure(figsize=(fig_width, fig_height))
+# Wider gap between columns, to fit the distance plot's y-axis label
+fig.get_layout_engine().set(wspace=0.08)
 grid = fig.add_gridspec(2, 2, height_ratios=row_aspects)
 
 # ------------------------------------------------------------------ #
@@ -193,7 +198,6 @@ grid = fig.add_gridspec(2, 2, height_ratios=row_aspects)
 # ------------------------------------------------------------------ #
 ax_epm_napari = fig.add_subplot(grid[0, 0])
 ax_epm_napari.imshow(epm_napari)
-ax_epm_napari.set_title("Mouse on an elevated plus maze")
 ax_epm_napari.axis("off")
 
 ax_heat = fig.add_subplot(grid[0, 1])
@@ -211,10 +215,9 @@ plot_occupancy(
     cmin=10,  # hide bins with fewer than 10 frames
     norm="log",
 )
-add_inset_colorbar(ax_heat, "# frames")
+cbar_ax = add_inset_colorbar(ax_heat, "Occupancy (# frames)", side="left")
 ax_heat.set_xlim(0, epm_width)
 ax_heat.set_ylim(epm_height, 0)
-ax_heat.set_title("Occupancy heatmap")
 ax_heat.axis("off")
 
 # ------------------------------------------------------------------ #
@@ -222,7 +225,6 @@ ax_heat.axis("off")
 # ------------------------------------------------------------------ #
 ax_bees_napari = fig.add_subplot(grid[1, 0])
 ax_bees_napari.imshow(bees_napari)
-ax_bees_napari.set_title("Two interacting bumblebees")
 ax_bees_napari.axis("off")
 
 ax_dist = fig.add_subplot(grid[1, 1])
@@ -234,16 +236,17 @@ for t_start, t_stop in interaction_periods:
 ax_dist.plot(
     thorax_distance.time, thorax_distance, color=get_color("teal", "Dark2")
 )
-ax_dist.axhline(INTERACTION_THRESHOLD_MM, color=label_color, ls="--", lw=0.8)
+ax_dist.axhline(INTERACTION_THRESHOLD_CM, color=label_color, ls="--", lw=0.8)
 ax_dist.set_xlim(time[0], time[-1] + dt)
+ax_dist.xaxis.set_major_locator(MultipleLocator(5))
 ax_dist.set_ylim(bottom=0)
 ax_dist.set_xlabel("Time (s)")
-ax_dist.set_title("Thorax-to-thorax distance (mm)")
+ax_dist.set_ylabel("Thorax-to-thorax distance (cm)")
 
-# Direct labels in place of a legend, which would overlap the bands
+# Add annotation for the interaction threshold and the first interaction period
 ax_dist.annotate(
-    f"{INTERACTION_THRESHOLD_MM} mm",
-    xy=(1, INTERACTION_THRESHOLD_MM), xycoords=("axes fraction", "data"),
+    f"{INTERACTION_THRESHOLD_CM} cm",
+    xy=(1, INTERACTION_THRESHOLD_CM), xycoords=("axes fraction", "data"),
     xytext=(-2, -2), textcoords="offset points",
     ha="right", va="top", color=label_color, fontsize="medium",
 )
@@ -256,15 +259,15 @@ ax_dist.annotate(
     ha="center", va="bottom", color=label_color, fontsize="medium",
 )
 
-# The equal-aspect image fills its axes' width but not its height, so it sits
-# vertically centred. Freeze the constrained layout and match the distance
-# axes to the image's height.
-fig.canvas.draw()
-fig.set_layout_engine("none")
-img_box, dist_box = ax_bees_napari.get_position(), ax_dist.get_position()
-ax_dist.set_position(
-    [dist_box.x0, img_box.y0, dist_box.width, img_box.height]
-)
+# Once constrained layout has placed everything, fine-tune the distance plot
+# by hand, to fix alignment issues with the colorbar and y-axis label.
+freeze_layout(fig)
+img_box = ax_bees_napari.get_position()
+ax_dist.set_position(Bbox.from_extents(
+    cbar_ax.get_position().x0, img_box.y0,  # left, bottom
+    ax_dist.get_position().x1, img_box.y1,  # right, top
+))
+align_y_labels(cbar_ax, ax_dist)
 ```
 
 ## Save the figure
