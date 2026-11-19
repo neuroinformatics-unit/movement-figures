@@ -86,7 +86,7 @@ rois = load_rois(data_dir() / "EPM_rois.geojson")
 roi_occ = compute_region_occupancy(pos_clean, rois)
 mouse_in_roi = roi_occ.sel(
     keypoint=["centre", "tailbase"],
-    individual="individual_0",
+    individual="id_0",
 ).all(dim="keypoint")
 
 pct_time_in_roi = (
@@ -95,7 +95,7 @@ pct_time_in_roi = (
 
 # Radians, clockwise from the positive x-axis.
 head_angle = compute_forward_vector_angle(
-    pos_clean.sel(individual="individual_0"),
+    pos_clean.sel(individual="id_0"),
     left_keypoint="left_ear",
     right_keypoint="right_ear",
     reference_vector=(1, 0),
@@ -152,7 +152,7 @@ ax_vel   = fig.add_subplot(gs[3, 1:])
 # ------------------------------------------------------------------ #
 pos_sel = positions.sel(
     keypoint="snout",
-    individual="individual_0",
+    individual="id_0",
     space="y",
     time=slice(240, 300),
 )
@@ -179,7 +179,7 @@ ax_trace.legend(
 ax_traj.imshow(traj_frame.mean(axis=2), cmap="gray")
 plot_centroid_trajectory(
     pos_clean.sel(time=slice(traj_end_sec - 10, traj_end_sec)),
-    individual="individual_0",
+    individual="id_0",
     keypoints=["centre", "tailbase", "left_ear", "right_ear"],
     ax=ax_traj,
     alpha=0.8,
