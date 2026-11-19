@@ -58,15 +58,14 @@ See the [main README](../../README.md#Videos).
 The video draws on three kinds of input:
 
 - **movement sample data**, fetched automatically: the DeepLabCut
-  DBTravelator mouse (segment 1) and elevated plus maze mouse (segment 2),
-  with their videos.
+  DBTravelator mouse (segment 1), the elevated plus maze mouse (segment 2)
+  and the SLEAP bees (segment 3), with their videos.
 - **Committed files** in `assets/`: the movement and NIU logos, and three
   icons: Font Awesome's `file-solid-full.svg` and `github-brands.svg`
   (CC BY 4.0) and GitHub Octicons' `octicon-law-24.svg` (MIT), credited on
   screen.
-- **Files that can't be committed** (third-party logos, the SLEAP bees
-  recording, the napari screen recording), which you put in `inputs/` by
-  hand.
+- **Files that can't be committed** (third-party logos, the napari screen
+  recording), which you put in `inputs/` by hand.
 
 `video.yml` lists every file in `inputs/`, with where to get it, who to
 credit, and its sha256 hash. Check that yours are complete and identical to

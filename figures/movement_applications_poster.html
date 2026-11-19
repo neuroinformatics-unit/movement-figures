@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-9ec635a1bb018bcd87dfc484fcd0913f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-8104339673ae97f830ad6c46b8436ec8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-9ec635a1bb018bcd87dfc484fcd0913f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-f0970495691e09e6711acdceeb6487cb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e1bfd1bbd62c499ce324c3070b950638.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-f0970495691e09e6711acdceeb6487cb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -163,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../figures/epm_occupancy.html">Figures</a></li><li class="breadcrumb-item"><a href="../figures/movement_applications_poster.html">movement applications (poster)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../figures/movement_applications_manuscript.html">Figures</a></li><li class="breadcrumb-item"><a href="../figures/movement_applications_poster.html">movement applications (poster)</a></li></ol></nav>
         <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -189,8 +189,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../figures/epm_occupancy.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">EPM occupancy (manuscript)</span></a>
+  <a href="../figures/movement_applications_manuscript.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">movement applications (manuscript)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -225,7 +225,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content" tabindex="-1">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../figures/epm_occupancy.html">Figures</a></li><li class="breadcrumb-item"><a href="../figures/movement_applications_poster.html">movement applications (poster)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../figures/movement_applications_manuscript.html">Figures</a></li><li class="breadcrumb-item"><a href="../figures/movement_applications_poster.html">movement applications (poster)</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">movement applications (poster)</h1>
 </div>
@@ -254,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <section id="imports-and-style" class="level2">
 <h2 class="anchored" data-anchor-id="imports-and-style">Imports and style</h2>
-<div id="118f85aa" class="cell" data-execution_count="1">
+<div id="85930070" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -278,10 +278,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    data_dir,</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    figure_size,</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    get_color,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    save_figure,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>apply_style(<span class="st">"poster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    plot_polar_histogram,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    save_figure,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>apply_style(<span class="st">"poster"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -291,7 +292,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="epm-dataset">EPM dataset</h3>
 <p>The EPM dataset ships with <code>movement</code>’s sample data. We apply a three-step cleaning pipeline (confidence filter, rolling median, linear gap interpolation) and keep both the raw and clean positions so we can compare them in the first panel.</p>
 <p>We also compute the time fraction spent in each ROI and the head direction angle for the clean positions, which will be visualized in the third figure row.</p>
-<div id="c2a7ee66" class="cell" data-execution_count="2">
+<div id="8476484b" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> sample_data.fetch_dataset(</span>
@@ -318,7 +319,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>roi_occ <span class="op">=</span> compute_region_occupancy(pos_clean, rois)</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>mouse_in_roi <span class="op">=</span> roi_occ.sel(</span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>],</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"id_0"</span>,</span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>).<span class="bu">all</span>(dim<span class="op">=</span><span class="st">"keypoint"</span>)</span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>pct_time_in_roi <span class="op">=</span> (</span>
@@ -327,7 +328,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Radians, clockwise from the positive x-axis.</span></span>
 <span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>head_angle <span class="op">=</span> compute_forward_vector_angle(</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(individual<span class="op">=</span><span class="st">"individual_0"</span>),</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(individual<span class="op">=</span><span class="st">"id_0"</span>),</span>
 <span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    left_keypoint<span class="op">=</span><span class="st">"left_ear"</span>,</span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    right_keypoint<span class="op">=</span><span class="st">"right_ear"</span>,</span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    reference_vector<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
@@ -340,7 +341,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="eye-tracking-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="eye-tracking-dataset">Eye-tracking dataset</h3>
 <p>We use a dataset that’s already part of <code>movement</code>’s sample data and has been thoroughly explored in <code>movement</code>’s <a href="https://movement.neuroinformatics.dev/latest/examples/mouse_eye_movements.html">‘Pupil tracking’ example</a>. Here we extract the first video frame with tracked keypoints and the pupil centroid, as well as the pupil centroid’s horizontal velocity over a specific window (normalised by the mean eye position to remove head/camera motion).</p>
-<div id="7cb7ee74" class="cell" data-execution_count="3">
+<div id="f7410b4e" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>eye_ds <span class="op">=</span> sample_data.fetch_dataset(</span>
@@ -365,7 +366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="build-the-figure" class="level2">
 <h2 class="anchored" data-anchor-id="build-the-figure">Build the figure</h2>
-<div id="f57dd467" class="cell" data-execution_count="4">
+<div id="28f4b811" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>figure_size(<span class="st">"double"</span>, height<span class="op">=</span><span class="fl">17.5</span>))</span>
@@ -387,7 +388,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>pos_sel <span class="op">=</span> positions.sel(</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    keypoint<span class="op">=</span><span class="st">"snout"</span>,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"id_0"</span>,</span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    space<span class="op">=</span><span class="st">"y"</span>,</span>
 <span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">240</span>, <span class="dv">300</span>),</span>
 <span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -414,7 +415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>ax_traj.imshow(traj_frame.mean(axis<span class="op">=</span><span class="dv">2</span>), cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
 <span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>plot_centroid_trajectory(</span>
 <span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    pos_clean.sel(time<span class="op">=</span><span class="bu">slice</span>(traj_end_sec <span class="op">-</span> <span class="dv">10</span>, traj_end_sec)),</span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"individual_0"</span>,</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    individual<span class="op">=</span><span class="st">"id_0"</span>,</span>
 <span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    keypoints<span class="op">=</span>[<span class="st">"centre"</span>, <span class="st">"tailbase"</span>, <span class="st">"left_ear"</span>, <span class="st">"right_ear"</span>],</span>
 <span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_traj,</span>
 <span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.8</span>,</span>
@@ -485,66 +486,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
 <span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel E: head direction polar histogram                             #</span></span>
 <span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>BIN_WIDTH_DEG <span class="op">=</span> <span class="dv">15</span></span>
-<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>n_bins <span class="op">=</span> <span class="bu">int</span>(<span class="dv">360</span> <span class="op">/</span> BIN_WIDTH_DEG)</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a>plot_polar_histogram(head_angle.sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">150</span>, <span class="dv">300</span>)), ax<span class="op">=</span>ax_polar)</span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a>ax_polar.set_title(<span class="st">"Head direction"</span>, pad<span class="op">=</span><span class="dv">45</span>)</span>
 <span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a>head_angle.sel(time<span class="op">=</span><span class="bu">slice</span>(<span class="dv">150</span>, <span class="dv">300</span>)).plot.hist(</span>
-<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>    bins<span class="op">=</span>np.linspace(<span class="op">-</span>np.pi, np.pi, n_bins <span class="op">+</span> <span class="dv">1</span>),</span>
-<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_polar,</span>
-<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>    density<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>    edgecolor<span class="op">=</span><span class="st">"white"</span>,</span>
-<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_direction(<span class="op">-</span><span class="dv">1</span>)   <span class="co"># clockwise</span></span>
-<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>ax_polar.set_theta_offset(<span class="dv">0</span>)       <span class="co"># 0 deg at the right</span></span>
-<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xlabel(<span class="st">""</span>)</span>
-<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>ax_polar.set_yticklabels([])</span>
-<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>tick_angles <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">9</span>)[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>tick_labels_deg <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="dv">181</span>, <span class="dv">45</span>)) <span class="op">+</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">0</span>, <span class="op">-</span><span class="dv">180</span>, <span class="op">-</span><span class="dv">45</span>))[<span class="op">-</span><span class="dv">1</span>:<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticks(tick_angles)</span>
-<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>ax_polar.set_xticklabels([<span class="ss">f"</span><span class="sc">{</span>t<span class="sc">}</span><span class="ch">\N{DEGREE SIGN}</span><span class="ss">"</span> <span class="cf">for</span> t <span class="kw">in</span> tick_labels_deg])</span>
-<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>ax_polar.set_title(<span class="st">"Head direction"</span>, pad<span class="op">=</span><span class="dv">45</span>)</span>
-<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F: example eye frame with tracked keypoints + centroid        #</span></span>
-<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>ax_frame.imshow(frame0, cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
-<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
-<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
-<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
-<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
-<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
-<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
-<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
-<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
-<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>),</span>
-<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>ax_frame.invert_yaxis()  <span class="co"># the dataset was captured flipped</span></span>
-<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="co"># Like axis("off"), but keeping the x/y labels.</span></span>
-<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xticks([])</span>
-<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>ax_frame.set_yticks([])</span>
-<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> ax_frame.spines.values():</span>
-<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a>    spine.set_visible(<span class="va">False</span>)</span>
-<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xlabel(<span class="st">"x"</span>)</span>
-<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>ax_frame.set_ylabel(<span class="st">"y"</span>)</span>
-<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a>ax_frame.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-align with panel A</span></span>
-<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G: pupil centroid x-velocity over time                        #</span></span>
-<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
-<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a>vx.plot.line(</span>
-<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_vel, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>), label<span class="op">=</span><span class="st">"Pupil centroid x velocity"</span></span>
-<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlim(<span class="bu">float</span>(vx.time.<span class="bu">min</span>()), <span class="bu">float</span>(vx.time.<span class="bu">max</span>()))</span>
-<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>ax_vel.set_title(<span class="st">"Pupil centroid x velocity"</span>)</span>
-<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlabel(<span class="st">"time (s)"</span>)</span>
-<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>ax_vel.set_ylabel(<span class="st">"velocity (px/s)"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel F: example eye frame with tracked keypoints + centroid        #</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>ax_frame.imshow(frame0, cmap<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a>    pos0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"teal"</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>ax_frame.scatter(</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"x"</span>),</span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>    centroid0.sel(space<span class="op">=</span><span class="st">"y"</span>),</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">120</span>,</span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>),</span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a>ax_frame.invert_yaxis()  <span class="co"># the dataset was captured flipped</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Like axis("off"), but keeping the x/y labels.</span></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xticks([])</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a>ax_frame.set_yticks([])</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> ax_frame.spines.values():</span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a>    spine.set_visible(<span class="va">False</span>)</span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a>ax_frame.set_xlabel(<span class="st">"x"</span>)</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a>ax_frame.set_ylabel(<span class="st">"y"</span>)</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a>ax_frame.set_anchor(<span class="st">"W"</span>)  <span class="co"># left-align with panel A</span></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel G: pupil centroid x-velocity over time                        #</span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------------ #</span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>vx.plot.line(</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>    ax<span class="op">=</span>ax_vel, color<span class="op">=</span>get_color(<span class="st">"orange"</span>, <span class="st">"Set2"</span>), label<span class="op">=</span><span class="st">"Pupil centroid x velocity"</span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlim(<span class="bu">float</span>(vx.time.<span class="bu">min</span>()), <span class="bu">float</span>(vx.time.<span class="bu">max</span>()))</span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a>ax_vel.set_title(<span class="st">"Pupil centroid x velocity"</span>)</span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>ax_vel.set_xlabel(<span class="st">"time (s)"</span>)</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>ax_vel.set_ylabel(<span class="st">"velocity (px/s)"</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -557,7 +539,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="save-the-figure" class="level2">
 <h2 class="anchored" data-anchor-id="save-the-figure">Save the figure</h2>
-<div id="5c5e10f2" class="cell" data-execution_count="5">
+<div id="9114973b" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig_name <span class="op">=</span> <span class="st">"movement_applications_poster"</span></span>
