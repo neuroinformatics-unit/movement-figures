@@ -3,6 +3,8 @@ title: "movement applications (manuscript)"
 sample_data:
     - filename: DLC_single-mouse_EPM.predictions.h5
       with_video: true
+    - filename: SLEAP_two-bees.predictions.slp
+      with_video: true
 ---
 
 A multi-row figure showcasing `movement` applications. Each row is one
@@ -27,7 +29,6 @@ from movement import sample_data
 from movement.filtering import (
     filter_by_confidence, rolling_filter, interpolate_over_time
 )
-from movement.io import load_poses
 from movement.kinematics import compute_pairwise_distances
 from movement.plots import plot_occupancy
 from movement.transforms import scale
@@ -35,7 +36,6 @@ from movement.transforms import scale
 from movement_figures import (
     add_inset_colorbar,
     apply_style,
-    data_dir,
     figure_size,
     get_color,
     napari_canvas_screenshot,
@@ -98,20 +98,15 @@ Two female worker bumblebees (*Bombus impatiens*) interacting in a petri dish
 with a hexagonal beeswax floor, filmed at 100 fps and tracked with
 SLEAP ([Pereira et al., 2022](https://doi.org/10.1038/s41592-022-01426-1)).
 We use the 20 s example clip (frames 21000--23000) from SLEAP's
-[datasets page](https://docs.sleap.ai/v1.6.5/reference/datasets/#bees).
+[datasets page](https://docs.sleap.ai/v1.6.5/reference/datasets/#bees),
+available as a `movement` sample dataset with its video.
 The tracks carry no confidence scores, so we skip the confidence
 filter. We smooth with a rolling median, then interpolate over short gaps
 (e.g. when the bees briefly occlude each other).
 
 ```{python}
-# TODO: fetch via movement.sample_data once the bees dataset is mirrored.
-# Until then, place the files in the (untracked) showcase video inputs.
-BEES_DIR = data_dir().parent / "videos" / "showcase" / "inputs"
-BEES_VIDEO = BEES_DIR / "bees@21000-23000.mp4"
-
-bees = load_poses.from_sleap_file(
-    BEES_DIR / "bees@21000-23000.slp",
-    fps=100,  # recording rate. The mp4 clip is encoded at 25 fps for playback
+bees = sample_data.fetch_dataset(
+    "SLEAP_two-bees.predictions.slp", with_video=True
 )
 bees = bees.assign_coords(individual=["bee-1", "bee-2"])  # Rename individuals
 position_smooth = rolling_filter(
@@ -170,7 +165,7 @@ bees_frame_index = round(BEES_FRAME_SEC * bees.fps)
 assert interacting.isel(time=bees_frame_index), "snapshot not in interaction"
 
 bees_napari = napari_canvas_screenshot(
-    bees, BEES_VIDEO,
+    bees, bees.video_path,
     bees_frame_index,
     tail_length=round(BEES_TAIL_SEC * bees.fps),
     zoom=True,
